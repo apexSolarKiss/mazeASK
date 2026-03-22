@@ -98,7 +98,7 @@ That viewpoint is more useful than just memorizing names.
 
 ---
 
-# Algorithms currently in `mazeASK 2`
+# Algorithms currently in `mazeASK`
 
 ## 1. Recursive Backtracker
 
