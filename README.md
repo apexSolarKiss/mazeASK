@@ -1,72 +1,53 @@
+![mazeASK](mazeASK.jpg)
+
 # mazeASK
 
-An interactive p5.js lab for exploring maze generation algorithms as systems, structures, and visual forms.
+Maze generation algorithms as systems.
 
-This is not just a collection of algorithms.  
-It is a study of how rules produce structure and how selection strategy shapes visual outcomes.
+---
+
+## Live
+
+Open and duplicate the sketch:
+
+https://editor.p5js.org/asymptoticSystemKey/sketches/FJk1OWjNb
 
 ---
 
 ## What this is
 
-mazeASK is a real-time maze generation environment where you can:
+An interactive p5.js lab for exploring maze generation algorithms through their behavior and output.
 
-- switch between multiple algorithms
-- watch them build structure step-by-step
-- compare their visual and structural biases
-- treat algorithms as compositional tools, not just code
+Switch between algorithms and watch how each one builds structure in real time.
 
----
-
-## Why this exists
-
-Most explanations of maze algorithms focus on implementation.
-
-That misses the more interesting question:
-
-> How do different rule systems produce different visual and structural outcomes?
-
-This project treats maze generation as:
-
-- graph construction  
-- procedural design  
-- algorithmic aesthetics  
+Same grid. Same constraints. Different rules.
 
 ---
 
-## Algorithms included
+## Algorithms
 
-- Recursive Backtracker
-- Binary Tree
-- Prim
-- Sidewinder
-- Eller
-- Kruskal
-- Wilson
-- Aldous–Broder
-
-These are not presented as isolated tricks, but as variations of:
-
-> building a connected structure under different constraints
+- Recursive Backtracker  
+- Binary Tree  
+- Prim  
+- Sidewinder  
+- Eller  
+- Kruskal  
+- Wilson  
+- Aldous–Broder  
 
 ---
 
 ## Key idea
 
-All of these algorithms are solving the same problem:
+All of these are doing the same thing >>
 
-- connect all cells  
-- avoid disconnected regions  
-- usually avoid cycles  
+building a spanning tree.
 
-They differ in:
+What changes is how the next connection is chosen.
 
-- how they choose the next step  
-- how local vs global their decisions are  
-- what biases they introduce  
-- what kind of structure they produce  
-
-**Result:** different textures of mazes
+That choice introduces bias.  
+That bias shapes the structure.  
+That structure is what you see.
 
 ---
 
@@ -91,84 +72,9 @@ They differ in:
 - `[` decrease grid  
 - `]` increase grid  
 
-### Output / Rendering
+### Output
 - `o` toggle output mode  
 - `p` toggle square / widescreen  
-
----
-
-## How to run
-
-### Option 1 — use the hosted sketch (recommended)
-
-Open and duplicate this sketch in the p5.js editor:
-
-https://editor.p5js.org/asymptoticSystemKey/full/FJk1OWjNb
-
-This is the fastest way to explore and modify the system.
-
----
-
-### Option 2 — run locally
-
-1. Rename:
-
-    mazeASK.js → sketch.js
-
-2. Place it inside a standard p5.js project (or alongside an `index.html` that loads p5)
-
-3. Run a local server:
-
-    npx serve
-
-4. Open the local URL shown in your terminal
-
----
-
-## File structure
-
-    /mazeASK.js                      -> main interactive system
-    /mazeASK_algorithms_notes.md     -> algorithm explanations
-    /mazeASK.jpg                     -> reference image
-    /LICENSE
-
----
-
-## Suggested way to explore
-
-Do not just run it once.
-
-Cycle through algorithms and observe:
-
-- corridor length  
-- branching density  
-- directional bias  
-- symmetry vs randomness  
-- perceived difficulty  
-
-Compare:
-
-- Recursive Backtracker vs Prim  
-- Binary Tree vs Sidewinder  
-- Kruskal vs Wilson vs Aldous–Broder  
-
----
-
-## Critical perspective
-
-Maze algorithms are often taught as separate recipes.
-
-A better framing:
-
-> They are different strategies for constructing a spanning tree.
-
-Once you see that, the differences become:
-
-- selection rule  
-- constraint handling  
-- bias injection  
-
-That perspective generalizes beyond mazes.
 
 ---
 
@@ -178,20 +84,26 @@ See:
 
     mazeASK_algorithms_notes.md
 
-for deeper breakdowns of each algorithm.
+for a breakdown of each algorithm and what it produces.
+
+---
+
+## Run locally (source)
+
+1. Rename:
+
+    mazeASK.js → sketch.js
+
+2. Place inside a p5.js project
+
+3. Run:
+
+    npx serve
+
+4. Open the local URL shown in your terminal
 
 ---
 
 ## License
 
 Apache 2.0
-
----
-
-## Context
-
-Part of the broader ASK system work:
-
-- procedural structures  
-- generative systems  
-- mathematically driven aesthetics  
