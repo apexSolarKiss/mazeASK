@@ -17,7 +17,7 @@ That means the maze is really a kind of connected tree drawn on a grid.
 
 ---
 
-## A kid-friendly way to think about it
+## A simple way to think about it
 
 Imagine a big building made of tiny rooms.
 
@@ -102,7 +102,7 @@ That viewpoint is more useful than just memorizing names.
 
 ## 1. Recursive Backtracker
 
-### Kid version
+### Explanation
 Start in one room.  
 Pick a neighboring room you have not visited yet.  
 Go there and knock down the wall between them.  
@@ -112,7 +112,7 @@ When you get stuck, go backward until you find a room where there is still anoth
 
 Then keep going.
 
-### Grownup version
+### Note
 This is depth-first search with backtracking.
 
 ### What it tends to look like
@@ -138,7 +138,7 @@ A great first maze algorithm to learn and visualize.
 
 ## 2. Binary Tree
 
-### Kid version
+### Explanation
 For every room, choose between only two favorite directions.
 
 For example, each room might connect either:
@@ -147,7 +147,7 @@ For example, each room might connect either:
 
 So every room makes one simple little decision.
 
-### Grownup version
+### Note
 This is a very simple biased carving rule.
 
 ### What it tends to look like
@@ -172,14 +172,14 @@ Good for understanding how bias changes maze style.
 
 ## 3. Prim
 
-### Kid version
+### Explanation
 Start with one room.
 
 Then keep growing the maze from the **outside edge** of the part you already built.
 
 It is like making a snowball bigger by adding new snow around the outside.
 
-### Grownup version
+### Note
 This is a randomized frontier-growth version of Prim’s algorithm.
 
 ### What it tends to look like
@@ -204,14 +204,14 @@ Great for comparison against Recursive Backtracker.
 
 ## 4. Sidewinder
 
-### Kid version
+### Explanation
 Go across a row and keep making a connected run.
 
 Every so often, choose one room in that run and make a passage upward.
 
 Then start a new run.
 
-### Grownup version
+### Note
 This is a row-based algorithm with a directional bias, but it is more interesting than Binary Tree.
 
 ### What it tends to look like
@@ -270,7 +270,7 @@ Use random walks, but erase loops before connecting to the existing maze.
 - produces a uniform spanning tree
 
 ### Tradeoff
-Harder to explain to a young child and not as immediate visually.
+Harder to explain and not as immediate visually.
 
 ---
 
@@ -358,7 +358,7 @@ That is how algorithm study becomes visual study.
 
 # Why start with Recursive Backtracker
 
-If a child or beginner is learning maze generation for the first time, Recursive Backtracker is usually the best starting point because:
+If someone is learning maze generation for the first time, Recursive Backtracker is usually the best starting point because:
 
 - it is easy to explain
 - it is easy to animate
