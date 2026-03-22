@@ -52,10 +52,11 @@ The deeper lesson is:
 
 They mainly differ in a few ways:
 
-### 1. How they choose the next cell
+### 1. How they choose the next step
 Do they go deep?  
 Do they grow from the edge?  
-Do they move row by row?
+Do they move row by row?  
+Do they choose walls instead of cells?
 
 ### 2. What kind of bias they introduce
 Do they prefer some directions?  
@@ -66,14 +67,17 @@ Do they make the maze feel more even or more wild?
 Long winding paths  
 Bushy dead ends  
 Horizontal runs  
-Geometric structure
+Geometric structure  
+Row-by-row patterns  
+Cycle-avoiding graph structure
 
 ### 4. What tradeoff they make
 Simplicity  
 Speed  
 Elegance  
 Fairness  
-Visual interest
+Visual interest  
+Bookkeeping complexity
 
 So the real transferable idea is this:
 
@@ -102,7 +106,7 @@ That viewpoint is more useful than just memorizing names.
 
 ---
 
-# Algorithms currently in `mazeASK`
+# Algorithms implemented in `mazeASK 2`
 
 ## 1. Recursive Backtracker
 
@@ -135,9 +139,6 @@ This is depth-first search with backtracking.
 - can go very deep before filling in other areas
 - not uniform or unbiased
 
-### Best use
-A great first maze algorithm to learn and visualize.
-
 ---
 
 ## 2. Binary Tree
@@ -169,9 +170,6 @@ This is a very simple biased carving rule.
 - can look artificial
 - some directions get favored too much
 
-### Best use
-Good for understanding how bias changes maze style.
-
 ---
 
 ## 3. Prim
@@ -200,9 +198,6 @@ This is a randomized frontier-growth version of Prim’s algorithm.
 - can feel bushier
 - often produces fewer memorable long passages
 - less “adventure tunnel” feeling than Recursive Backtracker
-
-### Best use
-Great for comparison against Recursive Backtracker.
 
 ---
 
@@ -233,111 +228,77 @@ This is a row-based algorithm with a directional bias, but it is more interestin
 - can look structured in a very obvious way
 - often feels less natural than more exploratory algorithms
 
-### Best use
-Useful for studying how row-wise construction changes maze character.
-
 ---
 
-# Algorithms not yet added, but useful later
+## 5. Eller
 
-## Eller’s Algorithm
-Builds the maze one row at a time while tracking connected sets.
+### Explanation
+Build the maze one row at a time while keeping track of which cells are already connected.
 
-### Why it matters
+Each row gets partially joined together sideways, then some cells are forced to connect downward so the next row stays connected to the maze above it.
+
+Then the process repeats for the next row.
+
+### Note
+This is a row-by-row algorithm that tracks connected sets.
+
+### What it tends to look like
+- structured but still varied
+- shaped by row-wise decisions
+- less like deep wandering and more like disciplined construction
+
+### Pros
 - very memory efficient
-- can generate mazes row by row
-- conceptually more advanced
+- elegant once understood
+- useful for thinking about connectivity as a set problem
+- good for very large or streaming mazes
 
-### Tradeoff
-Harder to understand than the simpler starter algorithms.
-
----
-
-## Kruskal’s Algorithm
-Treat walls like possible connections and only remove a wall if it does not create a cycle.
-
-### Why it matters
-- teaches disjoint sets / union-find
-- very graph-theoretic
-- good for showing cycle avoidance explicitly
-
-### Tradeoff
-The bookkeeping is more abstract.
+### Cons
+- harder to understand than the simpler starter algorithms
+- requires more bookkeeping than Backtracker or Binary Tree
+- the logic is less visually obvious at first glance
 
 ---
 
-## Wilson’s Algorithm
-Use random walks, but erase loops before connecting to the existing maze.
+## 6. Kruskal
 
-### Why it matters
-- mathematically elegant
-- produces a uniform spanning tree
+### Explanation
+Treat walls like possible connections between cells.
 
-### Tradeoff
-Harder to explain and not as immediate visually.
+Look at the walls in random order.  
+Remove a wall only if it joins two different regions.
 
----
+If removing a wall would make a loop inside a region that is already connected, leave that wall in place.
 
-## Aldous–Broder
-Randomly wander around the grid and only carve when first visiting a new cell.
+### Note
+This is a graph-based algorithm that uses disjoint sets / union-find to track connectivity.
 
-### Why it matters
-- conceptually simple
-- mathematically important
+### What it tends to look like
+- often bushier than Recursive Backtracker
+- lots of small branching structure
+- less corridor-dominant than depth-first carving
 
-### Tradeoff
-Very slow.
+### Pros
+- very clear graph logic
+- excellent for teaching cycle prevention
+- connects maze generation to broader computer science ideas
 
----
-
-# Fast visual comparison
-
-## Recursive Backtracker
-Feels like:
-- “go deep”
-- long winding hallways
-
-## Binary Tree
-Feels like:
-- “follow one of two favorite directions”
-- strong bias
-
-## Prim
-Feels like:
-- “grow from the edge”
-- bushier, more distributed
-
-## Sidewinder
-Feels like:
-- “make runs across rows”
-- structured and directional
+### Cons
+- the bookkeeping is more abstract
+- less immediate to explain than simpler carving algorithms
+- usually needs an extra supporting data structure
 
 ---
 
-# What to ask while comparing algorithms
-
-When switching algorithms, do not only ask, “Does it work?”
-
-Ask:
-
-- Which one makes the longest hallways?
-- Which one feels most balanced?
-- Which one feels most artificial?
-- Which one feels most elegant?
-- Which one looks easiest to solve?
-- Which one looks most surprising?
-
-That is how algorithm study becomes visual study.
-
----
-
-# Suggested controls for the sketch
+# Controls
 
 ## Algorithm switching
 - `1` Recursive Backtracker
 - `2` Binary Tree
 - `3` Prim
 - `4` Sidewinder
+- `5` Eller
+- `6` Kruskal
 
 ## Regenerate
 - `space`
@@ -360,20 +321,22 @@ That is how algorithm study becomes visual study.
 
 ---
 
-# Why start with Recursive Backtracker
+# Comparison prompts
 
-If someone is learning maze generation for the first time, Recursive Backtracker is usually the best starting point because:
+When switching algorithms, do not only ask, “Does it work?”
 
-- it is easy to explain
-- it is easy to animate
-- it creates dramatic results quickly
-- it teaches the core ideas of:
-  - visited vs unvisited cells
-  - neighbors
-  - carving passages
-  - backtracking when stuck
+Ask:
 
-After that, the other algorithms become easier to understand as variations in selection strategy.
+- Which one makes the longest hallways?
+- Which one feels most balanced?
+- Which one feels most artificial?
+- Which one feels most elegant?
+- Which one looks easiest to solve?
+- Which one looks most surprising?
+- Which one feels most local in its decisions?
+- Which one feels most graph-like?
+
+That is how algorithm study becomes visual study.
 
 ---
 
