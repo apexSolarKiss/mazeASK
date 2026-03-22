@@ -109,7 +109,7 @@ That viewpoint is more useful than just memorizing names.
 
 ---
 
-# Algorithms implemented in `mazeASK 2`
+# Algorithms implemented in `mazeASK`
 
 ## 1. Recursive Backtracker
 
