@@ -11,7 +11,7 @@
 
 /*
 =====================================================
-BIG PICTURE // FOR KIDS AND GROWNUPS
+BIG PICTURE
 =====================================================
 
 A maze is really a bunch of little boxes, called cells,
@@ -79,8 +79,8 @@ ALGORITHMS IN THIS SKETCH
 3 // Prim
 4 // Sidewinder
 
-Each algorithm below has comments written so a 7 year
-old can understand the basic idea, plus pros and cons.
+Each algorithm below has comments that explain the
+basic idea, plus pros and cons.
 
 =====================================================
 SIMPLE ANALOGIES
@@ -186,7 +186,7 @@ let frontierASK = [];
 let primVisitedCountASK = 0;
 
 let mazeCompleteASK = false;
-let stepsPerFrameASK = 1;
+let stepsPerFrameASK = 16;
 
 let algorithmASK = "recursiveBacktracker";
 let algorithmLabelASK = "Recursive Backtracker";
@@ -431,10 +431,9 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // RECURSIVE BACKTRACKTER
   // --------------------------------------------------
-  // Kid version:
-  // "Start in one room. Keep walking to a room you
+  // Start in one room. Keep walking to a room you
   // haven't visited yet. If you get stuck, walk
-  // backward until you find a room with another choice."
+  // backward until you find a room with another choice.
   //
   // Pros:
   // - easy to understand
@@ -445,7 +444,7 @@ function setupAlgorithmASK() {
   // - can make lots of deep branches
   // - not very balanced or uniform
   //
-  // Grownup note:
+  // Note:
   // This is depth-first search with backtracking.
   if (algorithmASK === "recursiveBacktracker") {
     algorithmLabelASK = "Recursive Backtracker";
@@ -456,9 +455,8 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // BINARY TREE
   // --------------------------------------------------
-  // Kid version:
-  // "At every room, pick one of just two favorite
-  // directions and break that wall."
+  // At every room, pick one of just two favorite
+  // directions and break that wall.
   //
   // In this sketch, each cell tries north or east.
   //
@@ -472,7 +470,7 @@ function setupAlgorithmASK() {
   // - mazes can feel artificial
   // - some directions get favored too much
   //
-  // Grownup note:
+  // Note:
   // This is less about realism and more about showing
   // how a very simple rule can create a whole maze.
   else if (algorithmASK === "binaryTree") {
@@ -483,9 +481,8 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // PRIM
   // --------------------------------------------------
-  // Kid version:
-  // "Start somewhere. Then grow the maze from the edge
-  // of the part you already built."
+  // Start somewhere. Then grow the maze from the edge
+  // of the part you already built.
   //
   // It is like building a snowball bigger by adding
   // new pieces around the outside.
@@ -499,7 +496,7 @@ function setupAlgorithmASK() {
   // - does not make corridors as long and dramatic
   // - often makes lots of short dead ends
   //
-  // Grownup note:
+  // Note:
   // This is a randomized frontier-growth approach.
   else if (algorithmASK === "prim") {
     algorithmLabelASK = "Prim";
@@ -511,9 +508,8 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // SIDEWINDER
   // --------------------------------------------------
-  // Kid version:
-  // "Go across a row, making a run of connected rooms.
-  // Every so often, punch one passage upward."
+  // Go across a row, making a run of connected rooms.
+  // Every so often, punch one passage upward.
   //
   // Pros:
   // - simple but more interesting than Binary Tree
@@ -524,7 +520,7 @@ function setupAlgorithmASK() {
   // - still has a directional bias
   // - can look row-ish and structured
   //
-  // Grownup note:
+  // Note:
   // It is a row-based strategy that reduces some bias
   // compared to Binary Tree, but not all of it.
   else if (algorithmASK === "sidewinder") {
