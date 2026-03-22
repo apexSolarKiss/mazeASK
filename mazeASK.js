@@ -2,23 +2,18 @@
 // Licensed under the Apache License, Version 2.0
 
 // =====================================================
-// ASK p5.js maze scaffold
-// Recursive Backtracker / Depth-First Search
-// Updated for template 2
-// - safe ASK naming
+// ASK p5.js // Maze Lab
+// template 2 version
 // - viewing mode vs output mode
-// - square vs widescreen composition rules
+// - clean algorithm comparison
+// - Recursive Backtracker / Binary Tree / Prim / Sidewinder
 // =====================================================
 
 // =====================================================
 // TOP-OF-FILE MODE SETTINGS
 // =====================================================
 
-// false = viewing mode >> use current browser window size
-// true  = output mode  >> use fixed export dimensions
 let outputASK = false;
-
-// options: "square" or "widescreen"
 let aspectModeASK = "widescreen";
 
 const renderPresetsASK = {
@@ -37,45 +32,52 @@ let colorsASK = [];
 let opacASK = 1;
 
 let timeASK = 0;
-
 let canvasWidthASK = 0;
 let canvasHeightASK = 0;
 
-// interaction state
 let mousePressedASK = false;
 let dragStartASK = null;
 let dragCurrentASK = null;
 let dragLengthASK = 0;
 let dragVectorASK = { x: 0, y: 0 };
 
-// optional containers
 let layersASK = [];
 let nodesASK = [];
 
-// global view controls
 let zoomASK = 1.0;
 let centerXASK = 0.5;
 let centerYASK = 0.5;
 
 // =====================================================
-// MAZE STATE
+// MAZE LAB STATE
 // =====================================================
 
 let mazeASK = [];
-let colsMazeASK = 64;
-let rowsMazeASK = 64;
+let colsMazeASK = 40;
+let rowsMazeASK = 24;
 let cellSizeASK = 0.02;
+
+let mazeOriginXASK = 0;
+let mazeOriginYASK = 0;
+let mazeWidthNormASK = 0.82;
+let mazeHeightNormASK = 0.62;
 
 let currentCellASK = null;
 let stackASK = [];
-let mazeCompleteASK = false;
-let stepsPerFrameASK = 12;
+let frontierASK = [];
+let primVisitedCountASK = 0;
 
-// composition
-let mazeOriginXASK = 0;
-let mazeOriginYASK = 0;
-let mazeWidthNormASK = 0.7;
-let mazeHeightNormASK = 0.7;
+let mazeCompleteASK = false;
+let stepsPerFrameASK = 16;
+
+let algorithmASK = "recursiveBacktracker";
+let algorithmLabelASK = "Recursive Backtracker";
+
+let generationModeASK = "step"; // "step" or "instant"
+let sidewinderRowASK = 0;
+let sidewinderColASK = 0;
+let sidewinderRunASK = [];
+let visitOrderCounterASK = 0;
 
 // =====================================================
 // SETUP
@@ -120,7 +122,11 @@ function draw() {
 }
 
 function drawASK() {
-  drawMazeASK();
+  drawVisitedFieldsASK();
+  drawWallsASK();
+  drawCurrentCellASK();
+  drawBorderASK();
+  drawLabOverlayASK();
 }
 
 function drawASKOverlay() {
@@ -188,16 +194,11 @@ function isSquareCompositionASK() {
   if (outputASK) {
     return aspectModeASK === "square";
   }
-
-  let ratioASK = canvasWidthASK / canvasHeightASK;
-  return ratioASK < 1.15;
+  return canvasWidthASK / canvasHeightASK < 1.15;
 }
 
 function configureCompositionASK() {
-  let squareASK = isSquareCompositionASK();
-
-  if (squareASK) {
-    // dense, centered, stable
+  if (isSquareCompositionASK()) {
     zoomASK = 1.0;
     centerXASK = 0.5;
     centerYASK = 0.5;
@@ -205,10 +206,14 @@ function configureCompositionASK() {
     mazeWidthNormASK = 0.78;
     mazeHeightNormASK = 0.78;
 
-    colsMazeASK = 34;
-    rowsMazeASK = 34;
+    if (algorithmASK === "sidewinder") {
+      colsMazeASK = 34;
+      rowsMazeASK = 34;
+    } else {
+      colsMazeASK = 36;
+      rowsMazeASK = 36;
+    }
   } else {
-    // cinematic, wider spread, slightly lower visual anchor
     zoomASK = 1.0;
     centerXASK = 0.5;
     centerYASK = 0.515;
@@ -216,21 +221,33 @@ function configureCompositionASK() {
     mazeWidthNormASK = 0.82;
     mazeHeightNormASK = 0.62;
 
-    colsMazeASK = 44;
-    rowsMazeASK = 24;
+    if (algorithmASK === "sidewinder") {
+      colsMazeASK = 44;
+      rowsMazeASK = 24;
+    } else {
+      colsMazeASK = 46;
+      rowsMazeASK = 24;
+    }
   }
 }
 
 // =====================================================
-// MAZE LOGIC
+// MAZE INITIALIZATION
 // =====================================================
 
 function initializeMazeASK() {
+  configureCompositionASK();
+
   mazeASK = [];
   stackASK = [];
+  frontierASK = [];
+  sidewinderRunASK = [];
   mazeCompleteASK = false;
-
-  configureCompositionASK();
+  currentCellASK = null;
+  primVisitedCountASK = 0;
+  visitOrderCounterASK = 0;
+  sidewinderRowASK = 0;
+  sidewinderColASK = 0;
 
   cellSizeASK = min(
     mazeWidthNormASK / colsMazeASK,
@@ -241,26 +258,17 @@ function initializeMazeASK() {
   let mazeHeightASK = rowsMazeASK * cellSizeASK;
 
   mazeOriginXASK = -mazeWidthASK * 0.5;
-
-  // centered in square, slightly lower in widescreen
-  if (isSquareCompositionASK()) {
-    mazeOriginYASK = -mazeHeightASK * 0.5;
-  } else {
-    mazeOriginYASK = -mazeHeightASK * 0.42;
-  }
+  mazeOriginYASK = isSquareCompositionASK() ? -mazeHeightASK * 0.5 : -mazeHeightASK * 0.42;
 
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     let rowCellsASK = [];
-
     for (let colASK = 0; colASK < colsMazeASK; colASK++) {
       rowCellsASK.push(makeCellASK(colASK, rowASK));
     }
-
     mazeASK.push(rowCellsASK);
   }
 
-  currentCellASK = mazeASK[0][0];
-  currentCellASK.visitedASK = true;
+  setupAlgorithmASK();
 }
 
 function makeCellASK(colASK, rowASK) {
@@ -268,7 +276,9 @@ function makeCellASK(colASK, rowASK) {
     colASK,
     rowASK,
     visitedASK: false,
+    frontierASK: false,
     depthASK: -1,
+    visitOrderASK: -1,
     wallsASK: {
       topASK: true,
       rightASK: true,
@@ -278,14 +288,57 @@ function makeCellASK(colASK, rowASK) {
   };
 }
 
+function setupAlgorithmASK() {
+  if (algorithmASK === "recursiveBacktracker") {
+    algorithmLabelASK = "Recursive Backtracker";
+    currentCellASK = mazeASK[0][0];
+    markVisitedASK(currentCellASK, 0);
+  } else if (algorithmASK === "binaryTree") {
+    algorithmLabelASK = "Binary Tree";
+    generationModeASK = "instant";
+  } else if (algorithmASK === "prim") {
+    algorithmLabelASK = "Prim";
+    currentCellASK = mazeASK[floor(rowsMazeASK / 2)][floor(colsMazeASK / 2)];
+    markVisitedASK(currentCellASK, 0);
+    addFrontierNeighborsASK(currentCellASK);
+  } else if (algorithmASK === "sidewinder") {
+    algorithmLabelASK = "Sidewinder";
+    generationModeASK = "step";
+    sidewinderRowASK = 0;
+    sidewinderColASK = 0;
+    sidewinderRunASK = [];
+  }
+}
+
+// =====================================================
+// MAZE UPDATE
+// =====================================================
+
 function updateMazeASK() {
   if (mazeCompleteASK) return;
 
+  if (algorithmASK === "binaryTree") {
+    runBinaryTreeASK();
+    mazeCompleteASK = true;
+    return;
+  }
+
   for (let iASK = 0; iASK < stepsPerFrameASK; iASK++) {
-    stepRecursiveBacktrackerASK();
+    if (algorithmASK === "recursiveBacktracker") {
+      stepRecursiveBacktrackerASK();
+    } else if (algorithmASK === "prim") {
+      stepPrimASK();
+    } else if (algorithmASK === "sidewinder") {
+      stepSidewinderASK();
+    }
+
     if (mazeCompleteASK) break;
   }
 }
+
+// =====================================================
+// ALGORITHMS
+// =====================================================
 
 function stepRecursiveBacktrackerASK() {
   let neighborsASK = getUnvisitedNeighborsASK(currentCellASK);
@@ -296,9 +349,7 @@ function stepRecursiveBacktrackerASK() {
     stackASK.push(currentCellASK);
     removeWallsASK(currentCellASK, nextCellASK);
 
-    nextCellASK.visitedASK = true;
-    nextCellASK.depthASK = stackASK.length;
-
+    markVisitedASK(nextCellASK, stackASK.length);
     currentCellASK = nextCellASK;
     return;
   }
@@ -311,7 +362,120 @@ function stepRecursiveBacktrackerASK() {
   mazeCompleteASK = true;
 }
 
-function getUnvisitedNeighborsASK(cellASK) {
+function runBinaryTreeASK() {
+  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
+    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
+      let cellASK = mazeASK[rowASK][colASK];
+      markVisitedASK(cellASK, rowASK + colASK);
+
+      let neighborsASK = [];
+
+      let northASK = getCellASK(colASK, rowASK - 1);
+      let eastASK = getCellASK(colASK + 1, rowASK);
+
+      if (northASK) neighborsASK.push(northASK);
+      if (eastASK) neighborsASK.push(eastASK);
+
+      if (neighborsASK.length > 0) {
+        let targetASK = random(neighborsASK);
+        removeWallsASK(cellASK, targetASK);
+      }
+    }
+  }
+}
+
+function stepPrimASK() {
+  if (frontierASK.length === 0) {
+    mazeCompleteASK = true;
+    return;
+  }
+
+  let frontierIndexASK = floor(random(frontierASK.length));
+  let cellASK = frontierASK.splice(frontierIndexASK, 1)[0];
+  cellASK.frontierASK = false;
+
+  let visitedNeighborsASK = getVisitedNeighborsASK(cellASK);
+
+  if (visitedNeighborsASK.length > 0) {
+    let connectASK = random(visitedNeighborsASK);
+    removeWallsASK(cellASK, connectASK);
+  }
+
+  let depthASK = visitedNeighborsASK.length > 0
+    ? visitedNeighborsASK[0].depthASK + 1
+    : 0;
+
+  markVisitedASK(cellASK, depthASK);
+  currentCellASK = cellASK;
+  addFrontierNeighborsASK(cellASK);
+}
+
+function stepSidewinderASK() {
+  if (sidewinderRowASK >= rowsMazeASK) {
+    mazeCompleteASK = true;
+    return;
+  }
+
+  let cellASK = mazeASK[sidewinderRowASK][sidewinderColASK];
+  markVisitedASK(cellASK, sidewinderRowASK);
+  currentCellASK = cellASK;
+  sidewinderRunASK.push(cellASK);
+
+  let atEasternBoundaryASK = sidewinderColASK === colsMazeASK - 1;
+  let atNorthernBoundaryASK = sidewinderRowASK === 0;
+
+  let carveNorthASK = atEasternBoundaryASK || (!atNorthernBoundaryASK && random() < 0.33);
+
+  if (carveNorthASK) {
+    if (!atNorthernBoundaryASK) {
+      let memberASK = random(sidewinderRunASK);
+      let northASK = getCellASK(memberASK.colASK, memberASK.rowASK - 1);
+      if (northASK) {
+        removeWallsASK(memberASK, northASK);
+      }
+    }
+    sidewinderRunASK = [];
+  } else {
+    let eastASK = getCellASK(sidewinderColASK + 1, sidewinderRowASK);
+    if (eastASK) {
+      removeWallsASK(cellASK, eastASK);
+    }
+  }
+
+  sidewinderColASK++;
+
+  if (sidewinderColASK >= colsMazeASK) {
+    sidewinderColASK = 0;
+    sidewinderRowASK++;
+    sidewinderRunASK = [];
+  }
+}
+
+// =====================================================
+// MAZE HELPERS
+// =====================================================
+
+function markVisitedASK(cellASK, depthASK) {
+  if (!cellASK.visitedASK) {
+    cellASK.visitedASK = true;
+    cellASK.depthASK = depthASK;
+    cellASK.visitOrderASK = visitOrderCounterASK;
+    visitOrderCounterASK++;
+  }
+}
+
+function addFrontierNeighborsASK(cellASK) {
+  let neighborsASK = getNeighborCellsASK(cellASK);
+
+  for (let neighborASK of neighborsASK) {
+    if (!neighborASK.visitedASK && !neighborASK.frontierASK) {
+      neighborASK.frontierASK = true;
+      frontierASK.push(neighborASK);
+    }
+  }
+}
+
+function getNeighborCellsASK(cellASK) {
   let neighborsASK = [];
   let colASK = cellASK.colASK;
   let rowASK = cellASK.rowASK;
@@ -321,12 +485,21 @@ function getUnvisitedNeighborsASK(cellASK) {
   let bottomASK = getCellASK(colASK, rowASK + 1);
   let leftASK = getCellASK(colASK - 1, rowASK);
 
-  if (topASK && !topASK.visitedASK) neighborsASK.push(topASK);
-  if (rightASK && !rightASK.visitedASK) neighborsASK.push(rightASK);
-  if (bottomASK && !bottomASK.visitedASK) neighborsASK.push(bottomASK);
-  if (leftASK && !leftASK.visitedASK) neighborsASK.push(leftASK);
+  if (topASK) neighborsASK.push(topASK);
+  if (rightASK) neighborsASK.push(rightASK);
+  if (bottomASK) neighborsASK.push(bottomASK);
+  if (leftASK) neighborsASK.push(leftASK);
 
   return neighborsASK;
+}
+
+function getUnvisitedNeighborsASK(cellASK) {
+  if (!cellASK) return [];
+  return getNeighborCellsASK(cellASK).filter(neighborASK => !neighborASK.visitedASK);
+}
+
+function getVisitedNeighborsASK(cellASK) {
+  return getNeighborCellsASK(cellASK).filter(neighborASK => neighborASK.visitedASK);
 }
 
 function getCellASK(colASK, rowASK) {
@@ -363,15 +536,14 @@ function removeWallsASK(cellAASK, cellBASK) {
   }
 }
 
+function setAlgorithmASK(nameASK) {
+  algorithmASK = nameASK;
+  initializeMazeASK();
+}
+
 // =====================================================
 // DRAWING
 // =====================================================
-
-function drawMazeASK() {
-  drawVisitedFieldsASK();
-  drawWallsASK();
-  drawCurrentCellASK();
-}
 
 function drawVisitedFieldsASK() {
   noStroke();
@@ -379,20 +551,16 @@ function drawVisitedFieldsASK() {
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     for (let colASK = 0; colASK < colsMazeASK; colASK++) {
       let cellASK = mazeASK[rowASK][colASK];
-
       if (!cellASK.visitedASK) continue;
 
-      let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
-      let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
+      let xASK = mazeOriginXASK + colASK * cellSizeASK;
+      let yASK = mazeOriginYASK + rowASK * cellSizeASK;
 
-      let nxASK = colsMazeASK <= 1 ? 0 : colASK / (colsMazeASK - 1);
-      let nyASK = rowsMazeASK <= 1 ? 0 : rowASK / (rowsMazeASK - 1);
+      let tASK = cellASK.visitOrderASK <= 0
+        ? 0
+        : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
 
-      let mixASK = 0.5 + 0.25 * sin(nxASK * PI * 2 + timeASK * 0.4)
-                        + 0.25 * cos(nyASK * PI * 2 - timeASK * 0.25);
-      mixASK = constrain(mixASK, 0, 1);
-
-      let fillColorASK = colorLerpASK(color2ASK, color3ASK, mixASK, mazeCompleteASK ? 42 : 24);
+      let fillColorASK = colorLerpASK(color2ASK, color3ASK, tASK, mazeCompleteASK ? 34 : 20);
 
       fill(
         red(fillColorASK),
@@ -423,8 +591,8 @@ function drawCellWallsASK(cellASK) {
   let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
   let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
 
-  let edgeMixASK = getEdgeMixASK(cellASK);
-  let wallColorASK = colorLerpASK(color1ASK, color4ASK, edgeMixASK, 255 * opacASK);
+  let mixASK = getEdgeMixASK(cellASK);
+  let wallColorASK = colorLerpASK(color1ASK, color4ASK, mixASK, 255);
 
   stroke(
     red(wallColorASK),
@@ -453,14 +621,7 @@ function getEdgeMixASK(cellASK) {
 
   let dxASK = abs(nxASK - 0.5) * 2.0;
   let dyASK = abs(nyASK - 0.5) * 2.0;
-
-  let radialASK = constrain((dxASK + dyASK) * 0.5, 0, 1);
-
-  if (isSquareCompositionASK()) {
-    return radialASK * 0.55;
-  } else {
-    return constrain(dxASK * 0.7 + dyASK * 0.25, 0, 1) * 0.65;
-  }
+  return constrain((dxASK + dyASK) * 0.35, 0, 1);
 }
 
 function drawCurrentCellASK() {
@@ -472,6 +633,43 @@ function drawCurrentCellASK() {
   noStroke();
   fill(red(color4ASK), green(color4ASK), blue(color4ASK), 120);
   rect(xASK, yASK, cellSizeASK, cellSizeASK);
+  noFill();
+}
+
+function drawBorderASK() {
+  let mazeWidthASK = colsMazeASK * cellSizeASK;
+  let mazeHeightASK = rowsMazeASK * cellSizeASK;
+
+  stroke(
+    red(color4ASK),
+    green(color4ASK),
+    blue(color4ASK),
+    90
+  );
+  strokeWeight(weightASK * 2.0);
+  noFill();
+  rect(mazeOriginXASK, mazeOriginYASK, mazeWidthASK, mazeHeightASK);
+}
+
+function drawLabOverlayASK() {
+  let overlayXASK = mazeOriginXASK;
+  let overlayYASK = mazeOriginYASK - 0.04;
+
+  noStroke();
+  fill(red(color1ASK), green(color1ASK), blue(color1ASK), 160);
+  textAlign(LEFT, TOP);
+  textSize(0.018);
+  text(
+    algorithmLabelASK +
+      "  //  " +
+      colsMazeASK +
+      "x" +
+      rowsMazeASK +
+      "  //  speed " +
+      stepsPerFrameASK,
+    overlayXASK,
+    overlayYASK
+  );
   noFill();
 }
 
@@ -583,7 +781,7 @@ function clickASK() {
 function mousePressedASKHook() {}
 
 function mouseDraggedASKHook() {
-  let dragAmountASK = constrain(abs(dragVectorASK.x) * 220, 1, 80);
+  let dragAmountASK = constrain(abs(dragVectorASK.x) * 240, 1, 240);
   stepsPerFrameASK = floor(dragAmountASK);
 }
 
@@ -610,25 +808,31 @@ function keyPressedASKHook() {
     initializeMazeASK();
   }
 
+  if (key === "1") {
+    setAlgorithmASK("recursiveBacktracker");
+  }
+
+  if (key === "2") {
+    setAlgorithmASK("binaryTree");
+  }
+
+  if (key === "3") {
+    setAlgorithmASK("prim");
+  }
+
+  if (key === "4") {
+    setAlgorithmASK("sidewinder");
+  }
+
   if (key === "[") {
-    if (isSquareCompositionASK()) {
-      colsMazeASK = max(8, colsMazeASK - 2);
-      rowsMazeASK = max(8, rowsMazeASK - 2);
-    } else {
-      colsMazeASK = max(12, colsMazeASK - 2);
-      rowsMazeASK = max(8, rowsMazeASK - 1);
-    }
+    colsMazeASK = max(8, colsMazeASK - 2);
+    rowsMazeASK = max(8, rowsMazeASK - 2);
     initializeMazeASK();
   }
 
   if (key === "]") {
-    if (isSquareCompositionASK()) {
-      colsMazeASK = min(96, colsMazeASK + 2);
-      rowsMazeASK = min(96, rowsMazeASK + 2);
-    } else {
-      colsMazeASK = min(120, colsMazeASK + 2);
-      rowsMazeASK = min(72, rowsMazeASK + 1);
-    }
+    colsMazeASK = min(120, colsMazeASK + 2);
+    rowsMazeASK = min(120, rowsMazeASK + 2);
     initializeMazeASK();
   }
 
@@ -659,10 +863,6 @@ function clearASK() {
   layersASK = [];
   nodesASK = [];
 }
-
-// =====================================================
-// RESIZE
-// =====================================================
 
 function windowResized() {
   if (!outputASK) {
