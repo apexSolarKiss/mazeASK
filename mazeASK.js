@@ -2,18 +2,132 @@
 // Licensed under the Apache License, Version 2.0
 
 // =====================================================
-// ASK p5.js // Maze Lab
+// mazeASK 2 // ASK p5.js Maze Lab
 // template 2 version
 // - viewing mode vs output mode
 // - clean algorithm comparison
 // - Recursive Backtracker / Binary Tree / Prim / Sidewinder
 // =====================================================
 
+/*
+=====================================================
+BIG PICTURE // FOR KIDS AND GROWNUPS
+=====================================================
+
+A maze is really a bunch of little boxes, called cells,
+that can connect to their neighbors.
+
+You can think of the grid like a city of rooms.
+Each room has walls.
+A maze algorithm decides which walls to knock down.
+
+Most of the time, we are trying to make a "perfect maze":
+- every cell can be reached
+- there is only one path between any two cells
+- there are no loops
+
+That means the maze is really a kind of connected tree.
+
+=====================================================
+BIG CONCEPTUAL TAKEAWAY
+=====================================================
+
+These different maze algorithms are not magic tricks.
+They are different ways to build a connected network.
+
+They mostly differ in:
+1. how they choose the next cell
+2. whether they like going deep, wide, or by frontier
+3. how much visual bias they create
+4. what kind of maze "texture" they make
+
+Examples:
+- Recursive Backtracker likes long winding paths
+- Binary Tree is very simple but biased
+- Prim grows outward from a frontier
+- Sidewinder likes horizontal runs with occasional links upward
+
+So the real lesson is not "memorize 4 algorithms".
+The real lesson is:
+selection strategy changes the look of the maze.
+
+=====================================================
+CRITICAL PERSPECTIVE
+=====================================================
+
+People often talk about these as if they are totally
+different things. That is only partly true.
+
+A better way to see them:
+they are all ways of building one connected structure
+while avoiding broken regions.
+
+So when you compare algorithms, ask:
+- How does it choose where to grow next?
+- What visual bias does it create?
+- What tradeoff does it make between simplicity,
+  speed, and maze style?
+
+That is the deeper idea.
+
+=====================================================
+ALGORITHMS IN THIS SKETCH
+=====================================================
+
+1 // Recursive Backtracker
+2 // Binary Tree
+3 // Prim
+4 // Sidewinder
+
+Each algorithm below has comments written so a 7 year
+old can understand the basic idea, plus pros and cons.
+
+=====================================================
+SIMPLE ANALOGIES
+=====================================================
+
+Recursive Backtracker:
+"Walk until stuck, then walk backward until you find
+ a place where you can choose a new path."
+
+Binary Tree:
+"In each room, choose one of two favorite directions."
+
+Prim:
+"Grow the maze from the edge of the already-built part."
+
+Sidewinder:
+"Make horizontal runs, and sometimes punch a hole upward."
+
+=====================================================
+WHAT TO NOTICE WHILE PLAYING
+=====================================================
+
+When you press keys 1-4, do not just ask:
+"Does it work?"
+
+Also ask:
+- Which one makes longer hallways?
+- Which one feels more messy?
+- Which one feels more fair?
+- Which one looks most artificial?
+- Which one looks most elegant?
+
+That is how you learn to see the algorithm through
+the drawing.
+
+=====================================================
+*/
+
 // =====================================================
 // TOP-OF-FILE MODE SETTINGS
 // =====================================================
 
+// false = viewing mode >> use current browser window size
+// true  = output mode  >> use fixed export dimensions
 let outputASK = false;
+
+// options: "square" or "widescreen"
 let aspectModeASK = "widescreen";
 
 const renderPresetsASK = {
@@ -35,15 +149,18 @@ let timeASK = 0;
 let canvasWidthASK = 0;
 let canvasHeightASK = 0;
 
+// mouse / drag state
 let mousePressedASK = false;
 let dragStartASK = null;
 let dragCurrentASK = null;
 let dragLengthASK = 0;
 let dragVectorASK = { x: 0, y: 0 };
 
+// optional template containers
 let layersASK = [];
 let nodesASK = [];
 
+// normalized-space view controls
 let zoomASK = 1.0;
 let centerXASK = 0.5;
 let centerYASK = 0.5;
@@ -62,13 +179,14 @@ let mazeOriginYASK = 0;
 let mazeWidthNormASK = 0.82;
 let mazeHeightNormASK = 0.62;
 
+// variables used by different algorithms
 let currentCellASK = null;
 let stackASK = [];
 let frontierASK = [];
 let primVisitedCountASK = 0;
 
 let mazeCompleteASK = false;
-let stepsPerFrameASK = 16;
+let stepsPerFrameASK = 1;
 
 let algorithmASK = "recursiveBacktracker";
 let algorithmLabelASK = "Recursive Backtracker";
@@ -78,6 +196,11 @@ let sidewinderRowASK = 0;
 let sidewinderColASK = 0;
 let sidewinderRunASK = [];
 let visitOrderCounterASK = 0;
+
+// manual density values that can persist instead of being
+// completely overwritten by composition defaults
+let manualColsASK = null;
+let manualRowsASK = null;
 
 // =====================================================
 // SETUP
@@ -130,6 +253,7 @@ function drawASK() {
 }
 
 function drawASKOverlay() {
+  // show drag line while adjusting speed
   if (mousePressedASK && dragStartASK && dragCurrentASK) {
     stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 180);
     strokeWeight(weightASK * 3.0);
@@ -206,12 +330,18 @@ function configureCompositionASK() {
     mazeWidthNormASK = 0.78;
     mazeHeightNormASK = 0.78;
 
-    if (algorithmASK === "sidewinder") {
-      colsMazeASK = 34;
-      rowsMazeASK = 34;
+    // default sizes if the user has not manually changed density
+    if (manualColsASK === null || manualRowsASK === null) {
+      if (algorithmASK === "sidewinder") {
+        colsMazeASK = 34;
+        rowsMazeASK = 34;
+      } else {
+        colsMazeASK = 36;
+        rowsMazeASK = 36;
+      }
     } else {
-      colsMazeASK = 36;
-      rowsMazeASK = 36;
+      colsMazeASK = manualColsASK;
+      rowsMazeASK = manualRowsASK;
     }
   } else {
     zoomASK = 1.0;
@@ -221,12 +351,17 @@ function configureCompositionASK() {
     mazeWidthNormASK = 0.82;
     mazeHeightNormASK = 0.62;
 
-    if (algorithmASK === "sidewinder") {
-      colsMazeASK = 44;
-      rowsMazeASK = 24;
+    if (manualColsASK === null || manualRowsASK === null) {
+      if (algorithmASK === "sidewinder") {
+        colsMazeASK = 44;
+        rowsMazeASK = 24;
+      } else {
+        colsMazeASK = 46;
+        rowsMazeASK = 24;
+      }
     } else {
-      colsMazeASK = 46;
-      rowsMazeASK = 24;
+      colsMazeASK = manualColsASK;
+      rowsMazeASK = manualRowsASK;
     }
   }
 }
@@ -258,7 +393,9 @@ function initializeMazeASK() {
   let mazeHeightASK = rowsMazeASK * cellSizeASK;
 
   mazeOriginXASK = -mazeWidthASK * 0.5;
-  mazeOriginYASK = isSquareCompositionASK() ? -mazeHeightASK * 0.5 : -mazeHeightASK * 0.42;
+  mazeOriginYASK = isSquareCompositionASK()
+    ? -mazeHeightASK * 0.5
+    : -mazeHeightASK * 0.42;
 
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     let rowCellsASK = [];
@@ -289,19 +426,108 @@ function makeCellASK(colASK, rowASK) {
 }
 
 function setupAlgorithmASK() {
+  generationModeASK = "step";
+
+  // --------------------------------------------------
+  // RECURSIVE BACKTRACKTER
+  // --------------------------------------------------
+  // Kid version:
+  // "Start in one room. Keep walking to a room you
+  // haven't visited yet. If you get stuck, walk
+  // backward until you find a room with another choice."
+  //
+  // Pros:
+  // - easy to understand
+  // - makes long twisty hallways
+  // - very fun to animate
+  //
+  // Cons:
+  // - can make lots of deep branches
+  // - not very balanced or uniform
+  //
+  // Grownup note:
+  // This is depth-first search with backtracking.
   if (algorithmASK === "recursiveBacktracker") {
     algorithmLabelASK = "Recursive Backtracker";
     currentCellASK = mazeASK[0][0];
     markVisitedASK(currentCellASK, 0);
-  } else if (algorithmASK === "binaryTree") {
+  }
+
+  // --------------------------------------------------
+  // BINARY TREE
+  // --------------------------------------------------
+  // Kid version:
+  // "At every room, pick one of just two favorite
+  // directions and break that wall."
+  //
+  // In this sketch, each cell tries north or east.
+  //
+  // Pros:
+  // - super simple
+  // - very fast
+  // - easy to code
+  //
+  // Cons:
+  // - strongly biased
+  // - mazes can feel artificial
+  // - some directions get favored too much
+  //
+  // Grownup note:
+  // This is less about realism and more about showing
+  // how a very simple rule can create a whole maze.
+  else if (algorithmASK === "binaryTree") {
     algorithmLabelASK = "Binary Tree";
     generationModeASK = "instant";
-  } else if (algorithmASK === "prim") {
+  }
+
+  // --------------------------------------------------
+  // PRIM
+  // --------------------------------------------------
+  // Kid version:
+  // "Start somewhere. Then grow the maze from the edge
+  // of the part you already built."
+  //
+  // It is like building a snowball bigger by adding
+  // new pieces around the outside.
+  //
+  // Pros:
+  // - feels more evenly spread out
+  // - grows outward in a nice way
+  // - good comparison against backtracker
+  //
+  // Cons:
+  // - does not make corridors as long and dramatic
+  // - often makes lots of short dead ends
+  //
+  // Grownup note:
+  // This is a randomized frontier-growth approach.
+  else if (algorithmASK === "prim") {
     algorithmLabelASK = "Prim";
     currentCellASK = mazeASK[floor(rowsMazeASK / 2)][floor(colsMazeASK / 2)];
     markVisitedASK(currentCellASK, 0);
     addFrontierNeighborsASK(currentCellASK);
-  } else if (algorithmASK === "sidewinder") {
+  }
+
+  // --------------------------------------------------
+  // SIDEWINDER
+  // --------------------------------------------------
+  // Kid version:
+  // "Go across a row, making a run of connected rooms.
+  // Every so often, punch one passage upward."
+  //
+  // Pros:
+  // - simple but more interesting than Binary Tree
+  // - makes nice horizontal runs
+  // - easier to study than some advanced algorithms
+  //
+  // Cons:
+  // - still has a directional bias
+  // - can look row-ish and structured
+  //
+  // Grownup note:
+  // It is a row-based strategy that reduces some bias
+  // compared to Binary Tree, but not all of it.
+  else if (algorithmASK === "sidewinder") {
     algorithmLabelASK = "Sidewinder";
     generationModeASK = "step";
     sidewinderRowASK = 0;
@@ -402,7 +628,7 @@ function stepPrimASK() {
   }
 
   let depthASK = visitedNeighborsASK.length > 0
-    ? visitedNeighborsASK[0].depthASK + 1
+    ? minVisitedNeighborDepthASK(visitedNeighborsASK) + 1
     : 0;
 
   markVisitedASK(cellASK, depthASK);
@@ -424,7 +650,8 @@ function stepSidewinderASK() {
   let atEasternBoundaryASK = sidewinderColASK === colsMazeASK - 1;
   let atNorthernBoundaryASK = sidewinderRowASK === 0;
 
-  let carveNorthASK = atEasternBoundaryASK || (!atNorthernBoundaryASK && random() < 0.33);
+  let carveNorthASK =
+    atEasternBoundaryASK || (!atNorthernBoundaryASK && random() < 0.33);
 
   if (carveNorthASK) {
     if (!atNorthernBoundaryASK) {
@@ -495,11 +722,23 @@ function getNeighborCellsASK(cellASK) {
 
 function getUnvisitedNeighborsASK(cellASK) {
   if (!cellASK) return [];
-  return getNeighborCellsASK(cellASK).filter(neighborASK => !neighborASK.visitedASK);
+  return getNeighborCellsASK(cellASK).filter(
+    (neighborASK) => !neighborASK.visitedASK
+  );
 }
 
 function getVisitedNeighborsASK(cellASK) {
-  return getNeighborCellsASK(cellASK).filter(neighborASK => neighborASK.visitedASK);
+  return getNeighborCellsASK(cellASK).filter(
+    (neighborASK) => neighborASK.visitedASK
+  );
+}
+
+function minVisitedNeighborDepthASK(neighborsASK) {
+  let minDepthASK = Infinity;
+  for (let neighborASK of neighborsASK) {
+    minDepthASK = min(minDepthASK, neighborASK.depthASK);
+  }
+  return minDepthASK === Infinity ? 0 : minDepthASK;
 }
 
 function getCellASK(colASK, rowASK) {
@@ -538,6 +777,12 @@ function removeWallsASK(cellAASK, cellBASK) {
 
 function setAlgorithmASK(nameASK) {
   algorithmASK = nameASK;
+
+  // when switching algorithms, reset to composition defaults
+  // unless the user later changes density again manually
+  manualColsASK = null;
+  manualRowsASK = null;
+
   initializeMazeASK();
 }
 
@@ -556,11 +801,17 @@ function drawVisitedFieldsASK() {
       let xASK = mazeOriginXASK + colASK * cellSizeASK;
       let yASK = mazeOriginYASK + rowASK * cellSizeASK;
 
-      let tASK = cellASK.visitOrderASK <= 0
-        ? 0
-        : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
+      let tASK =
+        cellASK.visitOrderASK <= 0
+          ? 0
+          : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
 
-      let fillColorASK = colorLerpASK(color2ASK, color3ASK, tASK, mazeCompleteASK ? 34 : 20);
+      let fillColorASK = colorLerpASK(
+        color2ASK,
+        color3ASK,
+        tASK,
+        mazeCompleteASK ? 34 : 20
+      );
 
       fill(
         red(fillColorASK),
@@ -640,12 +891,7 @@ function drawBorderASK() {
   let mazeWidthASK = colsMazeASK * cellSizeASK;
   let mazeHeightASK = rowsMazeASK * cellSizeASK;
 
-  stroke(
-    red(color4ASK),
-    green(color4ASK),
-    blue(color4ASK),
-    90
-  );
+  stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 90);
   strokeWeight(weightASK * 2.0);
   noFill();
   rect(mazeOriginXASK, mazeOriginYASK, mazeWidthASK, mazeHeightASK);
@@ -781,6 +1027,7 @@ function clickASK() {
 function mousePressedASKHook() {}
 
 function mouseDraggedASKHook() {
+  // horizontal drag changes generation speed
   let dragAmountASK = constrain(abs(dragVectorASK.x) * 240, 1, 240);
   stepsPerFrameASK = floor(dragAmountASK);
 }
@@ -808,6 +1055,7 @@ function keyPressedASKHook() {
     initializeMazeASK();
   }
 
+  // switch algorithms
   if (key === "1") {
     setAlgorithmASK("recursiveBacktracker");
   }
@@ -824,18 +1072,24 @@ function keyPressedASKHook() {
     setAlgorithmASK("sidewinder");
   }
 
+  // density controls
   if (key === "[") {
     colsMazeASK = max(8, colsMazeASK - 2);
     rowsMazeASK = max(8, rowsMazeASK - 2);
+    manualColsASK = colsMazeASK;
+    manualRowsASK = rowsMazeASK;
     initializeMazeASK();
   }
 
   if (key === "]") {
     colsMazeASK = min(120, colsMazeASK + 2);
     rowsMazeASK = min(120, rowsMazeASK + 2);
+    manualColsASK = colsMazeASK;
+    manualRowsASK = rowsMazeASK;
     initializeMazeASK();
   }
 
+  // speed controls
   if (key === "-") {
     stepsPerFrameASK = max(1, stepsPerFrameASK - 1);
   }
@@ -844,12 +1098,14 @@ function keyPressedASKHook() {
     stepsPerFrameASK = min(240, stepsPerFrameASK + 1);
   }
 
+  // output mode toggle
   if (key === "o" || key === "O") {
     outputASK = !outputASK;
     applyCanvasSizeASK();
     initializeMazeASK();
   }
 
+  // output aspect toggle
   if (key === "p" || key === "P") {
     aspectModeASK = aspectModeASK === "square" ? "widescreen" : "square";
     if (outputASK) {
