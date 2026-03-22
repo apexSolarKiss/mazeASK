@@ -1,3 +1,7 @@
+<!--© 2026 Andrew S Klug // ASK
+Apache License, Version 2.0-->
+![mazeASK](mazeASK.jpg)
+
 # mazeASK // Maze Algorithms Notes
 
 ## What mazeASK is doing
