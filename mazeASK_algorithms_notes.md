@@ -1,6 +1,6 @@
 # mazeASK // Maze Algorithms Notes
 
-## What this repo is doing
+## What mazeASK is doing
 
 This project builds mazes on a grid.
 
