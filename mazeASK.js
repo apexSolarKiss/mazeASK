@@ -13,6 +13,8 @@
 //   4 Sidewinder
 //   5 Eller
 //   6 Kruskal
+//   7 Wilson
+//   8 Aldous-Broder
 // =====================================================
 
 /*
@@ -54,8 +56,10 @@ Examples:
 - Sidewinder likes horizontal runs with occasional links upward
 - Eller builds row by row
 - Kruskal chooses walls while avoiding cycles
+- Wilson uses loop-erased random walks
+- Aldous-Broder uses a random walk that only carves on first visits
 
-So the real lesson is not "memorize 6 algorithms".
+So the real lesson is not "memorize 8 algorithms".
 The real lesson is:
 selection strategy changes the look of the maze.
 
@@ -88,6 +92,8 @@ ALGORITHMS IN THIS SKETCH
 4 // Sidewinder
 5 // Eller
 6 // Kruskal
+7 // Wilson
+8 // Aldous-Broder
 
 Each algorithm below has comments that explain the
 basic idea, plus pros and cons.
@@ -117,11 +123,19 @@ Kruskal:
 "Look at possible walls and remove only the ones that
  join two different regions."
 
+Wilson:
+"Take a wandering path, erase loops, then attach the
+ clean path to the maze."
+
+Aldous-Broder:
+"Wander randomly forever, and only carve when you step
+ into a room for the first time."
+
 =====================================================
 WHAT TO NOTICE WHILE PLAYING
 =====================================================
 
-When you press keys 1-6, do not just ask:
+When you press keys 1-8, do not just ask:
 "Does it work?"
 
 Also ask:
@@ -169,9 +183,6 @@ let dragCurrentASK = null;
 let dragLengthASK = 0;
 let dragVectorASK = { x: 0, y: 0 };
 
-let layersASK = [];
-let nodesASK = [];
-
 let zoomASK = 1.0;
 let centerXASK = 0.5;
 let centerYASK = 0.5;
@@ -202,8 +213,9 @@ let algorithmLabelASK = "Recursive Backtracker";
 let sidewinderRowASK = 0;
 let sidewinderColASK = 0;
 let sidewinderRunASK = [];
-let visitOrderCounterASK = 0;
 
+let visitOrderCounterASK = 0;
+let visitedCountASK = 0;
 let manualColsASK = null;
 let manualRowsASK = null;
 
@@ -218,6 +230,15 @@ let kruskalWallsASK = [];
 let kruskalParentASK = [];
 let kruskalRankASK = [];
 let kruskalStepIndexASK = 0;
+
+// Wilson state
+let wilsonWalkASK = [];
+let wilsonWalkIndexByKeyASK = {};
+let wilsonModeASK = "idle";
+let wilsonCarveIndexASK = 0;
+
+// Aldous-Broder state
+let aldousCurrentASK = null;
 
 // =====================================================
 // SETUP
@@ -251,11 +272,9 @@ function draw() {
   background(colorBackgroundASK);
 
   pushASKView();
-
   updateMazeASK();
   drawASK();
   drawASKOverlay();
-
   pop();
 
   timeASK += 0.02;
@@ -264,6 +283,7 @@ function draw() {
 function drawASK() {
   drawVisitedFieldsASK();
   drawWallsASK();
+  drawWilsonWalkOverlayASK();
   drawCurrentCellASK();
   drawBorderASK();
   drawLabOverlayASK();
@@ -386,6 +406,7 @@ function initializeMazeASK() {
   mazeCompleteASK = false;
   currentCellASK = null;
   visitOrderCounterASK = 0;
+  visitedCountASK = 0;
   sidewinderRowASK = 0;
   sidewinderColASK = 0;
 
@@ -400,6 +421,15 @@ function initializeMazeASK() {
   kruskalParentASK = [];
   kruskalRankASK = [];
   kruskalStepIndexASK = 0;
+
+  // reset Wilson
+  wilsonWalkASK = [];
+  wilsonWalkIndexByKeyASK = {};
+  wilsonModeASK = "idle";
+  wilsonCarveIndexASK = 0;
+
+  // reset Aldous-Broder
+  aldousCurrentASK = null;
 
   cellSizeASK = min(
     mazeWidthNormASK / colsMazeASK,
@@ -458,9 +488,6 @@ function setupAlgorithmASK() {
   // Cons:
   // - can make lots of deep branches
   // - not very balanced or uniform
-  //
-  // Note:
-  // This is depth-first search with backtracking.
   if (algorithmASK === "recursiveBacktracker") {
     algorithmLabelASK = "Recursive Backtracker";
     currentCellASK = mazeASK[0][0];
@@ -473,8 +500,6 @@ function setupAlgorithmASK() {
   // At every room, pick one of just two favorite
   // directions and break that wall.
   //
-  // In this sketch, each cell tries north or east.
-  //
   // Pros:
   // - super simple
   // - very fast
@@ -482,8 +507,7 @@ function setupAlgorithmASK() {
   //
   // Cons:
   // - strongly biased
-  // - mazes can feel artificial
-  // - some directions get favored too much
+  // - can feel artificial
   else if (algorithmASK === "binaryTree") {
     algorithmLabelASK = "Binary Tree";
   }
@@ -494,17 +518,12 @@ function setupAlgorithmASK() {
   // Start somewhere. Then grow the maze from the edge
   // of the part you already built.
   //
-  // It is like building a snowball bigger by adding
-  // new pieces around the outside.
-  //
   // Pros:
-  // - feels more evenly spread out
-  // - grows outward in a nice way
+  // - more evenly spread
   // - good comparison against backtracker
   //
   // Cons:
-  // - does not make corridors as long and dramatic
-  // - often makes lots of short dead ends
+  // - often makes shorter dead ends
   else if (algorithmASK === "prim") {
     algorithmLabelASK = "Prim";
     currentCellASK = mazeASK[floor(rowsMazeASK / 2)][floor(colsMazeASK / 2)];
@@ -517,35 +536,15 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // Go across a row, making a run of connected rooms.
   // Every so often, punch one passage upward.
-  //
-  // Pros:
-  // - simple but more interesting than Binary Tree
-  // - makes nice horizontal runs
-  //
-  // Cons:
-  // - still has a directional bias
-  // - can look row-ish and structured
   else if (algorithmASK === "sidewinder") {
     algorithmLabelASK = "Sidewinder";
-    sidewinderRowASK = 0;
-    sidewinderColASK = 0;
-    sidewinderRunASK = [];
   }
 
   // --------------------------------------------------
   // ELLER
   // --------------------------------------------------
   // Build one row at a time while remembering which
-  // cells are already connected.
-  //
-  // Pros:
-  // - memory efficient
-  // - teaches connectivity sets
-  // - elegant row-by-row logic
-  //
-  // Cons:
-  // - harder to understand
-  // - more bookkeeping
+  // rooms are already connected.
   else if (algorithmASK === "eller") {
     algorithmLabelASK = "Eller";
     initializeEllerASK();
@@ -556,18 +555,46 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // Look at possible walls and remove only the ones
   // that join two different regions.
-  //
-  // Pros:
-  // - great for learning cycle avoidance
-  // - graph-theoretic
-  // - clean logic
-  //
-  // Cons:
-  // - abstract bookkeeping
-  // - needs disjoint-set tracking
   else if (algorithmASK === "kruskal") {
     algorithmLabelASK = "Kruskal";
     initializeKruskalASK();
+  }
+
+  // --------------------------------------------------
+  // WILSON
+  // --------------------------------------------------
+  // Start a random walk from an unvisited room.
+  // If the walk loops back on itself, erase the loop.
+  // When the walk reaches the maze, carve the cleaned
+  // path into the maze.
+  //
+  // Pros:
+  // - mathematically elegant
+  // - produces a uniform spanning tree
+  //
+  // Cons:
+  // - more complex to explain
+  // - slower than the simpler starters
+  else if (algorithmASK === "wilson") {
+    algorithmLabelASK = "Wilson";
+    initializeWilsonASK();
+  }
+
+  // --------------------------------------------------
+  // ALDOUS-BRODER
+  // --------------------------------------------------
+  // Wander randomly forever, and only carve when you
+  // step into a room for the first time.
+  //
+  // Pros:
+  // - conceptually simple
+  // - mathematically important
+  //
+  // Cons:
+  // - very slow
+  else if (algorithmASK === "aldousBroder") {
+    algorithmLabelASK = "Aldous-Broder";
+    initializeAldousBroderASK();
   }
 }
 
@@ -578,7 +605,6 @@ function setupAlgorithmASK() {
 function updateMazeASK() {
   if (mazeCompleteASK) return;
 
-  // binary tree completes instantly
   if (algorithmASK === "binaryTree") {
     runBinaryTreeASK();
     mazeCompleteASK = true;
@@ -596,6 +622,10 @@ function updateMazeASK() {
       stepEllerASK();
     } else if (algorithmASK === "kruskal") {
       stepKruskalASK();
+    } else if (algorithmASK === "wilson") {
+      stepWilsonASK();
+    } else if (algorithmASK === "aldousBroder") {
+      stepAldousBroderASK();
     }
 
     if (mazeCompleteASK) break;
@@ -611,10 +641,8 @@ function stepRecursiveBacktrackerASK() {
 
   if (neighborsASK.length > 0) {
     let nextCellASK = random(neighborsASK);
-
     stackASK.push(currentCellASK);
     removeWallsASK(currentCellASK, nextCellASK);
-
     markVisitedASK(nextCellASK, stackASK.length);
     currentCellASK = nextCellASK;
     return;
@@ -642,8 +670,7 @@ function runBinaryTreeASK() {
       if (eastASK) neighborsASK.push(eastASK);
 
       if (neighborsASK.length > 0) {
-        let targetASK = random(neighborsASK);
-        removeWallsASK(cellASK, targetASK);
+        removeWallsASK(cellASK, random(neighborsASK));
       }
     }
   }
@@ -660,7 +687,6 @@ function stepPrimASK() {
   cellASK.frontierASK = false;
 
   let visitedNeighborsASK = getVisitedNeighborsASK(cellASK);
-
   if (visitedNeighborsASK.length > 0) {
     let connectASK = random(visitedNeighborsASK);
     removeWallsASK(cellASK, connectASK);
@@ -696,20 +722,15 @@ function stepSidewinderASK() {
     if (!atNorthernBoundaryASK) {
       let memberASK = random(sidewinderRunASK);
       let northASK = getCellASK(memberASK.colASK, memberASK.rowASK - 1);
-      if (northASK) {
-        removeWallsASK(memberASK, northASK);
-      }
+      if (northASK) removeWallsASK(memberASK, northASK);
     }
     sidewinderRunASK = [];
   } else {
     let eastASK = getCellASK(sidewinderColASK + 1, sidewinderRowASK);
-    if (eastASK) {
-      removeWallsASK(cellASK, eastASK);
-    }
+    if (eastASK) removeWallsASK(cellASK, eastASK);
   }
 
   sidewinderColASK++;
-
   if (sidewinderColASK >= colsMazeASK) {
     sidewinderColASK = 0;
     sidewinderRowASK++;
@@ -753,11 +774,10 @@ function stepEllerASK() {
   }
 
   let nextRowSetsASK = new Array(colsMazeASK).fill(0);
-
   let groupsASK = groupColumnsBySetASK(ellerSetsASK);
 
   for (let setIdASK in groupsASK) {
-    let colsInSetASK = groupsASK[setIdASK];
+    let colsInSetASK = groupsASK[setIdASK].slice();
     shuffleArrayASK(colsInSetASK);
 
     let requiredCountASK = 1 + floor(random(colsInSetASK.length));
@@ -788,15 +808,9 @@ function prepareEllerRowASK(rowASK) {
   }
 
   for (let colASK = 0; colASK < colsMazeASK - 1; colASK++) {
-    let sameSetASK = ellerSetsASK[colASK] === ellerSetsASK[colASK + 1];
-    if (sameSetASK) continue;
+    if (ellerSetsASK[colASK] === ellerSetsASK[colASK + 1]) continue;
 
-    let shouldJoinASK;
-    if (rowASK === rowsMazeASK - 1) {
-      shouldJoinASK = true;
-    } else {
-      shouldJoinASK = random() < 0.5;
-    }
+    let shouldJoinASK = rowASK === rowsMazeASK - 1 || random() < 0.5;
 
     if (shouldJoinASK) {
       let leftCellASK = mazeASK[rowASK][colASK];
@@ -844,9 +858,7 @@ function groupColumnsBySetASK(setArrayASK) {
   let groupsASK = {};
   for (let colASK = 0; colASK < setArrayASK.length; colASK++) {
     let setIdASK = setArrayASK[colASK];
-    if (!groupsASK[setIdASK]) {
-      groupsASK[setIdASK] = [];
-    }
+    if (!groupsASK[setIdASK]) groupsASK[setIdASK] = [];
     groupsASK[setIdASK].push(colASK);
   }
   return groupsASK;
@@ -895,9 +907,7 @@ function initializeKruskalASK() {
 
   shuffleArrayASK(kruskalWallsASK);
   kruskalStepIndexASK = 0;
-
   currentCellASK = mazeASK[0][0];
-  markVisitedASK(currentCellASK, 0);
 }
 
 function stepKruskalASK() {
@@ -907,9 +917,7 @@ function stepKruskalASK() {
     return;
   }
 
-  let wallASK = kruskalWallsASK[kruskalStepIndexASK];
-  kruskalStepIndexASK++;
-
+  let wallASK = kruskalWallsASK[kruskalStepIndexASK++];
   let cellAASK = getCellASK(wallASK.aColASK, wallASK.aRowASK);
   let cellBASK = getCellASK(wallASK.bColASK, wallASK.bRowASK);
 
@@ -962,10 +970,119 @@ function kruskalUnionASK(aASK, bASK) {
 function markAllCellsVisitedASK() {
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      let depthASK = rowASK + colASK;
-      markVisitedASK(mazeASK[rowASK][colASK], depthASK);
+      markVisitedASK(mazeASK[rowASK][colASK], rowASK + colASK);
     }
   }
+}
+
+// =====================================================
+// WILSON
+// =====================================================
+
+function initializeWilsonASK() {
+  let seedASK = mazeASK[0][0];
+  markVisitedASK(seedASK, 0);
+  currentCellASK = seedASK;
+  wilsonModeASK = "chooseStart";
+}
+
+function stepWilsonASK() {
+  if (visitedCountASK >= rowsMazeASK * colsMazeASK) {
+    mazeCompleteASK = true;
+    return;
+  }
+
+  if (wilsonModeASK === "chooseStart") {
+    let startASK = getRandomUnvisitedCellASK();
+    if (!startASK) {
+      mazeCompleteASK = true;
+      return;
+    }
+
+    wilsonWalkASK = [startASK];
+    wilsonWalkIndexByKeyASK = {};
+    wilsonWalkIndexByKeyASK[cellKeyASK(startASK)] = 0;
+    wilsonCarveIndexASK = 0;
+    currentCellASK = startASK;
+    wilsonModeASK = "walk";
+    return;
+  }
+
+  if (wilsonModeASK === "walk") {
+    let tailASK = wilsonWalkASK[wilsonWalkASK.length - 1];
+    let neighborsASK = getNeighborCellsASK(tailASK);
+    let nextASK = random(neighborsASK);
+    currentCellASK = nextASK;
+
+    if (nextASK.visitedASK) {
+      wilsonWalkASK.push(nextASK);
+      wilsonModeASK = "carve";
+      wilsonCarveIndexASK = 0;
+      return;
+    }
+
+    let keyASK = cellKeyASK(nextASK);
+    if (wilsonWalkIndexByKeyASK.hasOwnProperty(keyASK)) {
+      let loopStartASK = wilsonWalkIndexByKeyASK[keyASK];
+      wilsonWalkASK = wilsonWalkASK.slice(0, loopStartASK + 1);
+
+      wilsonWalkIndexByKeyASK = {};
+      for (let iASK = 0; iASK < wilsonWalkASK.length; iASK++) {
+        wilsonWalkIndexByKeyASK[cellKeyASK(wilsonWalkASK[iASK])] = iASK;
+      }
+      currentCellASK = wilsonWalkASK[wilsonWalkASK.length - 1];
+      return;
+    }
+
+    wilsonWalkASK.push(nextASK);
+    wilsonWalkIndexByKeyASK[keyASK] = wilsonWalkASK.length - 1;
+    return;
+  }
+
+  if (wilsonModeASK === "carve") {
+    if (wilsonCarveIndexASK >= wilsonWalkASK.length - 1) {
+      wilsonWalkASK = [];
+      wilsonWalkIndexByKeyASK = {};
+      wilsonModeASK = "chooseStart";
+      return;
+    }
+
+    let cellAASK = wilsonWalkASK[wilsonCarveIndexASK];
+    let cellBASK = wilsonWalkASK[wilsonCarveIndexASK + 1];
+    removeWallsASK(cellAASK, cellBASK);
+    markVisitedASK(cellAASK, wilsonCarveIndexASK);
+    markVisitedASK(cellBASK, wilsonCarveIndexASK + 1);
+    currentCellASK = cellBASK;
+    wilsonCarveIndexASK++;
+  }
+}
+
+// =====================================================
+// ALDOUS-BRODER
+// =====================================================
+
+function initializeAldousBroderASK() {
+  aldousCurrentASK = mazeASK[0][0];
+  currentCellASK = aldousCurrentASK;
+  markVisitedASK(aldousCurrentASK, 0);
+}
+
+function stepAldousBroderASK() {
+  if (visitedCountASK >= rowsMazeASK * colsMazeASK) {
+    mazeCompleteASK = true;
+    return;
+  }
+
+  let neighborsASK = getNeighborCellsASK(aldousCurrentASK);
+  let nextASK = random(neighborsASK);
+
+  if (!nextASK.visitedASK) {
+    removeWallsASK(aldousCurrentASK, nextASK);
+    markVisitedASK(nextASK, visitedCountASK);
+  }
+
+  aldousCurrentASK = nextASK;
+  currentCellASK = nextASK;
 }
 
 // =====================================================
@@ -978,6 +1095,7 @@ function markVisitedASK(cellASK, depthASK) {
     cellASK.depthASK = depthASK;
     cellASK.visitOrderASK = visitOrderCounterASK;
     visitOrderCounterASK++;
+    visitedCountASK++;
   }
 }
 
@@ -1062,6 +1180,21 @@ function removeWallsASK(cellAASK, cellBASK) {
     cellAASK.wallsASK.topASK = false;
     cellBASK.wallsASK.bottomASK = false;
   }
+}
+
+function getRandomUnvisitedCellASK() {
+  let optionsASK = [];
+  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
+    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
+      let cellASK = mazeASK[rowASK][colASK];
+      if (!cellASK.visitedASK) optionsASK.push(cellASK);
+    }
+  }
+  return optionsASK.length > 0 ? random(optionsASK) : null;
+}
+
+function cellKeyASK(cellASK) {
+  return cellASK.colASK + "," + cellASK.rowASK;
 }
 
 function setAlgorithmASK(nameASK) {
@@ -1156,6 +1289,27 @@ function drawCellWallsASK(cellASK) {
   }
   if (cellASK.wallsASK.leftASK) {
     line(xASK, yASK, xASK, yASK + cellSizeASK);
+  }
+}
+
+function drawWilsonWalkOverlayASK() {
+  if (algorithmASK !== "wilson") return;
+  if (wilsonModeASK !== "walk" && wilsonModeASK !== "carve") return;
+  if (wilsonWalkASK.length < 2) return;
+
+  stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 80);
+  strokeWeight(weightASK * 2.0);
+
+  for (let iASK = 0; iASK < wilsonWalkASK.length - 1; iASK++) {
+    let aASK = wilsonWalkASK[iASK];
+    let bASK = wilsonWalkASK[iASK + 1];
+
+    let axASK = mazeOriginXASK + aASK.colASK * cellSizeASK + cellSizeASK * 0.5;
+    let ayASK = mazeOriginYASK + aASK.rowASK * cellSizeASK + cellSizeASK * 0.5;
+    let bxASK = mazeOriginXASK + bASK.colASK * cellSizeASK + cellSizeASK * 0.5;
+    let byASK = mazeOriginYASK + bASK.rowASK * cellSizeASK + cellSizeASK * 0.5;
+
+    line(axASK, ayASK, bxASK, byASK);
   }
 }
 
@@ -1329,6 +1483,8 @@ function keyPressed() {
   if (key === "4") setAlgorithmASK("sidewinder");
   if (key === "5") setAlgorithmASK("eller");
   if (key === "6") setAlgorithmASK("kruskal");
+  if (key === "7") setAlgorithmASK("wilson");
+  if (key === "8") setAlgorithmASK("aldousBroder");
 
   if (key === "[") {
     colsMazeASK = max(8, colsMazeASK - 2);
