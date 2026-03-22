@@ -82,7 +82,7 @@ That structure is what you see.
 
 See:
 
-    mazeASK_algorithms_notes.md
+    mazeASK-algorithm-notes.md
 
 for a breakdown of each algorithm and what it produces.
 
