@@ -2,8 +2,7 @@
 // Licensed under the Apache License, Version 2.0
 
 // =====================================================
-// mazeASK 2 // ASK p5.js Maze Lab
-// template 2 version
+// mazeASK // p5.js maze lab
 // - viewing mode vs output mode
 // - clean algorithm comparison
 // - implemented:
