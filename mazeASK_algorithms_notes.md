@@ -56,7 +56,8 @@ They mainly differ in a few ways:
 Do they go deep?  
 Do they grow from the edge?  
 Do they move row by row?  
-Do they choose walls instead of cells?
+Do they choose walls instead of cells?  
+Do they walk randomly and then clean up loops?
 
 ### 2. What kind of bias they introduce
 Do they prefer some directions?  
@@ -69,7 +70,8 @@ Bushy dead ends
 Horizontal runs  
 Geometric structure  
 Row-by-row patterns  
-Cycle-avoiding graph structure
+Cycle-avoiding graph structure  
+Uniform spanning-tree behavior
 
 ### 4. What tradeoff they make
 Simplicity  
@@ -77,7 +79,8 @@ Speed
 Elegance  
 Fairness  
 Visual interest  
-Bookkeeping complexity
+Bookkeeping complexity  
+Mathematical purity
 
 So the real transferable idea is this:
 
@@ -290,6 +293,69 @@ This is a graph-based algorithm that uses disjoint sets / union-find to track co
 
 ---
 
+## 7. Wilson
+
+### Explanation
+Pick an unvisited room and start wandering randomly.
+
+While wandering, if the path loops back into itself, erase the loop so the path stays clean.
+
+Keep wandering until the path touches the part of the maze that already exists. Then carve the cleaned-up path into the maze.
+
+Repeat this until every room has been added.
+
+### Note
+This is a loop-erased random walk algorithm and it produces a **uniform spanning tree**.
+
+### What it tends to look like
+- less biased than many simple algorithms
+- more mathematically “fair”
+- often less obviously stylized than Recursive Backtracker
+
+### Pros
+- elegant
+- important mathematically
+- produces uniform spanning trees
+- great for learning how loop erasure changes a random walk
+
+### Cons
+- harder to understand at first
+- slower than simpler algorithms
+- the implementation has more moving parts
+
+---
+
+## 8. Aldous–Broder
+
+### Explanation
+Start in any room and wander randomly.
+
+Every time you enter a room for the **first** time, carve the passage that brought you there.
+
+If you enter a room you have already seen, do not carve anything new. Just keep wandering.
+
+Eventually, after enough wandering, every room gets visited and the maze is complete.
+
+### Note
+This is another random-walk algorithm that also produces a **uniform spanning tree**.
+
+### What it tends to look like
+- unbiased in the uniform-spanning-tree sense
+- visually less predictable than strongly biased methods
+- slow to build because the walk revisits old places a lot
+
+### Pros
+- conceptually simple
+- mathematically important
+- a clean baseline for understanding uniform random mazes
+
+### Cons
+- very slow
+- many steps do not visibly change the maze
+- not the most satisfying one to animate unless speed is increased
+
+---
+
 # Controls
 
 ## Algorithm switching
@@ -299,6 +365,8 @@ This is a graph-based algorithm that uses disjoint sets / union-find to track co
 - `4` Sidewinder
 - `5` Eller
 - `6` Kruskal
+- `7` Wilson
+- `8` Aldous-Broder
 
 ## Regenerate
 - `space`
@@ -335,6 +403,8 @@ Ask:
 - Which one looks most surprising?
 - Which one feels most local in its decisions?
 - Which one feels most graph-like?
+- Which one feels most random?
+- Which one feels most mathematically fair?
 
 That is how algorithm study becomes visual study.
 
