@@ -2,7 +2,7 @@
 Apache License, Version 2.0-->
 ![mazeASK](mazeASK.jpg)
 
-# mazeASK // algorithms notes
+# mazeASK // algorithm notes
 
 ## What mazeASK is doing
 
