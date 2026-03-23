@@ -2,7 +2,7 @@
 
 # mazeASK
 
-Maze generation algorithms as systems.
+Maze generation algorithms
 
 ---
 
