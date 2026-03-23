@@ -21,6 +21,24 @@ That means the maze is really a kind of connected tree drawn on a grid.
 
 ---
 
+## Core Pattern (Across All Algorithms)
+
+All of these follow the same underlying structure:
+
+- pick a next step  
+- connect cells  
+- avoid breaking the structure  
+
+What changes is:
+
+- how the next step is chosen  
+- how much randomness is allowed  
+- how much structure is enforced  
+
+That is what creates different maze “textures”.
+
+---
+
 ## A simple way to think about it
 
 Imagine a big building made of tiny rooms.
@@ -113,6 +131,18 @@ That viewpoint is more useful than just memorizing names.
 
 ## 1. Recursive Backtracker
 
+1. Start in any cell and mark it as visited.  
+2. Look for neighboring cells that haven’t been visited.  
+3. If there are unvisited neighbors:  
+   - pick one at random  
+   - remove the wall between them  
+   - move to that neighbor  
+4. If there are no unvisited neighbors:  
+   - go back to the previous cell  
+5. Repeat until every cell has been visited.
+
+> Go forward randomly. If you can’t, go backward.
+
 ### Explanation
 Start in one room.  
 Pick a neighboring room you have not visited yet.  
@@ -146,6 +176,16 @@ This is depth-first search with backtracking.
 
 ## 2. Binary Tree
 
+1. For each cell in the grid:  
+2. Look in two directions (for example: north and east).  
+3. If one or both neighbors exist:  
+   - pick one at random  
+   - remove the wall between them  
+4. Move on to the next cell.  
+5. Continue until all cells have been processed.
+
+> In each cell, connect in one of two preferred directions.
+
 ### Explanation
 For every room, choose between only two favorite directions.
 
@@ -177,6 +217,17 @@ This is a very simple biased carving rule.
 
 ## 3. Prim
 
+1. Start in any cell and mark it as visited.  
+2. Add its neighbors to a “frontier” list.  
+3. While there are frontier cells:  
+   - pick one at random  
+   - connect it to one of its visited neighbors  
+   - mark it as visited  
+   - add its unvisited neighbors to the frontier  
+4. Repeat until all cells are visited.
+
+> Grow the maze outward from its edges.
+
 ### Explanation
 Start with one room.
 
@@ -206,6 +257,21 @@ This is a randomized frontier-growth version of Prim’s algorithm.
 
 ## 4. Sidewinder
 
+1. Go row by row, left to right.  
+2. Keep a “run” of connected cells in the current row.  
+3. For each cell:  
+   - add it to the current run  
+   - decide: continue the run or break it  
+4. If continuing:  
+   - connect to the cell on the right  
+5. If breaking:  
+   - choose a random cell from the run  
+   - connect it upward  
+   - reset the run  
+6. Repeat for all rows.
+
+> Build horizontal runs, occasionally linking upward.
+
 ### Explanation
 Go across a row and keep making a connected run.
 
@@ -234,6 +300,19 @@ This is a row-based algorithm with a directional bias, but it is more interestin
 ---
 
 ## 5. Eller
+
+1. Work one row at a time.  
+2. Assign each cell in the row to a set (group).  
+3. Randomly connect adjacent cells in the row:  
+   - merge their sets when connected  
+4. For each set:  
+   - connect at least one cell downward into the next row  
+5. Carry the sets into the next row.  
+6. On the final row:  
+   - connect all remaining adjacent sets  
+7. Repeat until complete.
+
+> Build row by row, tracking which cells are connected.
 
 ### Explanation
 Build the maze one row at a time while keeping track of which cells are already connected.
@@ -265,6 +344,18 @@ This is a row-by-row algorithm that tracks connected sets.
 
 ## 6. Kruskal
 
+1. Treat every cell as its own separate group.  
+2. List all possible walls between cells.  
+3. Shuffle the list randomly.  
+4. For each wall:  
+   - if the cells are in different groups:  
+     - remove the wall  
+     - merge the groups  
+   - otherwise, leave the wall  
+5. Repeat until all cells are connected.
+
+> Remove walls only when they connect different regions.
+
 ### Explanation
 Treat walls like possible connections between cells.
 
@@ -294,6 +385,19 @@ This is a graph-based algorithm that uses disjoint sets / union-find to track co
 ---
 
 ## 7. Wilson
+
+1. Start by marking one random cell as part of the maze.  
+2. Pick a random unvisited cell.  
+3. Begin a random walk from it.  
+4. While walking:  
+   - if you revisit a cell in your path, erase the loop  
+   - continue walking  
+5. When the walk reaches the maze:  
+   - carve the entire path into the maze  
+   - mark all cells in the path as visited  
+6. Repeat until all cells are visited.
+
+> Wander, erase loops, then attach the path.
 
 ### Explanation
 Pick an unvisited room and start wandering randomly.
@@ -326,6 +430,17 @@ This is a loop-erased random walk algorithm and it produces a **uniform spanning
 ---
 
 ## 8. Aldous–Broder
+
+1. Start in any cell and mark it as visited.  
+2. Randomly move to a neighboring cell.  
+3. If the cell has not been visited:  
+   - remove the wall between the two cells  
+   - mark it as visited  
+4. If it has already been visited:  
+   - do nothing  
+5. Repeat until all cells are visited.
+
+> Wander randomly, carve only on first visits.
 
 ### Explanation
 Start in any room and wander randomly.
