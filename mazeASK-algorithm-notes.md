@@ -21,7 +21,7 @@ That means the maze is really a kind of connected tree drawn on a grid.
 
 ---
 
-## Core Pattern (Across All Algorithms)
+## Core Pattern // across all algorithms
 
 All of these follow the same underlying structure:
 
