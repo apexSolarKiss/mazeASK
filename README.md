@@ -24,6 +24,12 @@ Same grid. Same constraints. Different rules.
 
 ---
 
+## Architecture
+
+`mazeASK.js` is structured as a single p5.js sketch with three phases: initialization, incremental generation, and rendering. The `step...ASK()` functions contain the algorithm-specific generation logic.
+
+---
+
 ## Algorithms
 
 - Recursive Backtracker  

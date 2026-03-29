@@ -604,12 +604,14 @@ function setupAlgorithmASK() {
 function updateMazeASK() {
   if (mazeCompleteASK) return;
 
+  // Binary Tree completes in one pass; the other algorithms advance incrementally.
   if (algorithmASK === "binaryTree") {
     runBinaryTreeASK();
     mazeCompleteASK = true;
     return;
   }
 
+  // Run a bounded number of generation steps each frame for the active algorithm.
   for (let iASK = 0; iASK < stepsPerFrameASK; iASK++) {
     if (algorithmASK === "recursiveBacktracker") {
       stepRecursiveBacktrackerASK();
