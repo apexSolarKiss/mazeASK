@@ -1109,20 +1109,43 @@ function addFrontierNeighborsASK(cellASK) {
   }
 }
 
+function getNeighborCellASK(cellASK, directionASK) {
+  if (!cellASK) return null;
+
+  if (directionASK === "topASK") {
+    return getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+  }
+  if (directionASK === "rightASK") {
+    return getCellASK(cellASK.colASK + 1, cellASK.rowASK);
+  }
+  if (directionASK === "bottomASK") {
+    return getCellASK(cellASK.colASK, cellASK.rowASK + 1);
+  }
+  if (directionASK === "leftASK") {
+    return getCellASK(cellASK.colASK - 1, cellASK.rowASK);
+  }
+
+  return null;
+}
+
+function getRectNeighborsASK(cellASK) {
+  return {
+    topASK: getNeighborCellASK(cellASK, "topASK"),
+    rightASK: getNeighborCellASK(cellASK, "rightASK"),
+    bottomASK: getNeighborCellASK(cellASK, "bottomASK"),
+    leftASK: getNeighborCellASK(cellASK, "leftASK")
+  };
+}
+
 function getNeighborCellsASK(cellASK) {
+  if (!cellASK) return [];
   let neighborsASK = [];
-  let colASK = cellASK.colASK;
-  let rowASK = cellASK.rowASK;
+  let rectNeighborsASK = getRectNeighborsASK(cellASK);
 
-  let topASK = getCellASK(colASK, rowASK - 1);
-  let rightASK = getCellASK(colASK + 1, rowASK);
-  let bottomASK = getCellASK(colASK, rowASK + 1);
-  let leftASK = getCellASK(colASK - 1, rowASK);
-
-  if (topASK) neighborsASK.push(topASK);
-  if (rightASK) neighborsASK.push(rightASK);
-  if (bottomASK) neighborsASK.push(bottomASK);
-  if (leftASK) neighborsASK.push(leftASK);
+  if (rectNeighborsASK.topASK) neighborsASK.push(rectNeighborsASK.topASK);
+  if (rectNeighborsASK.rightASK) neighborsASK.push(rectNeighborsASK.rightASK);
+  if (rectNeighborsASK.bottomASK) neighborsASK.push(rectNeighborsASK.bottomASK);
+  if (rectNeighborsASK.leftASK) neighborsASK.push(rectNeighborsASK.leftASK);
 
   return neighborsASK;
 }
@@ -1162,9 +1185,7 @@ function getCellASK(colASK, rowASK) {
 
 function areAdjacentCellsASK(cellAASK, cellBASK) {
   if (!cellAASK || !cellBASK) return false;
-  let deltaColASK = abs(cellBASK.colASK - cellAASK.colASK);
-  let deltaRowASK = abs(cellBASK.rowASK - cellAASK.rowASK);
-  return deltaColASK + deltaRowASK === 1;
+  return getNeighborCellsASK(cellAASK).includes(cellBASK);
 }
 
 function makeLinkKeyASK(cellAASK, cellBASK) {
@@ -1274,10 +1295,7 @@ function drawWallsASK() {
 function drawCellWallsASK(cellASK) {
   let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
   let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
-  let topASK = getCellASK(cellASK.colASK, cellASK.rowASK - 1);
-  let rightASK = getCellASK(cellASK.colASK + 1, cellASK.rowASK);
-  let bottomASK = getCellASK(cellASK.colASK, cellASK.rowASK + 1);
-  let leftASK = getCellASK(cellASK.colASK - 1, cellASK.rowASK);
+  let rectNeighborsASK = getRectNeighborsASK(cellASK);
 
   let mixASK = getEdgeMixASK(cellASK);
   let wallColorASK = colorLerpASK(color1ASK, color4ASK, mixASK, 255);
@@ -1289,16 +1307,16 @@ function drawCellWallsASK(cellASK) {
     alpha(wallColorASK)
   );
 
-  if (!topASK || !areCellsLinkedASK(cellASK, topASK)) {
+  if (!rectNeighborsASK.topASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.topASK)) {
     line(xASK, yASK, xASK + cellSizeASK, yASK);
   }
-  if (!rightASK || !areCellsLinkedASK(cellASK, rightASK)) {
+  if (!rectNeighborsASK.rightASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.rightASK)) {
     line(xASK + cellSizeASK, yASK, xASK + cellSizeASK, yASK + cellSizeASK);
   }
-  if (!bottomASK || !areCellsLinkedASK(cellASK, bottomASK)) {
+  if (!rectNeighborsASK.bottomASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.bottomASK)) {
     line(xASK, yASK + cellSizeASK, xASK + cellSizeASK, yASK + cellSizeASK);
   }
-  if (!leftASK || !areCellsLinkedASK(cellASK, leftASK)) {
+  if (!rectNeighborsASK.leftASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.leftASK)) {
     line(xASK, yASK, xASK, yASK + cellSizeASK);
   }
 }
