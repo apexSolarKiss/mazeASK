@@ -191,6 +191,7 @@ let centerYASK = 0.5;
 // =====================================================
 
 let mazeASK = [];
+let mazeStateASK = null;
 let colsMazeASK = 40;
 let rowsMazeASK = 24;
 let cellSizeASK = 0.02;
@@ -399,6 +400,9 @@ function initializeMazeASK() {
   configureCompositionASK();
 
   mazeASK = [];
+  mazeStateASK = {
+    linksASK: new Set()
+  };
   stackASK = [];
   frontierASK = [];
   sidewinderRunASK = [];
@@ -461,13 +465,7 @@ function makeCellASK(colASK, rowASK) {
     visitedASK: false,
     frontierASK: false,
     depthASK: -1,
-    visitOrderASK: -1,
-    wallsASK: {
-      topASK: true,
-      rightASK: true,
-      bottomASK: true,
-      leftASK: true
-    }
+    visitOrderASK: -1
   };
 }
 
@@ -1162,25 +1160,33 @@ function getCellASK(colASK, rowASK) {
   return mazeASK[rowASK][colASK];
 }
 
+function areAdjacentCellsASK(cellAASK, cellBASK) {
+  if (!cellAASK || !cellBASK) return false;
+  let deltaColASK = abs(cellBASK.colASK - cellAASK.colASK);
+  let deltaRowASK = abs(cellBASK.rowASK - cellAASK.rowASK);
+  return deltaColASK + deltaRowASK === 1;
+}
+
+function makeLinkKeyASK(cellAASK, cellBASK) {
+  let keyAASK = cellKeyASK(cellAASK);
+  let keyBASK = cellKeyASK(cellBASK);
+  return keyAASK < keyBASK
+    ? keyAASK + "|" + keyBASK
+    : keyBASK + "|" + keyAASK;
+}
+
+function linkCellsASK(cellAASK, cellBASK) {
+  if (!areAdjacentCellsASK(cellAASK, cellBASK)) return;
+  mazeStateASK.linksASK.add(makeLinkKeyASK(cellAASK, cellBASK));
+}
+
+function areCellsLinkedASK(cellAASK, cellBASK) {
+  if (!areAdjacentCellsASK(cellAASK, cellBASK)) return false;
+  return mazeStateASK.linksASK.has(makeLinkKeyASK(cellAASK, cellBASK));
+}
+
 function removeWallsASK(cellAASK, cellBASK) {
-  let deltaColASK = cellBASK.colASK - cellAASK.colASK;
-  let deltaRowASK = cellBASK.rowASK - cellAASK.rowASK;
-
-  if (deltaColASK === 1) {
-    cellAASK.wallsASK.rightASK = false;
-    cellBASK.wallsASK.leftASK = false;
-  } else if (deltaColASK === -1) {
-    cellAASK.wallsASK.leftASK = false;
-    cellBASK.wallsASK.rightASK = false;
-  }
-
-  if (deltaRowASK === 1) {
-    cellAASK.wallsASK.bottomASK = false;
-    cellBASK.wallsASK.topASK = false;
-  } else if (deltaRowASK === -1) {
-    cellAASK.wallsASK.topASK = false;
-    cellBASK.wallsASK.bottomASK = false;
-  }
+  linkCellsASK(cellAASK, cellBASK);
 }
 
 function getRandomUnvisitedCellASK() {
@@ -1268,6 +1274,10 @@ function drawWallsASK() {
 function drawCellWallsASK(cellASK) {
   let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
   let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
+  let topASK = getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+  let rightASK = getCellASK(cellASK.colASK + 1, cellASK.rowASK);
+  let bottomASK = getCellASK(cellASK.colASK, cellASK.rowASK + 1);
+  let leftASK = getCellASK(cellASK.colASK - 1, cellASK.rowASK);
 
   let mixASK = getEdgeMixASK(cellASK);
   let wallColorASK = colorLerpASK(color1ASK, color4ASK, mixASK, 255);
@@ -1279,16 +1289,16 @@ function drawCellWallsASK(cellASK) {
     alpha(wallColorASK)
   );
 
-  if (cellASK.wallsASK.topASK) {
+  if (!topASK || !areCellsLinkedASK(cellASK, topASK)) {
     line(xASK, yASK, xASK + cellSizeASK, yASK);
   }
-  if (cellASK.wallsASK.rightASK) {
+  if (!rightASK || !areCellsLinkedASK(cellASK, rightASK)) {
     line(xASK + cellSizeASK, yASK, xASK + cellSizeASK, yASK + cellSizeASK);
   }
-  if (cellASK.wallsASK.bottomASK) {
+  if (!bottomASK || !areCellsLinkedASK(cellASK, bottomASK)) {
     line(xASK, yASK + cellSizeASK, xASK + cellSizeASK, yASK + cellSizeASK);
   }
-  if (cellASK.wallsASK.leftASK) {
+  if (!leftASK || !areCellsLinkedASK(cellASK, leftASK)) {
     line(xASK, yASK, xASK, yASK + cellSizeASK);
   }
 }
