@@ -105,3 +105,13 @@ Do not add transitional abstractions unless they clearly support the Path 2 dire
 - maze state = connectivity
 - algorithm runtime = transient generation state
 - renderer/view = presentation
+
+## Milestone 2 (Rectangular neighbor seam)
+
+- introduced shared rectangular neighbor helpers
+- unified adjacency logic through topology seam
+- routed renderer through same neighbor access
+
+No algorithm refactors.
+No Maze State changes.
+No topology expansion.
