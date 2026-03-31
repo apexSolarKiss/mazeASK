@@ -636,12 +636,14 @@ function updateMazeASK() {
 // =====================================================
 
 function stepRecursiveBacktrackerASK() {
-  let neighborsASK = getUnvisitedNeighborsASK(currentCellASK);
+  let neighborsASK = getNeighborCellsASK(currentCellASK).filter(
+    (neighborASK) => !neighborASK.visitedASK
+  );
 
   if (neighborsASK.length > 0) {
     let nextCellASK = random(neighborsASK);
     stackASK.push(currentCellASK);
-    removeWallsASK(currentCellASK, nextCellASK);
+    linkCellsASK(currentCellASK, nextCellASK);
     markVisitedASK(nextCellASK, stackASK.length);
     currentCellASK = nextCellASK;
     return;
