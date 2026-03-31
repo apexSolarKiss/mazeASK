@@ -60,7 +60,9 @@ Treat pull requests as the default review boundary for meaningful changes.
 
 Rules:
 - code changes = always use a branch + PR, even for solo work
-- docs-only changes = PR preferred, but optional if the change is truly small and non-architectural
+- code changes = always use a branch + PR
+- architecture or workflow docs changes = use a branch + PR
+- small non-architectural docs edits = PR optional
 - do not push code changes directly to `main` unless explicitly instructed
 - do not merge code changes without opening a PR first
 - PR descriptions should capture migration intent:
