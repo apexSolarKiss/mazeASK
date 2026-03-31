@@ -192,6 +192,7 @@ let centerYASK = 0.5;
 
 let mazeASK = [];
 let mazeStateASK = null;
+let topologyASK = null;
 let colsMazeASK = 40;
 let rowsMazeASK = 24;
 let cellSizeASK = 0.02;
@@ -454,6 +455,8 @@ function initializeMazeASK() {
     }
     mazeASK.push(rowCellsASK);
   }
+
+  topologyASK = makeRectTopologyASK();
 
   setupAlgorithmASK();
 }
@@ -1111,45 +1114,110 @@ function addFrontierNeighborsASK(cellASK) {
   }
 }
 
-function getNeighborCellASK(cellASK, directionASK) {
-  if (!cellASK) return null;
-
-  if (directionASK === "topASK") {
-    return getCellASK(cellASK.colASK, cellASK.rowASK - 1);
-  }
-  if (directionASK === "rightASK") {
-    return getCellASK(cellASK.colASK + 1, cellASK.rowASK);
-  }
-  if (directionASK === "bottomASK") {
-    return getCellASK(cellASK.colASK, cellASK.rowASK + 1);
-  }
-  if (directionASK === "leftASK") {
-    return getCellASK(cellASK.colASK - 1, cellASK.rowASK);
-  }
-
-  return null;
-}
-
-function getRectNeighborsASK(cellASK) {
+function makeRectTopologyASK() {
   return {
-    topASK: getNeighborCellASK(cellASK, "topASK"),
-    rightASK: getNeighborCellASK(cellASK, "rightASK"),
-    bottomASK: getNeighborCellASK(cellASK, "bottomASK"),
-    leftASK: getNeighborCellASK(cellASK, "leftASK")
+    getNeighborCellASK(cellASK, directionASK) {
+      if (!cellASK) return null;
+
+      if (directionASK === "topASK") {
+        return getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+      }
+      if (directionASK === "rightASK") {
+        return getCellASK(cellASK.colASK + 1, cellASK.rowASK);
+      }
+      if (directionASK === "bottomASK") {
+        return getCellASK(cellASK.colASK, cellASK.rowASK + 1);
+      }
+      if (directionASK === "leftASK") {
+        return getCellASK(cellASK.colASK - 1, cellASK.rowASK);
+      }
+
+      return null;
+    },
+
+    getRectNeighborsASK(cellASK) {
+      return {
+        topASK: this.getNeighborCellASK(cellASK, "topASK"),
+        rightASK: this.getNeighborCellASK(cellASK, "rightASK"),
+        bottomASK: this.getNeighborCellASK(cellASK, "bottomASK"),
+        leftASK: this.getNeighborCellASK(cellASK, "leftASK")
+      };
+    },
+
+    getNeighborsASK(cellASK) {
+      if (!cellASK) return [];
+      let neighborsASK = [];
+      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+
+      if (rectNeighborsASK.topASK) neighborsASK.push(rectNeighborsASK.topASK);
+      if (rectNeighborsASK.rightASK) neighborsASK.push(rectNeighborsASK.rightASK);
+      if (rectNeighborsASK.bottomASK) neighborsASK.push(rectNeighborsASK.bottomASK);
+      if (rectNeighborsASK.leftASK) neighborsASK.push(rectNeighborsASK.leftASK);
+
+      return neighborsASK;
+    },
+
+    areAdjacentCellsASK(cellAASK, cellBASK) {
+      if (!cellAASK || !cellBASK) return false;
+      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    },
+
+    getCellCenterASK(cellASK) {
+      return {
+        x: mazeOriginXASK + cellASK.colASK * cellSizeASK + cellSizeASK * 0.5,
+        y: mazeOriginYASK + cellASK.rowASK * cellSizeASK + cellSizeASK * 0.5
+      };
+    },
+
+    getCellEdgeSegmentsASK(cellASK) {
+      let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
+      let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
+      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+
+      return [
+        {
+          neighborASK: rectNeighborsASK.topASK,
+          axASK: xASK,
+          ayASK: yASK,
+          bxASK: xASK + cellSizeASK,
+          byASK: yASK
+        },
+        {
+          neighborASK: rectNeighborsASK.rightASK,
+          axASK: xASK + cellSizeASK,
+          ayASK: yASK,
+          bxASK: xASK + cellSizeASK,
+          byASK: yASK + cellSizeASK
+        },
+        {
+          neighborASK: rectNeighborsASK.bottomASK,
+          axASK: xASK,
+          ayASK: yASK + cellSizeASK,
+          bxASK: xASK + cellSizeASK,
+          byASK: yASK + cellSizeASK
+        },
+        {
+          neighborASK: rectNeighborsASK.leftASK,
+          axASK: xASK,
+          ayASK: yASK,
+          bxASK: xASK,
+          byASK: yASK + cellSizeASK
+        }
+      ];
+    }
   };
 }
 
+function getNeighborCellASK(cellASK, directionASK) {
+  return topologyASK.getNeighborCellASK(cellASK, directionASK);
+}
+
+function getRectNeighborsASK(cellASK) {
+  return topologyASK.getRectNeighborsASK(cellASK);
+}
+
 function getNeighborCellsASK(cellASK) {
-  if (!cellASK) return [];
-  let neighborsASK = [];
-  let rectNeighborsASK = getRectNeighborsASK(cellASK);
-
-  if (rectNeighborsASK.topASK) neighborsASK.push(rectNeighborsASK.topASK);
-  if (rectNeighborsASK.rightASK) neighborsASK.push(rectNeighborsASK.rightASK);
-  if (rectNeighborsASK.bottomASK) neighborsASK.push(rectNeighborsASK.bottomASK);
-  if (rectNeighborsASK.leftASK) neighborsASK.push(rectNeighborsASK.leftASK);
-
-  return neighborsASK;
+  return topologyASK.getNeighborsASK(cellASK);
 }
 
 function getUnvisitedNeighborsASK(cellASK) {
@@ -1186,8 +1254,7 @@ function getCellASK(colASK, rowASK) {
 }
 
 function areAdjacentCellsASK(cellAASK, cellBASK) {
-  if (!cellAASK || !cellBASK) return false;
-  return getNeighborCellsASK(cellAASK).includes(cellBASK);
+  return topologyASK.areAdjacentCellsASK(cellAASK, cellBASK);
 }
 
 function makeLinkKeyASK(cellAASK, cellBASK) {
@@ -1295,9 +1362,7 @@ function drawWallsASK() {
 }
 
 function drawCellWallsASK(cellASK) {
-  let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
-  let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
-  let rectNeighborsASK = getRectNeighborsASK(cellASK);
+  let edgeSegmentsASK = topologyASK.getCellEdgeSegmentsASK(cellASK);
 
   let mixASK = getEdgeMixASK(cellASK);
   let wallColorASK = colorLerpASK(color1ASK, color4ASK, mixASK, 255);
@@ -1309,17 +1374,10 @@ function drawCellWallsASK(cellASK) {
     alpha(wallColorASK)
   );
 
-  if (!rectNeighborsASK.topASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.topASK)) {
-    line(xASK, yASK, xASK + cellSizeASK, yASK);
-  }
-  if (!rectNeighborsASK.rightASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.rightASK)) {
-    line(xASK + cellSizeASK, yASK, xASK + cellSizeASK, yASK + cellSizeASK);
-  }
-  if (!rectNeighborsASK.bottomASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.bottomASK)) {
-    line(xASK, yASK + cellSizeASK, xASK + cellSizeASK, yASK + cellSizeASK);
-  }
-  if (!rectNeighborsASK.leftASK || !areCellsLinkedASK(cellASK, rectNeighborsASK.leftASK)) {
-    line(xASK, yASK, xASK, yASK + cellSizeASK);
+  for (let edgeASK of edgeSegmentsASK) {
+    if (!edgeASK.neighborASK || !areCellsLinkedASK(cellASK, edgeASK.neighborASK)) {
+      line(edgeASK.axASK, edgeASK.ayASK, edgeASK.bxASK, edgeASK.byASK);
+    }
   }
 }
 
@@ -1334,13 +1392,10 @@ function drawWilsonWalkOverlayASK() {
   for (let iASK = 0; iASK < wilsonWalkASK.length - 1; iASK++) {
     let aASK = wilsonWalkASK[iASK];
     let bASK = wilsonWalkASK[iASK + 1];
+    let centerAASK = topologyASK.getCellCenterASK(aASK);
+    let centerBASK = topologyASK.getCellCenterASK(bASK);
 
-    let axASK = mazeOriginXASK + aASK.colASK * cellSizeASK + cellSizeASK * 0.5;
-    let ayASK = mazeOriginYASK + aASK.rowASK * cellSizeASK + cellSizeASK * 0.5;
-    let bxASK = mazeOriginXASK + bASK.colASK * cellSizeASK + cellSizeASK * 0.5;
-    let byASK = mazeOriginYASK + bASK.rowASK * cellSizeASK + cellSizeASK * 0.5;
-
-    line(axASK, ayASK, bxASK, byASK);
+    line(centerAASK.x, centerAASK.y, centerBASK.x, centerBASK.y);
   }
 }
 
