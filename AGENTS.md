@@ -53,3 +53,22 @@ Use PR descriptions to capture:
 - the next milestone
 
 Do not move architectural narrative into source comments or commit messages.
+
+### Branching and PR workflow
+
+Treat pull requests as the default review boundary for meaningful changes.
+
+Rules:
+- code changes = always use a branch + PR, even for solo work
+- docs-only changes = PR preferred, but optional if the change is truly small and non-architectural
+- do not push code changes directly to `main` unless explicitly instructed
+- do not merge code changes without opening a PR first
+- PR descriptions should capture migration intent:
+  - why this change exists
+  - what changed
+  - what did not change
+  - what remains out of scope
+
+If a branch has been committed and pushed but no PR has been opened yet, prefer opening the PR rather than pushing additional changes directly to `main`.
+
+If a direct push to `main` happens accidentally, do not rewrite history unless explicitly asked. Instead, prefer documenting the milestone clearly in `docs/architecture.md` or another repo doc when appropriate.
