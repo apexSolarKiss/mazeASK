@@ -73,6 +73,7 @@ That structure is what you see.
 ### Interaction
 - `space` regenerate  
 - `r` recolor  
+- `h` toggle rectangular / hex topology  
 - drag horizontally to change speed  
 
 ### Density
@@ -82,6 +83,16 @@ That structure is what you see.
 ### Output
 - `o` toggle output mode  
 - `p` toggle square / widescreen  
+
+---
+
+## Topology mode
+
+Rectangular is the default baseline.
+
+Hex is currently opt-in through the `H` toggle and is implemented as a small proof-of-concept path for Recursive Backtracker only.
+
+The other algorithms remain in their current rectangular-oriented state for now.
 
 ---
 
