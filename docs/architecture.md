@@ -115,3 +115,46 @@ Do not add transitional abstractions unless they clearly support the Path 2 dire
 No algorithm refactors.
 No Maze State changes.
 No topology expansion.
+
+## Milestone 3 (Hex topology proof of concept)
+
+- added a hex topology peer alongside the rectangular topology
+- kept rectangular as the default baseline
+- preserved Maze State link ownership and normalized link storage unchanged
+- introduced a topology-driven rendering path sufficient for the proof of concept:
+  - filled visited cells
+  - current-cell highlight
+  - outer border rendering
+- kept hex intentionally limited to an opt-in proof path for Recursive Backtracker only
+
+This milestone proves that:
+- topology can own non-rectangular neighbor relationships
+- topology can own enough geometry for non-rectangular rendering
+- the existing link-based Maze State can support that path without storage changes
+
+This milestone does not claim:
+- full topology-generalized algorithm support
+- parity across every existing algorithm
+- completion of renderer generalization beyond the current proof path
+
+## Milestone 4 (Neighbor-driven algorithm portability)
+
+The next pressure test is algorithm portability across the topology seam.
+
+Focus first on algorithms that already operate primarily through neighbor access:
+- Prim
+- Wilson
+- Aldous-Broder
+
+The goal of this milestone is:
+- verify that additional algorithms can run on multiple topologies without topology-specific carve logic
+- keep Maze State link ownership unchanged
+- continue treating rectangular as the stable baseline while expanding topology pressure tests
+
+Explicitly later:
+- Binary Tree
+- Sidewinder
+- Eller
+- Kruskal
+
+Those remain structurally rectangular for now and belong to a later milestone.
