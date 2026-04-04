@@ -193,6 +193,7 @@ let centerYASK = 0.5;
 let mazeASK = [];
 let mazeStateASK = null;
 let topologyASK = null;
+let topologyModeASK = "rect";
 let colsMazeASK = 40;
 let rowsMazeASK = 24;
 let cellSizeASK = 0.02;
@@ -352,6 +353,8 @@ function isSquareCompositionASK() {
 }
 
 function configureCompositionASK() {
+  let activeTopologyModeASK = getActiveTopologyModeASK();
+
   if (isSquareCompositionASK()) {
     zoomASK = 1.0;
     centerXASK = 0.5;
@@ -360,7 +363,10 @@ function configureCompositionASK() {
     mazeHeightNormASK = 0.78;
 
     if (manualColsASK === null || manualRowsASK === null) {
-      if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
+      if (activeTopologyModeASK === "hex") {
+        colsMazeASK = 20;
+        rowsMazeASK = 20;
+      } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
         colsMazeASK = 34;
         rowsMazeASK = 34;
       } else {
@@ -379,7 +385,10 @@ function configureCompositionASK() {
     mazeHeightNormASK = 0.62;
 
     if (manualColsASK === null || manualRowsASK === null) {
-      if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
+      if (activeTopologyModeASK === "hex") {
+        colsMazeASK = 28;
+        rowsMazeASK = 16;
+      } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
         colsMazeASK = 44;
         rowsMazeASK = 24;
       } else {
@@ -435,19 +444,6 @@ function initializeMazeASK() {
   // reset Aldous-Broder
   aldousCurrentASK = null;
 
-  cellSizeASK = min(
-    mazeWidthNormASK / colsMazeASK,
-    mazeHeightNormASK / rowsMazeASK
-  );
-
-  let mazeWidthASK = colsMazeASK * cellSizeASK;
-  let mazeHeightASK = rowsMazeASK * cellSizeASK;
-
-  mazeOriginXASK = -mazeWidthASK * 0.5;
-  mazeOriginYASK = isSquareCompositionASK()
-    ? -mazeHeightASK * 0.5
-    : -mazeHeightASK * 0.42;
-
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     let rowCellsASK = [];
     for (let colASK = 0; colASK < colsMazeASK; colASK++) {
@@ -456,7 +452,10 @@ function initializeMazeASK() {
     mazeASK.push(rowCellsASK);
   }
 
-  topologyASK = makeRectTopologyASK();
+  topologyASK =
+    getActiveTopologyModeASK() === "hex"
+      ? makeHexTopologyASK()
+      : makeRectTopologyASK();
 
   setupAlgorithmASK();
 }
@@ -1115,7 +1114,22 @@ function addFrontierNeighborsASK(cellASK) {
 }
 
 function makeRectTopologyASK() {
+  cellSizeASK = min(
+    mazeWidthNormASK / colsMazeASK,
+    mazeHeightNormASK / rowsMazeASK
+  );
+
+  let mazeWidthASK = colsMazeASK * cellSizeASK;
+  let mazeHeightASK = rowsMazeASK * cellSizeASK;
+
+  mazeOriginXASK = -mazeWidthASK * 0.5;
+  mazeOriginYASK = isSquareCompositionASK()
+    ? -mazeHeightASK * 0.5
+    : -mazeHeightASK * 0.42;
+
   return {
+    modeASK: "rect",
+
     getNeighborCellASK(cellASK, directionASK) {
       if (!cellASK) return null;
 
@@ -1169,6 +1183,19 @@ function makeRectTopologyASK() {
       };
     },
 
+    getCellPolygonASK(cellASK, insetASK = 0) {
+      let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK + insetASK;
+      let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK + insetASK;
+      let sizeASK = max(0, cellSizeASK - insetASK * 2);
+
+      return [
+        { xASK, yASK },
+        { xASK: xASK + sizeASK, yASK },
+        { xASK: xASK + sizeASK, yASK: yASK + sizeASK },
+        { xASK, yASK: yASK + sizeASK }
+      ];
+    },
+
     getCellEdgeSegmentsASK(cellASK) {
       let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
       let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
@@ -1204,6 +1231,201 @@ function makeRectTopologyASK() {
           byASK: yASK + cellSizeASK
         }
       ];
+    },
+
+    getBorderSegmentsASK() {
+      return [
+        {
+          axASK: mazeOriginXASK,
+          ayASK: mazeOriginYASK,
+          bxASK: mazeOriginXASK + mazeWidthASK,
+          byASK: mazeOriginYASK
+        },
+        {
+          axASK: mazeOriginXASK + mazeWidthASK,
+          ayASK: mazeOriginYASK,
+          bxASK: mazeOriginXASK + mazeWidthASK,
+          byASK: mazeOriginYASK + mazeHeightASK
+        },
+        {
+          axASK: mazeOriginXASK + mazeWidthASK,
+          ayASK: mazeOriginYASK + mazeHeightASK,
+          bxASK: mazeOriginXASK,
+          byASK: mazeOriginYASK + mazeHeightASK
+        },
+        {
+          axASK: mazeOriginXASK,
+          ayASK: mazeOriginYASK + mazeHeightASK,
+          bxASK: mazeOriginXASK,
+          byASK: mazeOriginYASK
+        }
+      ];
+    }
+  };
+}
+
+function makeHexTopologyASK() {
+  const sqrtThreeASK = sqrt(3);
+  const hexRadiusASK = min(
+    mazeWidthNormASK / (sqrtThreeASK * (colsMazeASK + 0.5)),
+    mazeHeightNormASK / (rowsMazeASK * 1.5 + 0.5)
+  );
+  const hexWidthASK = sqrtThreeASK * hexRadiusASK;
+  const mazeWidthASK = hexWidthASK * (colsMazeASK + 0.5);
+  const mazeHeightASK = hexRadiusASK * (rowsMazeASK * 1.5 + 0.5);
+
+  cellSizeASK = hexRadiusASK;
+  mazeOriginXASK = -mazeWidthASK * 0.5;
+  mazeOriginYASK = isSquareCompositionASK()
+    ? -mazeHeightASK * 0.5
+    : -mazeHeightASK * 0.42;
+
+  function getOffsetNeighborsASK(cellASK) {
+    let rowOffsetASK = cellASK.rowASK % 2 === 0 ? 0 : 1;
+
+    return {
+      topRightASK: getCellASK(cellASK.colASK + rowOffsetASK, cellASK.rowASK - 1),
+      rightASK: getCellASK(cellASK.colASK + 1, cellASK.rowASK),
+      bottomRightASK: getCellASK(cellASK.colASK + rowOffsetASK, cellASK.rowASK + 1),
+      bottomLeftASK: getCellASK(cellASK.colASK - 1 + rowOffsetASK, cellASK.rowASK + 1),
+      leftASK: getCellASK(cellASK.colASK - 1, cellASK.rowASK),
+      topLeftASK: getCellASK(cellASK.colASK - 1 + rowOffsetASK, cellASK.rowASK - 1)
+    };
+  }
+
+  function getHexCenterASK(cellASK) {
+    return {
+      x: mazeOriginXASK + hexWidthASK * (cellASK.colASK + 0.5 * (cellASK.rowASK % 2)) + hexWidthASK * 0.5,
+      y: mazeOriginYASK + cellASK.rowASK * hexRadiusASK * 1.5 + hexRadiusASK
+    };
+  }
+
+  function getHexPolygonASK(cellASK, insetASK = 0) {
+    let centerASK = getHexCenterASK(cellASK);
+    let radiusASK = max(0, hexRadiusASK - insetASK);
+    let halfWidthASK = sqrtThreeASK * 0.5 * radiusASK;
+
+    return [
+      { xASK: centerASK.x, yASK: centerASK.y - radiusASK },
+      { xASK: centerASK.x + halfWidthASK, yASK: centerASK.y - radiusASK * 0.5 },
+      { xASK: centerASK.x + halfWidthASK, yASK: centerASK.y + radiusASK * 0.5 },
+      { xASK: centerASK.x, yASK: centerASK.y + radiusASK },
+      { xASK: centerASK.x - halfWidthASK, yASK: centerASK.y + radiusASK * 0.5 },
+      { xASK: centerASK.x - halfWidthASK, yASK: centerASK.y - radiusASK * 0.5 }
+    ];
+  }
+
+  return {
+    modeASK: "hex",
+
+    getNeighborCellASK(cellASK, directionASK) {
+      if (!cellASK) return null;
+      let neighborsASK = getOffsetNeighborsASK(cellASK);
+      return neighborsASK[directionASK] || null;
+    },
+
+    getRectNeighborsASK() {
+      return {
+        topASK: null,
+        rightASK: null,
+        bottomASK: null,
+        leftASK: null
+      };
+    },
+
+    getNeighborsASK(cellASK) {
+      if (!cellASK) return [];
+      let neighborsASK = getOffsetNeighborsASK(cellASK);
+
+      return [
+        neighborsASK.topRightASK,
+        neighborsASK.rightASK,
+        neighborsASK.bottomRightASK,
+        neighborsASK.bottomLeftASK,
+        neighborsASK.leftASK,
+        neighborsASK.topLeftASK
+      ].filter(Boolean);
+    },
+
+    areAdjacentCellsASK(cellAASK, cellBASK) {
+      if (!cellAASK || !cellBASK) return false;
+      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    },
+
+    getCellCenterASK(cellASK) {
+      return getHexCenterASK(cellASK);
+    },
+
+    getCellPolygonASK(cellASK, insetASK = 0) {
+      return getHexPolygonASK(cellASK, insetASK);
+    },
+
+    getCellEdgeSegmentsASK(cellASK) {
+      let polygonASK = getHexPolygonASK(cellASK);
+      let neighborsASK = getOffsetNeighborsASK(cellASK);
+
+      return [
+        {
+          neighborASK: neighborsASK.topRightASK,
+          axASK: polygonASK[0].xASK,
+          ayASK: polygonASK[0].yASK,
+          bxASK: polygonASK[1].xASK,
+          byASK: polygonASK[1].yASK
+        },
+        {
+          neighborASK: neighborsASK.rightASK,
+          axASK: polygonASK[1].xASK,
+          ayASK: polygonASK[1].yASK,
+          bxASK: polygonASK[2].xASK,
+          byASK: polygonASK[2].yASK
+        },
+        {
+          neighborASK: neighborsASK.bottomRightASK,
+          axASK: polygonASK[2].xASK,
+          ayASK: polygonASK[2].yASK,
+          bxASK: polygonASK[3].xASK,
+          byASK: polygonASK[3].yASK
+        },
+        {
+          neighborASK: neighborsASK.bottomLeftASK,
+          axASK: polygonASK[3].xASK,
+          ayASK: polygonASK[3].yASK,
+          bxASK: polygonASK[4].xASK,
+          byASK: polygonASK[4].yASK
+        },
+        {
+          neighborASK: neighborsASK.leftASK,
+          axASK: polygonASK[4].xASK,
+          ayASK: polygonASK[4].yASK,
+          bxASK: polygonASK[5].xASK,
+          byASK: polygonASK[5].yASK
+        },
+        {
+          neighborASK: neighborsASK.topLeftASK,
+          axASK: polygonASK[5].xASK,
+          ayASK: polygonASK[5].yASK,
+          bxASK: polygonASK[0].xASK,
+          byASK: polygonASK[0].yASK
+        }
+      ];
+    },
+
+    getBorderSegmentsASK() {
+      let borderSegmentsASK = [];
+
+      for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
+        for (let colASK = 0; colASK < colsMazeASK; colASK++) {
+          let edgeSegmentsASK = this.getCellEdgeSegmentsASK(mazeASK[rowASK][colASK]);
+
+          for (let edgeASK of edgeSegmentsASK) {
+            if (!edgeASK.neighborASK) {
+              borderSegmentsASK.push(edgeASK);
+            }
+          }
+        }
+      }
+
+      return borderSegmentsASK;
     }
   };
 }
@@ -1301,6 +1523,20 @@ function setAlgorithmASK(nameASK) {
   initializeMazeASK();
 }
 
+function setTopologyASK(modeASK) {
+  topologyModeASK = modeASK === "hex" ? "hex" : "rect";
+  manualColsASK = null;
+  manualRowsASK = null;
+  initializeMazeASK();
+}
+
+function getActiveTopologyModeASK() {
+  if (topologyModeASK === "hex" && algorithmASK === "recursiveBacktracker") {
+    return "hex";
+  }
+  return "rect";
+}
+
 function shuffleArrayASK(arrayASK) {
   for (let iASK = arrayASK.length - 1; iASK > 0; iASK--) {
     let jASK = floor(random(iASK + 1));
@@ -1322,9 +1558,6 @@ function drawVisitedFieldsASK() {
       let cellASK = mazeASK[rowASK][colASK];
       if (!cellASK.visitedASK) continue;
 
-      let xASK = mazeOriginXASK + colASK * cellSizeASK;
-      let yASK = mazeOriginYASK + rowASK * cellSizeASK;
-
       let tASK =
         cellASK.visitOrderASK <= 0
           ? 0
@@ -1344,7 +1577,7 @@ function drawVisitedFieldsASK() {
         alpha(fillColorASK)
       );
 
-      rect(xASK, yASK, cellSizeASK, cellSizeASK);
+      drawCellPolygonASK(topologyASK.getCellPolygonASK(cellASK));
     }
   }
 
@@ -1411,23 +1644,21 @@ function getEdgeMixASK(cellASK) {
 function drawCurrentCellASK() {
   if (!currentCellASK || mazeCompleteASK) return;
 
-  let xASK = mazeOriginXASK + currentCellASK.colASK * cellSizeASK;
-  let yASK = mazeOriginYASK + currentCellASK.rowASK * cellSizeASK;
-
   noStroke();
   fill(red(color4ASK), green(color4ASK), blue(color4ASK), 120);
-  rect(xASK, yASK, cellSizeASK, cellSizeASK);
+  drawCellPolygonASK(topologyASK.getCellPolygonASK(currentCellASK, cellSizeASK * 0.12));
   noFill();
 }
 
 function drawBorderASK() {
-  let mazeWidthASK = colsMazeASK * cellSizeASK;
-  let mazeHeightASK = rowsMazeASK * cellSizeASK;
-
   stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 90);
   strokeWeight(weightASK * 2.0);
   noFill();
-  rect(mazeOriginXASK, mazeOriginYASK, mazeWidthASK, mazeHeightASK);
+
+  let borderSegmentsASK = topologyASK.getBorderSegmentsASK();
+  for (let segmentASK of borderSegmentsASK) {
+    line(segmentASK.axASK, segmentASK.ayASK, segmentASK.bxASK, segmentASK.byASK);
+  }
 }
 
 function drawLabOverlayASK() {
@@ -1440,6 +1671,8 @@ function drawLabOverlayASK() {
   textSize(0.018);
   text(
     algorithmLabelASK +
+      "  //  " +
+      (getActiveTopologyModeASK() === "hex" ? "hex" : "rect") +
       "  //  " +
       colsMazeASK +
       "x" +
@@ -1563,6 +1796,10 @@ function keyPressed() {
     initializeMazeASK();
   }
 
+  if (key === "h" || key === "H") {
+    setTopologyASK(topologyModeASK === "hex" ? "rect" : "hex");
+  }
+
   if (key === "1") setAlgorithmASK("recursiveBacktracker");
   if (key === "2") setAlgorithmASK("binaryTree");
   if (key === "3") setAlgorithmASK("prim");
@@ -1630,4 +1867,12 @@ function colorLerpASK(colorAASK, colorBASK, amtASK, alphaASK = 255) {
     blue(mixedASK),
     alphaASK
   );
+}
+
+function drawCellPolygonASK(pointsASK) {
+  beginShape();
+  for (let pointASK of pointsASK) {
+    vertex(pointASK.xASK, pointASK.yASK);
+  }
+  endShape(CLOSE);
 }
