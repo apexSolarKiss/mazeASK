@@ -137,6 +137,14 @@ Hex currently works for:
 - Wilson
 - Kruskal
 
+Triangle currently works for:
+- Recursive Backtracker
+- Prim
+- Aldous-Broder
+- Wilson
+
+Binary Tree and Kruskal are not yet enabled on triangle.
+
 Sidewinder and Eller remain intentionally rectangular-only for now.
 
 ---

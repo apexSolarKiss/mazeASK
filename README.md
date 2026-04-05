@@ -74,6 +74,7 @@ That structure is what you see.
 - `space` regenerate  
 - `r` recolor  
 - `h` toggle rectangular / hex topology  
+- `t` toggle rectangular / triangle topology  
 - `-` / `+` adjust speed  
 - drag horizontally to change speed  
 
@@ -100,6 +101,16 @@ Hex currently works for:
 - Aldous–Broder
 - Wilson
 - Kruskal
+
+Triangle is opt-in through the `T` toggle.
+
+Triangle currently works for:
+- Recursive Backtracker
+- Prim
+- Aldous–Broder
+- Wilson
+
+Binary Tree and Kruskal are not yet enabled on triangle.
 
 Sidewinder and Eller remain rectangular-only for now.
 
