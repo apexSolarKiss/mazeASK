@@ -44,6 +44,8 @@ Same grid. Same constraints. Different rules.
 - Wilson  
 - Aldous–Broder  
 
+See [mazeASK-algorithm-notes.md](mazeASK-algorithm-notes.md) for a breakdown of each algorithm and what it produces.
+
 ---
 
 ## Key idea
@@ -115,12 +117,6 @@ Triangle currently works for:
 Binary Tree and Kruskal are not yet enabled on triangle.
 
 Sidewinder and Eller remain rectangular-only for now.
-
----
-
-## Notes
-
-See [mazeASK-algorithm-notes.md](mazeASK-algorithm-notes.md) for a breakdown of each algorithm and what it produces.
 
 ---
 
