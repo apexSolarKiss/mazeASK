@@ -189,6 +189,8 @@ The remaining work is to define topology-owned sweep or layer semantics, or an e
 
 This milestone is a design problem first.
 
+See [`docs/milestone-6-semantics.md`](docs/milestone-6-semantics.md) for the dedicated semantic design note.
+
 It should clarify:
 - whether Sidewinder should gain a topology-owned sweep/run analogue or remain intentionally rectangular
 - whether Eller should gain a topology-owned layer/set propagation analogue or remain intentionally rectangular
