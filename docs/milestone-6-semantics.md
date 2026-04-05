@@ -33,9 +33,12 @@ Current incidental rectangular details:
 - row and column counters as the traversal mechanism
 - explicit eastern and northern boundary checks
 
-The open decision is:
-- define a topology-owned sweep/run analogue
-- or keep Sidewinder intentionally rectangular
+Current decision:
+- Sidewinder remains intentionally rectangular for now.
+
+The blocker is semantic, not plumbing.
+
+Any future generalization would require a deliberate topology-owned sweep/run model first.
 
 ## Eller Problem Statement
 
@@ -50,9 +53,12 @@ Current incidental rectangular details:
 - literal left/right merge checks
 - direct downward propagation to the next row
 
-The open decision is:
-- define topology-owned layer/frontier semantics
-- or keep Eller intentionally rectangular
+Current decision:
+- Eller remains intentionally rectangular for now.
+
+The blocker is semantic, not plumbing.
+
+Any future generalization would require a deliberate topology-owned layer/frontier model first.
 
 ## Required Decisions Before Implementation
 
@@ -70,6 +76,10 @@ For both:
 - what stays topology-owned versus algorithm-owned
 - whether remaining rectangular-only is an acceptable final outcome
 
+Current outcome:
+- remaining rectangular-only is acceptable for now
+- no implementation branch is justified until a new semantic model is explicitly chosen
+
 ## Non-Goals
 
 - no code changes
@@ -79,9 +89,11 @@ For both:
 
 ## Decision Outcomes
 
-Possible outcomes of this note:
+Current outcome of this note:
 - Sidewinder remains rectangular-only
 - Eller remains rectangular-only
+
+Future outcome if revisited later:
 - one or both get a future topology-owned semantic model
 
 Only after those decisions are made should implementation branches be created.
