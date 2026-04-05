@@ -665,12 +665,7 @@ function runBinaryTreeASK() {
       let cellASK = mazeASK[rowASK][colASK];
       markVisitedASK(cellASK, rowASK + colASK);
 
-      let neighborsASK = [];
-      let northASK = getCellASK(colASK, rowASK - 1);
-      let eastASK = getCellASK(colASK + 1, rowASK);
-
-      if (northASK) neighborsASK.push(northASK);
-      if (eastASK) neighborsASK.push(eastASK);
+      let neighborsASK = getBinaryTreeCandidatesASK(cellASK).filter(Boolean);
 
       if (neighborsASK.length > 0) {
         removeWallsASK(cellASK, random(neighborsASK));
@@ -1171,6 +1166,14 @@ function makeRectTopologyASK() {
       return neighborsASK;
     },
 
+    getBinaryTreeCandidatesASK(cellASK) {
+      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+      return [
+        rectNeighborsASK.topASK,
+        rectNeighborsASK.rightASK
+      ];
+    },
+
     areAdjacentCellsASK(cellAASK, cellBASK) {
       if (!cellAASK || !cellBASK) return false;
       return this.getNeighborsASK(cellAASK).includes(cellBASK);
@@ -1347,6 +1350,15 @@ function makeHexTopologyASK() {
       ].filter(Boolean);
     },
 
+    getBinaryTreeCandidatesASK(cellASK) {
+      if (!cellASK) return [];
+      let neighborsASK = getOffsetNeighborsASK(cellASK);
+      return [
+        neighborsASK.topRightASK,
+        neighborsASK.rightASK
+      ];
+    },
+
     areAdjacentCellsASK(cellAASK, cellBASK) {
       if (!cellAASK || !cellBASK) return false;
       return this.getNeighborsASK(cellAASK).includes(cellBASK);
@@ -1442,6 +1454,10 @@ function getNeighborCellsASK(cellASK) {
   return topologyASK.getNeighborsASK(cellASK);
 }
 
+function getBinaryTreeCandidatesASK(cellASK) {
+  return topologyASK.getBinaryTreeCandidatesASK(cellASK);
+}
+
 function getUnvisitedNeighborsASK(cellASK) {
   if (!cellASK) return [];
   return getNeighborCellsASK(cellASK).filter(
@@ -1533,6 +1549,7 @@ function setTopologyASK(modeASK) {
 function isHexEnabledAlgorithmASK() {
   return (
     algorithmASK === "recursiveBacktracker" ||
+    algorithmASK === "binaryTree" ||
     algorithmASK === "prim" ||
     algorithmASK === "aldousBroder" ||
     algorithmASK === "wilson"
