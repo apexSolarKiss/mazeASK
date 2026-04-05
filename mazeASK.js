@@ -1600,8 +1600,18 @@ function makeTriangleTopologyASK() {
       ].filter(Boolean);
     },
 
-    getBinaryTreeCandidatesASK() {
-      return [];
+    getBinaryTreeCandidatesASK(cellASK) {
+      if (!cellASK) return [];
+
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+      let horizontalASK = cellASK.rowASK % 2 === 0
+        ? neighborsASK.rightASK
+        : neighborsASK.leftASK;
+      let verticalASK = isUpTriangleASK(cellASK)
+        ? null
+        : neighborsASK.topASK;
+
+      return [verticalASK, horizontalASK];
     },
 
     getKruskalEdgesASK() {
@@ -1829,6 +1839,7 @@ function isHexEnabledAlgorithmASK() {
 function isTriangleEnabledAlgorithmASK() {
   return (
     algorithmASK === "recursiveBacktracker" ||
+    algorithmASK === "binaryTree" ||
     algorithmASK === "prim" ||
     algorithmASK === "aldousBroder" ||
     algorithmASK === "wilson"
