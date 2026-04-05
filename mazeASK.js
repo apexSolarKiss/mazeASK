@@ -1533,7 +1533,8 @@ function setTopologyASK(modeASK) {
 function isHexEnabledAlgorithmASK() {
   return (
     algorithmASK === "recursiveBacktracker" ||
-    algorithmASK === "prim"
+    algorithmASK === "prim" ||
+    algorithmASK === "aldousBroder"
   );
 }
 
