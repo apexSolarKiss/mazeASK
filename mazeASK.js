@@ -1614,8 +1614,27 @@ function makeTriangleTopologyASK() {
       return [verticalASK, horizontalASK];
     },
 
-    getKruskalEdgesASK() {
-      return [];
+    getKruskalEdgesASK(cellASK) {
+      if (!cellASK) return [];
+
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+      let edgesASK = [];
+
+      if (neighborsASK.rightASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: neighborsASK.rightASK
+        });
+      }
+
+      if (neighborsASK.verticalASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: neighborsASK.verticalASK
+        });
+      }
+
+      return edgesASK;
     },
 
     areAdjacentCellsASK(cellAASK, cellBASK) {
@@ -1842,7 +1861,8 @@ function isTriangleEnabledAlgorithmASK() {
     algorithmASK === "binaryTree" ||
     algorithmASK === "prim" ||
     algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson"
+    algorithmASK === "wilson" ||
+    algorithmASK === "kruskal"
   );
 }
 
