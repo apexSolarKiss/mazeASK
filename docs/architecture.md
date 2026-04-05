@@ -156,20 +156,40 @@ This milestone does not claim portability for:
 
 Those remain structurally rectangular for now.
 
-## Milestone 5 (Rectangular-structured algorithm redesign)
+## Milestone 5 (Rectangular-structured algorithm split)
 
-The next pressure test is the set of algorithms that still embed rectangular assumptions in their generation logic:
-- Binary Tree
+This milestone split the remaining rectangular-structured algorithms into separate redesign tracks instead of treating them as one undifferentiated portability bucket.
+
+This milestone now includes:
+- Binary Tree redesigned through a topology seam
+- Kruskal redesigned through topology-owned edges and activated on hex
+
+This milestone still does not claim portability for:
 - Sidewinder
 - Eller
-- Kruskal
 
-This milestone is not another gate-widening step.
+Those remain rectangular-only for now.
 
-The remaining work is to remove embedded rectangular assumptions so these algorithms can be expressed through topology-owned structure and canonical link creation.
+This milestone proves that:
+- some rectangular-structured algorithms can be separated into smaller redesign tracks
+- topology-owned structure can replace hardcoded rectangular assumptions where the algorithm shape remains local
+- Maze State link ownership remains unchanged through that redesign work
 
-This milestone remains unproven:
-- portability for algorithms whose control flow is still tied to rows, columns, or rectangular direction choices
-- a topology-neutral formulation for the rectangular-structured algorithms
+This milestone leaves open:
+- algorithms whose defining control flow still depends on sweep semantics or row/layer propagation
+- any claim of full topology-generalized support across the remaining rectangular-oriented algorithms
 
-Implementation details for that redesign remain intentionally open.
+## Milestone 6 (Topology-owned sweep / layer semantics)
+
+The next architectural frontier is not another activation pass.
+
+The remaining work is to define topology-owned sweep or layer semantics, or an equivalent structure, that could support honest future reformulations of:
+- Sidewinder
+- Eller
+
+This milestone is a design problem first.
+
+It should clarify:
+- whether Sidewinder should gain a topology-owned sweep/run analogue or remain intentionally rectangular
+- whether Eller should gain a topology-owned layer/set propagation analogue or remain intentionally rectangular
+- the minimum topology-owned semantic needed before any implementation promise is credible
