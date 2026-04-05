@@ -1594,7 +1594,8 @@ function isHexEnabledAlgorithmASK() {
     algorithmASK === "binaryTree" ||
     algorithmASK === "prim" ||
     algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson"
+    algorithmASK === "wilson" ||
+    algorithmASK === "kruskal"
   );
 }
 
