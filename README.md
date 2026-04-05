@@ -120,11 +120,7 @@ Sidewinder and Eller remain rectangular-only for now.
 
 ## Notes
 
-See:
-
-    mazeASK-algorithm-notes.md
-
-for a breakdown of each algorithm and what it produces.
+See [mazeASK-algorithm-notes.md](mazeASK-algorithm-notes.md) for a breakdown of each algorithm and what it produces.
 
 ---
 
