@@ -139,22 +139,37 @@ This milestone does not claim:
 
 ## Milestone 4 (Neighbor-driven algorithm portability)
 
-The next pressure test is algorithm portability across the topology seam.
+This milestone extends hex portability across the algorithms that already operate primarily through neighbor access.
 
-Focus first on algorithms that already operate primarily through neighbor access:
-- Prim
-- Wilson
-- Aldous-Broder
+- Recursive Backtracker, Prim, Aldous-Broder, and Wilson now run through the topology seam on hex.
 
-The goal of this milestone is:
-- verify that additional algorithms can run on multiple topologies without topology-specific carve logic
-- keep Maze State link ownership unchanged
-- continue treating rectangular as the stable baseline while expanding topology pressure tests
+This milestone proves that:
+- additional neighbor-driven algorithms can run on multiple topologies without topology-specific carve logic
+- Maze State link ownership remains unchanged while topology controls adjacency and geometry
+- the existing rectangular baseline can remain stable while hex support expands through the same seam
 
-Explicitly later:
+This milestone does not claim portability for:
 - Binary Tree
 - Sidewinder
 - Eller
 - Kruskal
 
-Those remain structurally rectangular for now and belong to a later milestone.
+Those remain structurally rectangular for now.
+
+## Milestone 5 (Rectangular-structured algorithm redesign)
+
+The next pressure test is the set of algorithms that still embed rectangular assumptions in their generation logic:
+- Binary Tree
+- Sidewinder
+- Eller
+- Kruskal
+
+This milestone is not another gate-widening step.
+
+The remaining work is to remove embedded rectangular assumptions so these algorithms can be expressed through topology-owned structure and canonical link creation.
+
+This milestone remains unproven:
+- portability for algorithms whose control flow is still tied to rows, columns, or rectangular direction choices
+- a topology-neutral formulation for the rectangular-structured algorithms
+
+Implementation details for that redesign remain intentionally open.
