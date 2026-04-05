@@ -1827,7 +1827,12 @@ function isHexEnabledAlgorithmASK() {
 }
 
 function isTriangleEnabledAlgorithmASK() {
-  return algorithmASK === "recursiveBacktracker";
+  return (
+    algorithmASK === "recursiveBacktracker" ||
+    algorithmASK === "prim" ||
+    algorithmASK === "aldousBroder" ||
+    algorithmASK === "wilson"
+  );
 }
 
 function getActiveTopologyModeASK() {
