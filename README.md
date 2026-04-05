@@ -9,9 +9,11 @@ Maze generation algorithms
 
 ## Live
 
-Open and duplicate the sketch:
+Open the fullscreen sketch:
 
-https://editor.p5js.org/asymptoticSystemKey/sketches/FJk1OWjNb
+https://editor.p5js.org/asymptoticSystemKey/full/FJk1OWjNb
+
+Best viewed on desktop in Chrome.
 
 ---
 
