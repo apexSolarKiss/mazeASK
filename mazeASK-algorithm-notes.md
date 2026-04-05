@@ -6,9 +6,9 @@ Apache License, Version 2.0-->
 
 ## What mazeASK is doing
 
-This project builds mazes on a grid.
+This project builds mazes on a topology of connected cells.
 
-A maze is made of many little cells. Each cell starts with walls.  
+A maze is made of many little cells. Each cell starts with possible boundaries between it and its neighbors.  
 A maze algorithm decides which walls to remove so all the cells connect.
 
 Most of the algorithms here try to make a **perfect maze**:
@@ -17,7 +17,7 @@ Most of the algorithms here try to make a **perfect maze**:
 - there is exactly one path between any two cells
 - there are no loops
 
-That means the maze is really a kind of connected tree drawn on a grid.
+That means the maze is really a kind of connected tree drawn on a topology.
 
 ---
 
@@ -43,7 +43,7 @@ That is what creates different maze “textures”.
 
 Imagine a big building made of tiny rooms.
 
-Each room has walls on all four sides.
+Each room begins with boundaries to its neighboring rooms.
 
 A maze algorithm is just a set of rules for deciding:
 
@@ -124,6 +124,20 @@ So instead of memorizing them as disconnected recipes, compare them by asking:
 - What kind of maze does it tend to make?
 
 That viewpoint is more useful than just memorizing names.
+
+---
+
+## Current sketch status
+
+Hex currently works for:
+- Recursive Backtracker
+- Binary Tree
+- Prim
+- Aldous-Broder
+- Wilson
+- Kruskal
+
+Sidewinder and Eller remain intentionally rectangular-only for now.
 
 ---
 
