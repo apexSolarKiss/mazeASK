@@ -366,6 +366,9 @@ function configureCompositionASK() {
       if (activeTopologyModeASK === "hex") {
         colsMazeASK = 20;
         rowsMazeASK = 20;
+      } else if (activeTopologyModeASK === "triangle") {
+        colsMazeASK = 34;
+        rowsMazeASK = 34;
       } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
         colsMazeASK = 34;
         rowsMazeASK = 34;
@@ -388,6 +391,9 @@ function configureCompositionASK() {
       if (activeTopologyModeASK === "hex") {
         colsMazeASK = 28;
         rowsMazeASK = 16;
+      } else if (activeTopologyModeASK === "triangle") {
+        colsMazeASK = 46;
+        rowsMazeASK = 24;
       } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
         colsMazeASK = 44;
         rowsMazeASK = 24;
@@ -455,7 +461,9 @@ function initializeMazeASK() {
   topologyASK =
     getActiveTopologyModeASK() === "hex"
       ? makeHexTopologyASK()
-      : makeRectTopologyASK();
+      : getActiveTopologyModeASK() === "triangle"
+        ? makeTriangleTopologyASK()
+        : makeRectTopologyASK();
 
   setupAlgorithmASK();
 }
@@ -1472,6 +1480,222 @@ function makeHexTopologyASK() {
   };
 }
 
+function makeTriangleTopologyASK() {
+  const sqrtThreeASK = sqrt(3);
+  const triangleHeightASKFactorASK = sqrtThreeASK * 0.5;
+  const triangleSideASK = min(
+    (mazeWidthNormASK * 2) / (colsMazeASK + 1),
+    mazeHeightNormASK / (rowsMazeASK * triangleHeightASKFactorASK)
+  );
+  const triangleHeightASK = triangleSideASK * triangleHeightASKFactorASK;
+  const mazeWidthASK = triangleSideASK * (colsMazeASK + 1) * 0.5;
+  const mazeHeightASK = triangleHeightASK * rowsMazeASK;
+
+  cellSizeASK = triangleSideASK;
+  mazeOriginXASK = -mazeWidthASK * 0.5;
+  mazeOriginYASK = isSquareCompositionASK()
+    ? -mazeHeightASK * 0.5
+    : -mazeHeightASK * 0.42;
+
+  function isUpTriangleASK(cellASK) {
+    return (cellASK.colASK + cellASK.rowASK) % 2 === 0;
+  }
+
+  function getTriangleNeighborsASK(cellASK) {
+    let isUpASK = isUpTriangleASK(cellASK);
+    let verticalASK = isUpASK
+      ? getCellASK(cellASK.colASK, cellASK.rowASK + 1)
+      : getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+
+    return {
+      topASK: isUpASK ? null : verticalASK,
+      rightASK: getCellASK(cellASK.colASK + 1, cellASK.rowASK),
+      bottomASK: isUpASK ? verticalASK : null,
+      leftASK: getCellASK(cellASK.colASK - 1, cellASK.rowASK),
+      verticalASK
+    };
+  }
+
+  function getTriangleMidXASK(cellASK) {
+    return mazeOriginXASK + triangleSideASK * (cellASK.colASK + 1) * 0.5;
+  }
+
+  function getTriangleTopYASK(cellASK) {
+    return mazeOriginYASK + cellASK.rowASK * triangleHeightASK;
+  }
+
+  function getTriangleCenterASK(cellASK) {
+    let isUpASK = isUpTriangleASK(cellASK);
+    return {
+      x: getTriangleMidXASK(cellASK),
+      y: getTriangleTopYASK(cellASK) + triangleHeightASK * (isUpASK ? 2 / 3 : 1 / 3)
+    };
+  }
+
+  function insetTrianglePolygonASK(polygonASK, centerASK, insetASK) {
+    if (insetASK <= 0) return polygonASK;
+
+    return polygonASK.map((pointASK) => {
+      let dxASK = pointASK.xASK - centerASK.x;
+      let dyASK = pointASK.yASK - centerASK.y;
+      let distanceASK = sqrt(dxASK * dxASK + dyASK * dyASK);
+
+      if (distanceASK === 0) return pointASK;
+
+      let scaleASK = max(0, (distanceASK - insetASK) / distanceASK);
+      return {
+        xASK: centerASK.x + dxASK * scaleASK,
+        yASK: centerASK.y + dyASK * scaleASK
+      };
+    });
+  }
+
+  function getTrianglePolygonASK(cellASK, insetASK = 0) {
+    let midXASK = getTriangleMidXASK(cellASK);
+    let topYASK = getTriangleTopYASK(cellASK);
+    let isUpASK = isUpTriangleASK(cellASK);
+
+    let polygonASK = isUpASK
+      ? [
+          { xASK: midXASK, yASK: topYASK },
+          { xASK: midXASK + triangleSideASK * 0.5, yASK: topYASK + triangleHeightASK },
+          { xASK: midXASK - triangleSideASK * 0.5, yASK: topYASK + triangleHeightASK }
+        ]
+      : [
+          { xASK: midXASK - triangleSideASK * 0.5, yASK: topYASK },
+          { xASK: midXASK + triangleSideASK * 0.5, yASK: topYASK },
+          { xASK: midXASK, yASK: topYASK + triangleHeightASK }
+        ];
+
+    return insetTrianglePolygonASK(polygonASK, getTriangleCenterASK(cellASK), insetASK);
+  }
+
+  return {
+    modeASK: "triangle",
+
+    getNeighborCellASK(cellASK, directionASK) {
+      if (!cellASK) return null;
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+      return neighborsASK[directionASK] || null;
+    },
+
+    getRectNeighborsASK(cellASK) {
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+      return {
+        topASK: neighborsASK.topASK,
+        rightASK: neighborsASK.rightASK,
+        bottomASK: neighborsASK.bottomASK,
+        leftASK: neighborsASK.leftASK
+      };
+    },
+
+    getNeighborsASK(cellASK) {
+      if (!cellASK) return [];
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+
+      return [
+        neighborsASK.leftASK,
+        neighborsASK.rightASK,
+        neighborsASK.verticalASK
+      ].filter(Boolean);
+    },
+
+    getBinaryTreeCandidatesASK() {
+      return [];
+    },
+
+    getKruskalEdgesASK() {
+      return [];
+    },
+
+    areAdjacentCellsASK(cellAASK, cellBASK) {
+      if (!cellAASK || !cellBASK) return false;
+      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    },
+
+    getCellCenterASK(cellASK) {
+      return getTriangleCenterASK(cellASK);
+    },
+
+    getCellPolygonASK(cellASK, insetASK = 0) {
+      return getTrianglePolygonASK(cellASK, insetASK);
+    },
+
+    getCellEdgeSegmentsASK(cellASK) {
+      let polygonASK = getTrianglePolygonASK(cellASK);
+      let neighborsASK = getTriangleNeighborsASK(cellASK);
+
+      if (isUpTriangleASK(cellASK)) {
+        return [
+          {
+            neighborASK: neighborsASK.rightASK,
+            axASK: polygonASK[0].xASK,
+            ayASK: polygonASK[0].yASK,
+            bxASK: polygonASK[1].xASK,
+            byASK: polygonASK[1].yASK
+          },
+          {
+            neighborASK: neighborsASK.bottomASK,
+            axASK: polygonASK[1].xASK,
+            ayASK: polygonASK[1].yASK,
+            bxASK: polygonASK[2].xASK,
+            byASK: polygonASK[2].yASK
+          },
+          {
+            neighborASK: neighborsASK.leftASK,
+            axASK: polygonASK[2].xASK,
+            ayASK: polygonASK[2].yASK,
+            bxASK: polygonASK[0].xASK,
+            byASK: polygonASK[0].yASK
+          }
+        ];
+      }
+
+      return [
+        {
+          neighborASK: neighborsASK.leftASK,
+          axASK: polygonASK[0].xASK,
+          ayASK: polygonASK[0].yASK,
+          bxASK: polygonASK[2].xASK,
+          byASK: polygonASK[2].yASK
+        },
+        {
+          neighborASK: neighborsASK.rightASK,
+          axASK: polygonASK[2].xASK,
+          ayASK: polygonASK[2].yASK,
+          bxASK: polygonASK[1].xASK,
+          byASK: polygonASK[1].yASK
+        },
+        {
+          neighborASK: neighborsASK.topASK,
+          axASK: polygonASK[1].xASK,
+          ayASK: polygonASK[1].yASK,
+          bxASK: polygonASK[0].xASK,
+          byASK: polygonASK[0].yASK
+        }
+      ];
+    },
+
+    getBorderSegmentsASK() {
+      let borderSegmentsASK = [];
+
+      for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
+        for (let colASK = 0; colASK < colsMazeASK; colASK++) {
+          let edgeSegmentsASK = this.getCellEdgeSegmentsASK(mazeASK[rowASK][colASK]);
+
+          for (let edgeASK of edgeSegmentsASK) {
+            if (!edgeASK.neighborASK) {
+              borderSegmentsASK.push(edgeASK);
+            }
+          }
+        }
+      }
+
+      return borderSegmentsASK;
+    }
+  };
+}
+
 function getNeighborCellASK(cellASK, directionASK) {
   return topologyASK.getNeighborCellASK(cellASK, directionASK);
 }
@@ -1582,7 +1806,10 @@ function setAlgorithmASK(nameASK) {
 }
 
 function setTopologyASK(modeASK) {
-  topologyModeASK = modeASK === "hex" ? "hex" : "rect";
+  topologyModeASK =
+    modeASK === "hex" || modeASK === "triangle"
+      ? modeASK
+      : "rect";
   manualColsASK = null;
   manualRowsASK = null;
   initializeMazeASK();
@@ -1599,9 +1826,16 @@ function isHexEnabledAlgorithmASK() {
   );
 }
 
+function isTriangleEnabledAlgorithmASK() {
+  return algorithmASK === "recursiveBacktracker";
+}
+
 function getActiveTopologyModeASK() {
   if (topologyModeASK === "hex" && isHexEnabledAlgorithmASK()) {
     return "hex";
+  }
+  if (topologyModeASK === "triangle" && isTriangleEnabledAlgorithmASK()) {
+    return "triangle";
   }
   return "rect";
 }
@@ -1741,7 +1975,7 @@ function drawLabOverlayASK() {
   text(
     algorithmLabelASK +
       "  //  " +
-      (getActiveTopologyModeASK() === "hex" ? "hex" : "rect") +
+      getActiveTopologyModeASK() +
       "  //  " +
       colsMazeASK +
       "x" +
@@ -1867,6 +2101,10 @@ function keyPressed() {
 
   if (key === "h" || key === "H") {
     setTopologyASK(topologyModeASK === "hex" ? "rect" : "hex");
+  }
+
+  if (key === "t" || key === "T") {
+    setTopologyASK(topologyModeASK === "triangle" ? "rect" : "triangle");
   }
 
   if (key === "1") setAlgorithmASK("recursiveBacktracker");
