@@ -1530,8 +1530,15 @@ function setTopologyASK(modeASK) {
   initializeMazeASK();
 }
 
+function isHexEnabledAlgorithmASK() {
+  return (
+    algorithmASK === "recursiveBacktracker" ||
+    algorithmASK === "prim"
+  );
+}
+
 function getActiveTopologyModeASK() {
-  if (topologyModeASK === "hex" && algorithmASK === "recursiveBacktracker") {
+  if (topologyModeASK === "hex" && isHexEnabledAlgorithmASK()) {
     return "hex";
   }
   return "rect";
