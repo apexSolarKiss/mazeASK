@@ -1534,7 +1534,8 @@ function isHexEnabledAlgorithmASK() {
   return (
     algorithmASK === "recursiveBacktracker" ||
     algorithmASK === "prim" ||
-    algorithmASK === "aldousBroder"
+    algorithmASK === "aldousBroder" ||
+    algorithmASK === "wilson"
   );
 }
 
