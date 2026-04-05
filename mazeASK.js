@@ -873,35 +873,19 @@ function markEntireRowVisitedASK(rowASK, depthASK) {
 // =====================================================
 
 function initializeKruskalASK() {
-  let totalCellsASK = rowsMazeASK * colsMazeASK;
+  kruskalParentASK = {};
+  kruskalRankASK = {};
 
-  kruskalParentASK = new Array(totalCellsASK);
-  kruskalRankASK = new Array(totalCellsASK).fill(0);
-  for (let iASK = 0; iASK < totalCellsASK; iASK++) {
-    kruskalParentASK[iASK] = iASK;
-  }
-
-  kruskalWallsASK = [];
   for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
     for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      if (colASK < colsMazeASK - 1) {
-        kruskalWallsASK.push({
-          aColASK: colASK,
-          aRowASK: rowASK,
-          bColASK: colASK + 1,
-          bRowASK: rowASK
-        });
-      }
-      if (rowASK < rowsMazeASK - 1) {
-        kruskalWallsASK.push({
-          aColASK: colASK,
-          aRowASK: rowASK,
-          bColASK: colASK,
-          bRowASK: rowASK + 1
-        });
-      }
+      let cellASK = mazeASK[rowASK][colASK];
+      let cellIdASK = cellKeyASK(cellASK);
+      kruskalParentASK[cellIdASK] = cellIdASK;
+      kruskalRankASK[cellIdASK] = 0;
     }
   }
+
+  kruskalWallsASK = getKruskalEdgesASK();
 
   shuffleArrayASK(kruskalWallsASK);
   kruskalStepIndexASK = 0;
@@ -916,11 +900,11 @@ function stepKruskalASK() {
   }
 
   let wallASK = kruskalWallsASK[kruskalStepIndexASK++];
-  let cellAASK = getCellASK(wallASK.aColASK, wallASK.aRowASK);
-  let cellBASK = getCellASK(wallASK.bColASK, wallASK.bRowASK);
+  let cellAASK = wallASK.cellAASK;
+  let cellBASK = wallASK.cellBASK;
 
-  let idAASK = cellIndexASK(cellAASK.colASK, cellAASK.rowASK);
-  let idBASK = cellIndexASK(cellBASK.colASK, cellBASK.rowASK);
+  let idAASK = cellKeyASK(cellAASK);
+  let idBASK = cellKeyASK(cellBASK);
 
   let rootAASK = kruskalFindASK(idAASK);
   let rootBASK = kruskalFindASK(idBASK);
@@ -936,10 +920,6 @@ function stepKruskalASK() {
     markVisitedASK(cellBASK, depthASK);
     currentCellASK = cellBASK;
   }
-}
-
-function cellIndexASK(colASK, rowASK) {
-  return rowASK * colsMazeASK + colASK;
 }
 
 function kruskalFindASK(indexASK) {
@@ -1174,6 +1154,27 @@ function makeRectTopologyASK() {
       ];
     },
 
+    getKruskalEdgesASK(cellASK) {
+      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+      let edgesASK = [];
+
+      if (rectNeighborsASK.rightASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: rectNeighborsASK.rightASK
+        });
+      }
+
+      if (rectNeighborsASK.bottomASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: rectNeighborsASK.bottomASK
+        });
+      }
+
+      return edgesASK;
+    },
+
     areAdjacentCellsASK(cellAASK, cellBASK) {
       if (!cellAASK || !cellBASK) return false;
       return this.getNeighborsASK(cellAASK).includes(cellBASK);
@@ -1359,6 +1360,35 @@ function makeHexTopologyASK() {
       ];
     },
 
+    getKruskalEdgesASK(cellASK) {
+      if (!cellASK) return [];
+      let neighborsASK = getOffsetNeighborsASK(cellASK);
+      let edgesASK = [];
+
+      if (neighborsASK.rightASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: neighborsASK.rightASK
+        });
+      }
+
+      if (neighborsASK.bottomRightASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: neighborsASK.bottomRightASK
+        });
+      }
+
+      if (neighborsASK.bottomLeftASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: neighborsASK.bottomLeftASK
+        });
+      }
+
+      return edgesASK;
+    },
+
     areAdjacentCellsASK(cellAASK, cellBASK) {
       if (!cellAASK || !cellBASK) return false;
       return this.getNeighborsASK(cellAASK).includes(cellBASK);
@@ -1456,6 +1486,18 @@ function getNeighborCellsASK(cellASK) {
 
 function getBinaryTreeCandidatesASK(cellASK) {
   return topologyASK.getBinaryTreeCandidatesASK(cellASK);
+}
+
+function getKruskalEdgesASK() {
+  let edgesASK = [];
+
+  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
+    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
+      edgesASK.push(...topologyASK.getKruskalEdgesASK(mazeASK[rowASK][colASK]));
+    }
+  }
+
+  return edgesASK;
 }
 
 function getUnvisitedNeighborsASK(cellASK) {
