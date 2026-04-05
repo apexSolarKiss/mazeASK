@@ -192,3 +192,22 @@ This milestone is a design problem first.
 See [`docs/milestone-6-semantics.md`](docs/milestone-6-semantics.md) for the dedicated semantic design note.
 
 Its immediate outcome is a decision boundary, not an active implementation track.
+
+## Milestone 7 (Triangle topology in progress)
+
+This milestone is currently in progress.
+
+So far it includes:
+- a triangle topology peer alongside rectangular and hex
+- topology-owned triangle geometry and rendering support
+- triangle activation for the already portable neighbor-driven algorithms:
+  - Recursive Backtracker
+  - Prim
+  - Aldous-Broder
+  - Wilson
+
+This milestone does not yet claim triangle support for:
+- Binary Tree
+- Kruskal
+- Sidewinder
+- Eller
