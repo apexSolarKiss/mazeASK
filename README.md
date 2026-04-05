@@ -74,6 +74,7 @@ That structure is what you see.
 - `space` regenerate  
 - `r` recolor  
 - `h` toggle rectangular / hex topology  
+- `-` / `+` adjust speed  
 - drag horizontally to change speed  
 
 ### Density
