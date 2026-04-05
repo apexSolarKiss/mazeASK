@@ -193,21 +193,21 @@ See [`docs/milestone-6-semantics.md`](docs/milestone-6-semantics.md) for the ded
 
 Its immediate outcome is a decision boundary, not an active implementation track.
 
-## Milestone 7 (Triangle topology in progress)
+## Milestone 7 (Triangle topology completion)
 
-This milestone is currently in progress.
+This milestone is now complete.
 
-So far it includes:
+This milestone includes:
 - a triangle topology peer alongside rectangular and hex
 - topology-owned triangle geometry and rendering support
-- triangle activation for the already portable neighbor-driven algorithms:
+- triangle activation for:
   - Recursive Backtracker
+  - Binary Tree
   - Prim
   - Aldous-Broder
   - Wilson
+  - Kruskal
 
-This milestone does not yet claim triangle support for:
-- Binary Tree
-- Kruskal
+This milestone does not claim triangle support for:
 - Sidewinder
 - Eller
