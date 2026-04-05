@@ -90,9 +90,17 @@ That structure is what you see.
 
 Rectangular is the default baseline.
 
-Hex is currently opt-in through the `H` toggle and is implemented as a small proof-of-concept path for Recursive Backtracker only.
+Hex is opt-in through the `H` toggle.
 
-The other algorithms remain in their current rectangular-oriented state for now.
+Hex currently works for:
+- Recursive Backtracker
+- Binary Tree
+- Prim
+- Aldous–Broder
+- Wilson
+- Kruskal
+
+Sidewinder and Eller remain rectangular-only for now.
 
 ---
 
