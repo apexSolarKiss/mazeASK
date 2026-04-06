@@ -2045,34 +2045,66 @@ function initColorsASK() {
 }
 
 function renderColorsASK() {
-  colorBackgroundASK = random(colorsASK);
-  color1ASK = random(colorsASK);
+  // Stronger floor for the active cell, border, and overlay role against the background.
+  const color4FloorASK = 95;
+  // Lighter floor for wall readability without forcing every reroll into high contrast.
+  const color1FloorASK = 52;
+
+  colorBackgroundASK = pickPaletteColorASK(
+    (candidateASK) => !isBannedBackgroundColorASK(candidateASK)
+  );
+  color4ASK = pickPaletteColorASK(
+    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK) >= color4FloorASK,
+    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK)
+  );
+  color1ASK = pickPaletteColorASK(
+    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK) >= color1FloorASK,
+    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK)
+  );
   color2ASK = random(colorsASK);
   color3ASK = random(colorsASK);
-  color4ASK = random(colorsASK);
-
-  let attemptsASK = 0;
-  while (
-    attemptsASK < 20 &&
-    sameColorASK(colorBackgroundASK, color1ASK) &&
-    sameColorASK(colorBackgroundASK, color2ASK) &&
-    sameColorASK(colorBackgroundASK, color3ASK) &&
-    sameColorASK(colorBackgroundASK, color4ASK)
-  ) {
-    color1ASK = random(colorsASK);
-    color2ASK = random(colorsASK);
-    color3ASK = random(colorsASK);
-    color4ASK = random(colorsASK);
-    attemptsASK++;
-  }
 }
 
-function sameColorASK(colorAASK, colorBASK) {
+function isBannedBackgroundColorASK(colorASK) {
   return (
-    red(colorAASK) === red(colorBASK) &&
-    green(colorAASK) === green(colorBASK) &&
-    blue(colorAASK) === blue(colorBASK)
+    red(colorASK) === 190 &&
+    green(colorASK) === 63 &&
+    blue(colorASK) === 246
   );
+}
+
+function colorDistanceASK(colorAASK, colorBASK) {
+  let drASK = red(colorAASK) - red(colorBASK);
+  let dgASK = green(colorAASK) - green(colorBASK);
+  let dbASK = blue(colorAASK) - blue(colorBASK);
+  return sqrt(drASK * drASK + dgASK * dgASK + dbASK * dbASK);
+}
+
+function pickPaletteColorASK(isValidASK, scoreASK = null) {
+  let validColorsASK = colorsASK.filter(isValidASK);
+  if (validColorsASK.length > 0) {
+    return random(validColorsASK);
+  }
+
+  if (!scoreASK) {
+    return random(colorsASK);
+  }
+
+  let bestScoreASK = -Infinity;
+  let fallbackColorsASK = [];
+
+  for (let candidateASK of colorsASK) {
+    let candidateScoreASK = scoreASK(candidateASK);
+
+    if (candidateScoreASK > bestScoreASK) {
+      bestScoreASK = candidateScoreASK;
+      fallbackColorsASK = [candidateASK];
+    } else if (candidateScoreASK === bestScoreASK) {
+      fallbackColorsASK.push(candidateASK);
+    }
+  }
+
+  return random(fallbackColorsASK);
 }
 
 // =====================================================
