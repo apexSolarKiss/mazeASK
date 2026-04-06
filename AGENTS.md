@@ -1,5 +1,12 @@
 ## Architecture intent
 
+## Repo entry points
+
+For orientation:
+- `README.md` = repo overview
+- `docs/workflow-boundary.md` = repo-vs-external control boundary
+- `docs/architecture.md` = design intent
+
 mazeASK is evolving toward a three-layer architecture:
 
 - topology = graph structure
