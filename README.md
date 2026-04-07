@@ -97,9 +97,7 @@ That structure is what you see.
 
 Rectangular is the default baseline.
 
-Hex is opt-in through the `H` toggle.
-
-Hex currently works for:
+Hex is opt-in through the `H` toggle and currently works for:
 - Recursive Backtracker
 - Binary Tree
 - Prim
@@ -107,9 +105,7 @@ Hex currently works for:
 - Wilson
 - Kruskal
 
-Radial is opt-in through the `C` toggle.
-
-Radial currently works for:
+Radial is opt-in through the `C` toggle and currently works for:
 - Recursive Backtracker
 - Prim
 - Aldous–Broder
@@ -121,9 +117,7 @@ Radial does not yet claim support for:
 - Sidewinder
 - Eller
 
-Triangle is opt-in through the `T` toggle.
-
-Triangle currently works for:
+Triangle is opt-in through the `T` toggle and currently works for:
 - Recursive Backtracker
 - Binary Tree
 - Prim
