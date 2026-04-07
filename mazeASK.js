@@ -366,6 +366,9 @@ function configureCompositionASK() {
       if (activeTopologyModeASK === "hex") {
         colsMazeASK = 20;
         rowsMazeASK = 20;
+      } else if (activeTopologyModeASK === "radial") {
+        colsMazeASK = 96;
+        rowsMazeASK = 10;
       } else if (activeTopologyModeASK === "triangle") {
         colsMazeASK = 34;
         rowsMazeASK = 34;
@@ -391,6 +394,9 @@ function configureCompositionASK() {
       if (activeTopologyModeASK === "hex") {
         colsMazeASK = 28;
         rowsMazeASK = 16;
+      } else if (activeTopologyModeASK === "radial") {
+        colsMazeASK = 96;
+        rowsMazeASK = 8;
       } else if (activeTopologyModeASK === "triangle") {
         colsMazeASK = 46;
         rowsMazeASK = 24;
@@ -461,6 +467,8 @@ function initializeMazeASK() {
   topologyASK =
     getActiveTopologyModeASK() === "hex"
       ? makeHexTopologyASK()
+      : getActiveTopologyModeASK() === "radial"
+        ? makeRadialTopologyASK()
       : getActiveTopologyModeASK() === "triangle"
         ? makeTriangleTopologyASK()
         : makeRectTopologyASK();
@@ -533,7 +541,9 @@ function setupAlgorithmASK() {
   // - often makes shorter dead ends
   else if (algorithmASK === "prim") {
     algorithmLabelASK = "Prim";
-    currentCellASK = getTopologyMiddleCellASK();
+    currentCellASK = getActiveTopologyModeASK() === "radial"
+      ? getTopologyFirstCellASK()
+      : getTopologyMiddleCellASK();
     markVisitedASK(currentCellASK, 0);
     addFrontierNeighborsASK(currentCellASK);
   }
@@ -1486,6 +1496,358 @@ function makeHexTopologyASK() {
   };
 }
 
+function makeRadialTopologyASK() {
+  let ringCountASK = rowsMazeASK;
+  let maxCellsPerRingASK = colsMazeASK;
+  let cellsASK = [];
+
+  let radiusASK = min(mazeWidthNormASK, mazeHeightNormASK) * 0.5;
+  let ringThicknessASK = radiusASK / max(1, ringCountASK);
+  let centerASK = { xASK: 0, yASK: 0 };
+
+  mazeOriginXASK = -radiusASK;
+  mazeOriginYASK = -radiusASK;
+  cellSizeASK = ringThicknessASK;
+
+  function buildRingCountsASK() {
+    let countsASK = [];
+
+    for (let ringASK = 0; ringASK < ringCountASK; ringASK++) {
+      if (ringASK === 0) {
+        countsASK.push(1);
+        continue;
+      }
+
+      if (ringASK === 1) {
+        countsASK.push(min(maxCellsPerRingASK, 6));
+        continue;
+      }
+
+      let previousCountASK = countsASK[ringASK - 1];
+      let circumferenceASK = TWO_PI * (ringASK + 0.5);
+      let arcLengthASK = circumferenceASK / previousCountASK;
+      let shouldSplitASK = arcLengthASK > 1.8 && previousCountASK * 2 <= maxCellsPerRingASK;
+
+      countsASK.push(shouldSplitASK ? previousCountASK * 2 : previousCountASK);
+    }
+
+    return countsASK;
+  }
+
+  let ringCountsASK = buildRingCountsASK();
+  let ringsASK = [];
+
+  for (let ringASK = 0; ringASK < ringCountASK; ringASK++) {
+    let cellCountASK = ringCountsASK[ringASK];
+    let ringCellsASK = [];
+
+    for (let indexASK = 0; indexASK < cellCountASK; indexASK++) {
+      let cellASK = mazeASK[ringASK][indexASK];
+      cellASK.ringASK = ringASK;
+      cellASK.indexInRingASK = indexASK;
+      cellASK.ringCellCountASK = cellCountASK;
+      ringCellsASK.push(cellASK);
+      cellsASK.push(cellASK);
+    }
+
+    ringsASK.push(ringCellsASK);
+  }
+
+  function getRingCellASK(ringASK, indexASK) {
+    if (ringASK < 0 || ringASK >= ringsASK.length) return null;
+    let ringCellsASK = ringsASK[ringASK];
+    if (ringCellsASK.length === 0) return null;
+    let wrappedIndexASK = ((indexASK % ringCellsASK.length) + ringCellsASK.length) % ringCellsASK.length;
+    return ringCellsASK[wrappedIndexASK];
+  }
+
+  function getCellAnglesASK(cellASK, insetASK = 0) {
+    let countASK = max(1, cellASK.ringCellCountASK);
+    let startAngleASK = -HALF_PI + TWO_PI * (cellASK.indexInRingASK / countASK);
+    let endAngleASK = -HALF_PI + TWO_PI * ((cellASK.indexInRingASK + 1) / countASK);
+
+    if (insetASK <= 0 || cellASK.ringASK === 0) {
+      return { startAngleASK, endAngleASK };
+    }
+
+    let midRadiusASK = (cellASK.ringASK + 0.5) * ringThicknessASK;
+    let angleInsetASK = min((endAngleASK - startAngleASK) * 0.25, insetASK / max(midRadiusASK, 0.0001));
+
+    return {
+      startAngleASK: startAngleASK + angleInsetASK,
+      endAngleASK: endAngleASK - angleInsetASK
+    };
+  }
+
+  function getArcPointsASK(radiusASKValue, startAngleASK, endAngleASK) {
+    let pointCountASK = max(2, ceil(abs(endAngleASK - startAngleASK) / (PI / 18)) + 1);
+    let pointsASK = [];
+
+    for (let iASK = 0; iASK < pointCountASK; iASK++) {
+      let tASK = pointCountASK === 1 ? 0 : iASK / (pointCountASK - 1);
+      let angleASK = lerp(startAngleASK, endAngleASK, tASK);
+      pointsASK.push({
+        xASK: centerASK.xASK + cos(angleASK) * radiusASKValue,
+        yASK: centerASK.yASK + sin(angleASK) * radiusASKValue
+      });
+    }
+
+    return pointsASK;
+  }
+
+  function getRadialLinePointsASK(radiusAASK, radiusBASK, angleASK) {
+    return [
+      {
+        xASK: centerASK.xASK + cos(angleASK) * radiusAASK,
+        yASK: centerASK.yASK + sin(angleASK) * radiusAASK
+      },
+      {
+        xASK: centerASK.xASK + cos(angleASK) * radiusBASK,
+        yASK: centerASK.yASK + sin(angleASK) * radiusBASK
+      }
+    ];
+  }
+
+  function segmentsFromPointsASK(pointsASK, neighborASK) {
+    let segmentsASK = [];
+
+    for (let iASK = 0; iASK < pointsASK.length - 1; iASK++) {
+      segmentsASK.push({
+        neighborASK,
+        axASK: pointsASK[iASK].xASK,
+        ayASK: pointsASK[iASK].yASK,
+        bxASK: pointsASK[iASK + 1].xASK,
+        byASK: pointsASK[iASK + 1].yASK
+      });
+    }
+
+    return segmentsASK;
+  }
+
+  function getInwardNeighborASK(cellASK) {
+    if (!cellASK || cellASK.ringASK === 0) return null;
+
+    let innerCellsASK = ringsASK[cellASK.ringASK - 1];
+    let ratioASK = cellASK.ringCellCountASK / innerCellsASK.length;
+    return innerCellsASK[floor(cellASK.indexInRingASK / ratioASK)] || null;
+  }
+
+  function getOutwardNeighborsASK(cellASK) {
+    if (!cellASK || cellASK.ringASK >= ringsASK.length - 1) return [];
+
+    let outerCellsASK = ringsASK[cellASK.ringASK + 1];
+    let ratioASK = outerCellsASK.length / cellASK.ringCellCountASK;
+    let startIndexASK = floor(cellASK.indexInRingASK * ratioASK);
+    let endIndexASK = floor((cellASK.indexInRingASK + 1) * ratioASK);
+    let neighborsASK = [];
+
+    for (let indexASK = startIndexASK; indexASK < endIndexASK; indexASK++) {
+      let neighborASK = outerCellsASK[indexASK];
+      if (neighborASK) neighborsASK.push(neighborASK);
+    }
+
+    return neighborsASK;
+  }
+
+  function getRingNeighborsASK(cellASK) {
+    if (!cellASK || cellASK.ringCellCountASK <= 1) {
+      return { clockwiseASK: null, counterClockwiseASK: null };
+    }
+
+    return {
+      clockwiseASK: getRingCellASK(cellASK.ringASK, cellASK.indexInRingASK + 1),
+      counterClockwiseASK: getRingCellASK(cellASK.ringASK, cellASK.indexInRingASK - 1)
+    };
+  }
+
+  function getRadialPolygonASK(cellASK, insetASK = 0) {
+    if (!cellASK) return [];
+
+    let outerRadiusASK = max(0, (cellASK.ringASK + 1) * ringThicknessASK - insetASK);
+
+    if (cellASK.ringASK === 0) {
+      return getArcPointsASK(outerRadiusASK, -HALF_PI, 1.5 * PI).slice(0, -1);
+    }
+
+    let innerRadiusASK = max(0, cellASK.ringASK * ringThicknessASK + insetASK);
+    let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, insetASK);
+    let outerArcASK = getArcPointsASK(outerRadiusASK, startAngleASK, endAngleASK);
+    let innerArcASK = getArcPointsASK(innerRadiusASK, endAngleASK, startAngleASK);
+
+    return [...outerArcASK, ...innerArcASK];
+  }
+
+  function getRadialEdgeSegmentsASK(cellASK) {
+    if (!cellASK) return [];
+
+    let innerRadiusASK = cellASK.ringASK * ringThicknessASK;
+    let outerRadiusASK = (cellASK.ringASK + 1) * ringThicknessASK;
+    let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, 0);
+    let ringNeighborsASK = getRingNeighborsASK(cellASK);
+    let inwardNeighborASK = getInwardNeighborASK(cellASK);
+    let outwardNeighborsASK = getOutwardNeighborsASK(cellASK);
+    let edgeSegmentsASK = [];
+
+    if (cellASK.ringCellCountASK > 1) {
+      edgeSegmentsASK.push(
+        ...segmentsFromPointsASK(
+          getRadialLinePointsASK(innerRadiusASK, outerRadiusASK, endAngleASK),
+          ringNeighborsASK.clockwiseASK
+        )
+      );
+    }
+
+    if (cellASK.ringASK > 0) {
+      edgeSegmentsASK.push(
+        ...segmentsFromPointsASK(
+          getArcPointsASK(innerRadiusASK, startAngleASK, endAngleASK),
+          inwardNeighborASK
+        )
+      );
+    }
+
+    if (outwardNeighborsASK.length === 0) {
+      edgeSegmentsASK.push(
+        ...segmentsFromPointsASK(
+          getArcPointsASK(outerRadiusASK, startAngleASK, endAngleASK),
+          null
+        )
+      );
+    } else {
+      let outerCountASK = outwardNeighborsASK.length;
+      for (let iASK = 0; iASK < outerCountASK; iASK++) {
+        let segmentStartASK = lerp(startAngleASK, endAngleASK, iASK / outerCountASK);
+        let segmentEndASK = lerp(startAngleASK, endAngleASK, (iASK + 1) / outerCountASK);
+        edgeSegmentsASK.push(
+          ...segmentsFromPointsASK(
+            getArcPointsASK(outerRadiusASK, segmentStartASK, segmentEndASK),
+            outwardNeighborsASK[iASK]
+          )
+        );
+      }
+    }
+
+    return edgeSegmentsASK;
+  }
+
+  return {
+    modeASK: "radial",
+
+    getNeighborCellASK(cellASK, directionASK) {
+      if (!cellASK) return null;
+
+      if (directionASK === "inwardASK") {
+        return getInwardNeighborASK(cellASK);
+      }
+      if (directionASK === "outwardASK") {
+        return getOutwardNeighborsASK(cellASK)[0] || null;
+      }
+      if (directionASK === "clockwiseASK") {
+        return getRingNeighborsASK(cellASK).clockwiseASK;
+      }
+      if (directionASK === "counterClockwiseASK") {
+        return getRingNeighborsASK(cellASK).counterClockwiseASK;
+      }
+
+      return null;
+    },
+
+    getRectNeighborsASK() {
+      return {
+        topASK: null,
+        rightASK: null,
+        bottomASK: null,
+        leftASK: null
+      };
+    },
+
+    getNeighborsASK(cellASK) {
+      if (!cellASK) return [];
+
+      let ringNeighborsASK = getRingNeighborsASK(cellASK);
+      return [
+        getInwardNeighborASK(cellASK),
+        ...getOutwardNeighborsASK(cellASK),
+        ringNeighborsASK.clockwiseASK,
+        ringNeighborsASK.counterClockwiseASK
+      ].filter(Boolean);
+    },
+
+    getCellsASK() {
+      return cellsASK;
+    },
+
+    getBinaryTreeCandidatesASK() {
+      return [];
+    },
+
+    getKruskalEdgesASK(cellASK) {
+      if (!cellASK) return [];
+
+      let edgesASK = [];
+      let ringNeighborsASK = getRingNeighborsASK(cellASK);
+
+      if (ringNeighborsASK.clockwiseASK) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: ringNeighborsASK.clockwiseASK
+        });
+      }
+
+      for (let outwardNeighborASK of getOutwardNeighborsASK(cellASK)) {
+        edgesASK.push({
+          cellAASK: cellASK,
+          cellBASK: outwardNeighborASK
+        });
+      }
+
+      return edgesASK;
+    },
+
+    areAdjacentCellsASK(cellAASK, cellBASK) {
+      if (!cellAASK || !cellBASK) return false;
+      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    },
+
+    getCellCenterASK(cellASK) {
+      if (!cellASK) return centerASK;
+      if (cellASK.ringASK === 0) return centerASK;
+
+      let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, 0);
+      let midAngleASK = (startAngleASK + endAngleASK) * 0.5;
+      let midRadiusASK = (cellASK.ringASK + 0.5) * ringThicknessASK;
+
+      return {
+        x: centerASK.xASK + cos(midAngleASK) * midRadiusASK,
+        y: centerASK.yASK + sin(midAngleASK) * midRadiusASK
+      };
+    },
+
+    getCellPolygonASK(cellASK, insetASK = 0) {
+      return getRadialPolygonASK(cellASK, insetASK);
+    },
+
+    getCellEdgeSegmentsASK(cellASK) {
+      return getRadialEdgeSegmentsASK(cellASK);
+    },
+
+    getBorderSegmentsASK() {
+      let borderSegmentsASK = [];
+
+      for (let cellASK of cellsASK) {
+        let edgeSegmentsASK = this.getCellEdgeSegmentsASK(cellASK);
+        for (let edgeASK of edgeSegmentsASK) {
+          if (!edgeASK.neighborASK) {
+            borderSegmentsASK.push(edgeASK);
+          }
+        }
+      }
+
+      return borderSegmentsASK;
+    }
+  };
+}
+
 function makeTriangleTopologyASK() {
   let cellsASK = mazeASK.flat();
   const sqrtThreeASK = sqrt(3);
@@ -1858,7 +2220,7 @@ function setAlgorithmASK(nameASK) {
 
 function setTopologyASK(modeASK) {
   topologyModeASK =
-    modeASK === "hex" || modeASK === "triangle"
+    modeASK === "hex" || modeASK === "triangle" || modeASK === "radial"
       ? modeASK
       : "rect";
   manualColsASK = null;
@@ -1888,9 +2250,21 @@ function isTriangleEnabledAlgorithmASK() {
   );
 }
 
+function isRadialEnabledAlgorithmASK() {
+  return (
+    algorithmASK === "recursiveBacktracker" ||
+    algorithmASK === "prim" ||
+    algorithmASK === "aldousBroder" ||
+    algorithmASK === "wilson"
+  );
+}
+
 function getActiveTopologyModeASK() {
   if (topologyModeASK === "hex" && isHexEnabledAlgorithmASK()) {
     return "hex";
+  }
+  if (topologyModeASK === "radial" && isRadialEnabledAlgorithmASK()) {
+    return "radial";
   }
   if (topologyModeASK === "triangle" && isTriangleEnabledAlgorithmASK()) {
     return "triangle";
@@ -2186,6 +2560,10 @@ function keyPressed() {
 
   if (key === "h" || key === "H") {
     setTopologyASK(topologyModeASK === "hex" ? "rect" : "hex");
+  }
+
+  if (key === "c" || key === "C") {
+    setTopologyASK(topologyModeASK === "radial" ? "rect" : "radial");
   }
 
   if (key === "t" || key === "T") {
