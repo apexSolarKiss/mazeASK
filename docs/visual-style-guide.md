@@ -112,7 +112,7 @@ They should not feel like UI bubbles, playful helper text, or narrative captions
 
 ### Preference for abstraction
 
-Ceteris paribus, abstract and minimal labels are preferred over literal descriptive labels when both are legible.
+*Ceteris paribus*, abstract and minimal labels are preferred over literal descriptive labels when both are legible.
 
 For example, a compact structural readout is usually better than a verbose explanatory tag if the shorter version still communicates the necessary distinction.
 
@@ -176,15 +176,15 @@ Subtle beauty is allowed as long as the relevant structure remains readable.
 
 The current palette should be understood as the following named swatches:
 
-- white = `color(255, 255, 255)`
-- smokey lavender 1 = `color(139, 121, 162)`
-- warm lavender 1 = `color(193, 154, 216)`
-- warm lavender 2 = `color(164, 146, 200)`
-- warm lavender 4 = `color(174, 135, 194)`
-- warm lavender 5 = `color(226, 211, 240)`
-- smokey plum 1 = `color(132, 80, 155)`
-- smokey plum 2 = `color(114, 85, 131)`
-- violet 1 = `color(190, 63, 246)`
+- `#FFFFFF` // `rgb(255, 255, 255)` // white
+- `#8B79A2` // `rgb(139, 121, 162)` // smokey lavender 1
+- `#C19AD8` // `rgb(193, 154, 216)` // warm lavender 1
+- `#A492C8` // `rgb(164, 146, 200)` // warm lavender 2
+- `#AE87C2` // `rgb(174, 135, 194)` // warm lavender 4
+- `#E2D3F0` // `rgb(226, 211, 240)` // warm lavender 5
+- `#84509B` // `rgb(132, 80, 155)` // smokey plum 1
+- `#725583` // `rgb(114, 85, 131)` // smokey plum 2
+- `#BE3FF6` // `rgb(190, 63, 246)` // violet 1
 
 Some swatches currently appear more than once in code.
 
