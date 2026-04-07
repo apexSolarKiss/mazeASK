@@ -110,10 +110,10 @@ Radial is opt-in through the `C` toggle and currently works for:
 - Prim
 - Aldous–Broder
 - Wilson
+- Kruskal
 
 Radial does not yet claim support for:
 - Binary Tree
-- Kruskal
 - Sidewinder
 - Eller
 
