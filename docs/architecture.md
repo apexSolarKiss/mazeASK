@@ -2,6 +2,8 @@
 
 ## Goal
 
+For a concept-first explanation of how mazeASK generalized from rectangular wall-thinking into a topology-driven maze lab, see [`docs/from-rectangular-to-topology.md`](docs/from-rectangular-to-topology.md).
+
 mazeASK is moving toward a graph-first architecture in which:
 
 - Topology defines possible structure
