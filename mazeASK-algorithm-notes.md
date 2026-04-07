@@ -159,15 +159,6 @@ Radial does not yet claim support for:
 
 Sidewinder and Eller remain intentionally rectangular-only for now.
 
-## Current controls
-
-- `1` through `8` switch algorithms
-- `space` regenerates the maze
-- `r` rerolls the palette
-- `h` toggles rectangular / hex topology
-- `c` toggles rectangular / radial topology
-- `t` toggles rectangular / triangle topology
-
 ---
 
 # Algorithms implemented in `mazeASK`
@@ -544,6 +535,11 @@ This is another random-walk algorithm that also produces a **uniform spanning tr
 
 ## Recolor
 - `r`
+
+## Topology
+- `h` toggle rectangular/hex
+- `c` toggle rectangular/radial
+- `t` toggle rectangular/triangle
 
 ---
 

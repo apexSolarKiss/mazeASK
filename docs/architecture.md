@@ -236,7 +236,7 @@ This milestone does not claim radial support for:
 - Sidewinder
 - Eller
 
-It also does not claim:
+This milestone also does not claim:
 - a `getCellASK(col,row)` redesign
 - a broad storage abstraction rewrite
 - any change in algorithm ownership
