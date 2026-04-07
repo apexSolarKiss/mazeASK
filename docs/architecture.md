@@ -211,3 +211,32 @@ This milestone includes:
 This milestone does not claim triangle support for:
 - Sidewinder
 - Eller
+
+## Milestone 8 (Variable-cell-count radial topology)
+
+This milestone adds a fourth peer topology alongside rectangular, hex, and triangle.
+
+This milestone includes:
+- a variable-cell-count radial topology built on the topology-owned cell enumeration seam
+- topology-owned radial cell construction, adjacency, geometry, edge segments, and border segments
+- radial activation for:
+  - Recursive Backtracker
+  - Prim
+  - Aldous-Broder
+  - Wilson
+
+This milestone proves that:
+- the shared topology seam can support an uneven-ring radial structure without redesigning Maze State
+- neighbor-driven algorithms can run on a real radial topology through topology-owned adjacency and geometry
+- rendering can stay link-derived while topology owns radial boundary structure
+
+This milestone does not claim radial support for:
+- Binary Tree
+- Kruskal
+- Sidewinder
+- Eller
+
+It also does not claim:
+- a `getCellASK(col,row)` redesign
+- a broad storage abstraction rewrite
+- any change in algorithm ownership

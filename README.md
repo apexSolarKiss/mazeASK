@@ -78,6 +78,7 @@ That structure is what you see.
 - `space` regenerate  
 - `r` recolor  
 - `h` toggle rectangular / hex topology  
+- `c` toggle rectangular / radial topology  
 - `t` toggle rectangular / triangle topology  
 - `-` / `+` adjust speed  
 - drag horizontally to change speed  
@@ -105,6 +106,20 @@ Hex currently works for:
 - Aldous–Broder
 - Wilson
 - Kruskal
+
+Radial is opt-in through the `C` toggle.
+
+Radial currently works for:
+- Recursive Backtracker
+- Prim
+- Aldous–Broder
+- Wilson
+
+Radial does not yet claim support for:
+- Binary Tree
+- Kruskal
+- Sidewinder
+- Eller
 
 Triangle is opt-in through the `T` toggle.
 

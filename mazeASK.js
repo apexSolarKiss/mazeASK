@@ -367,6 +367,7 @@ function configureCompositionASK() {
         colsMazeASK = 20;
         rowsMazeASK = 20;
       } else if (activeTopologyModeASK === "radial") {
+        // Radial density is expressed as max cells per ring and ring count.
         colsMazeASK = 96;
         rowsMazeASK = 10;
       } else if (activeTopologyModeASK === "triangle") {
@@ -395,6 +396,7 @@ function configureCompositionASK() {
         colsMazeASK = 28;
         rowsMazeASK = 16;
       } else if (activeTopologyModeASK === "radial") {
+        // Radial defaults keep enough rings for structure without overcrowding the outer arc.
         colsMazeASK = 96;
         rowsMazeASK = 8;
       } else if (activeTopologyModeASK === "triangle") {
@@ -1526,6 +1528,7 @@ function makeRadialTopologyASK() {
       let previousCountASK = countsASK[ringASK - 1];
       let circumferenceASK = TWO_PI * (ringASK + 0.5);
       let arcLengthASK = circumferenceASK / previousCountASK;
+      // Split only when the next ring would become too stretched at the current density.
       let shouldSplitASK = arcLengthASK > 1.8 && previousCountASK * 2 <= maxCellsPerRingASK;
 
       countsASK.push(shouldSplitASK ? previousCountASK * 2 : previousCountASK);
@@ -1542,6 +1545,7 @@ function makeRadialTopologyASK() {
     let ringCellsASK = [];
 
     for (let indexASK = 0; indexASK < cellCountASK; indexASK++) {
+      // The prebuilt matrix stays in place, but only the true ring cells become part of the radial topology.
       let cellASK = mazeASK[ringASK][indexASK];
       cellASK.ringASK = ringASK;
       cellASK.indexInRingASK = indexASK;
@@ -1628,6 +1632,7 @@ function makeRadialTopologyASK() {
     if (!cellASK || cellASK.ringASK === 0) return null;
 
     let innerCellsASK = ringsASK[cellASK.ringASK - 1];
+    // Uneven rings map each outer wedge back to the inner wedge that spans the same angle.
     let ratioASK = cellASK.ringCellCountASK / innerCellsASK.length;
     return innerCellsASK[floor(cellASK.indexInRingASK / ratioASK)] || null;
   }
@@ -1636,6 +1641,7 @@ function makeRadialTopologyASK() {
     if (!cellASK || cellASK.ringASK >= ringsASK.length - 1) return [];
 
     let outerCellsASK = ringsASK[cellASK.ringASK + 1];
+    // A ring can fan out to multiple outer neighbors when the next ring has more cells.
     let ratioASK = outerCellsASK.length / cellASK.ringCellCountASK;
     let startIndexASK = floor(cellASK.indexInRingASK * ratioASK);
     let endIndexASK = floor((cellASK.indexInRingASK + 1) * ratioASK);
@@ -1689,6 +1695,7 @@ function makeRadialTopologyASK() {
     let edgeSegmentsASK = [];
 
     if (cellASK.ringCellCountASK > 1) {
+      // Same-ring wall ownership stays canonical by emitting only the clockwise boundary.
       edgeSegmentsASK.push(
         ...segmentsFromPointsASK(
           getRadialLinePointsASK(innerRadiusASK, outerRadiusASK, endAngleASK),
@@ -2251,6 +2258,7 @@ function isTriangleEnabledAlgorithmASK() {
 }
 
 function isRadialEnabledAlgorithmASK() {
+  // Radial milestone 1 stays limited to the algorithms that already run cleanly through neighbors + links.
   return (
     algorithmASK === "recursiveBacktracker" ||
     algorithmASK === "prim" ||
@@ -2563,6 +2571,7 @@ function keyPressed() {
   }
 
   if (key === "c" || key === "C") {
+    // C keeps radial as a separate opt-in topology toggle alongside hex and triangle.
     setTopologyASK(topologyModeASK === "radial" ? "rect" : "radial");
   }
 
