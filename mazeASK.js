@@ -2258,12 +2258,13 @@ function isTriangleEnabledAlgorithmASK() {
 }
 
 function isRadialEnabledAlgorithmASK() {
-  // Radial milestone 1 stays limited to the algorithms that already run cleanly through neighbors + links.
+  // Radial activation stays limited to the algorithms that already run cleanly through neighbors + links.
   return (
     algorithmASK === "recursiveBacktracker" ||
     algorithmASK === "prim" ||
     algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson"
+    algorithmASK === "wilson" ||
+    algorithmASK === "kruskal"
   );
 }
 

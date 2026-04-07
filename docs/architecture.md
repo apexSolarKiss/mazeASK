@@ -224,6 +224,7 @@ This milestone includes:
   - Prim
   - Aldous-Broder
   - Wilson
+  - Kruskal
 
 This milestone proves that:
 - the shared topology seam can support an uneven-ring radial structure without redesigning Maze State
@@ -232,7 +233,6 @@ This milestone proves that:
 
 This milestone does not claim radial support for:
 - Binary Tree
-- Kruskal
 - Sidewinder
 - Eller
 

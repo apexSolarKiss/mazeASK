@@ -150,10 +150,10 @@ Radial currently works for:
 - Prim
 - Aldous-Broder
 - Wilson
+- Kruskal
 
 Radial does not yet claim support for:
 - Binary Tree
-- Kruskal
 - Sidewinder
 - Eller
 
