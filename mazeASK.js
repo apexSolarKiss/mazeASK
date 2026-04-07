@@ -497,7 +497,7 @@ function setupAlgorithmASK() {
   // - not very balanced or uniform
   if (algorithmASK === "recursiveBacktracker") {
     algorithmLabelASK = "Recursive Backtracker";
-    currentCellASK = mazeASK[0][0];
+    currentCellASK = getTopologyFirstCellASK();
     markVisitedASK(currentCellASK, 0);
   }
 
@@ -533,7 +533,7 @@ function setupAlgorithmASK() {
   // - often makes shorter dead ends
   else if (algorithmASK === "prim") {
     algorithmLabelASK = "Prim";
-    currentCellASK = mazeASK[floor(rowsMazeASK / 2)][floor(colsMazeASK / 2)];
+    currentCellASK = getTopologyMiddleCellASK();
     markVisitedASK(currentCellASK, 0);
     addFrontierNeighborsASK(currentCellASK);
   }
@@ -884,20 +884,17 @@ function initializeKruskalASK() {
   kruskalParentASK = {};
   kruskalRankASK = {};
 
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      let cellASK = mazeASK[rowASK][colASK];
-      let cellIdASK = cellKeyASK(cellASK);
-      kruskalParentASK[cellIdASK] = cellIdASK;
-      kruskalRankASK[cellIdASK] = 0;
-    }
+  for (let cellASK of getTopologyCellsASK()) {
+    let cellIdASK = cellKeyASK(cellASK);
+    kruskalParentASK[cellIdASK] = cellIdASK;
+    kruskalRankASK[cellIdASK] = 0;
   }
 
   kruskalWallsASK = getKruskalEdgesASK();
 
   shuffleArrayASK(kruskalWallsASK);
   kruskalStepIndexASK = 0;
-  currentCellASK = mazeASK[0][0];
+  currentCellASK = getTopologyFirstCellASK();
 }
 
 function stepKruskalASK() {
@@ -954,10 +951,9 @@ function kruskalUnionASK(aASK, bASK) {
 }
 
 function markAllCellsVisitedASK() {
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      markVisitedASK(mazeASK[rowASK][colASK], rowASK + colASK);
-    }
+  let cellsASK = getTopologyCellsASK();
+  for (let iASK = 0; iASK < cellsASK.length; iASK++) {
+    markVisitedASK(cellsASK[iASK], iASK);
   }
 }
 
@@ -966,14 +962,14 @@ function markAllCellsVisitedASK() {
 // =====================================================
 
 function initializeWilsonASK() {
-  let seedASK = mazeASK[0][0];
+  let seedASK = getTopologyFirstCellASK();
   markVisitedASK(seedASK, 0);
   currentCellASK = seedASK;
   wilsonModeASK = "chooseStart";
 }
 
 function stepWilsonASK() {
-  if (visitedCountASK >= rowsMazeASK * colsMazeASK) {
+  if (visitedCountASK >= getTopologyCellsASK().length) {
     mazeCompleteASK = true;
     return;
   }
@@ -1048,13 +1044,13 @@ function stepWilsonASK() {
 // =====================================================
 
 function initializeAldousBroderASK() {
-  aldousCurrentASK = mazeASK[0][0];
+  aldousCurrentASK = getTopologyFirstCellASK();
   currentCellASK = aldousCurrentASK;
   markVisitedASK(aldousCurrentASK, 0);
 }
 
 function stepAldousBroderASK() {
-  if (visitedCountASK >= rowsMazeASK * colsMazeASK) {
+  if (visitedCountASK >= getTopologyCellsASK().length) {
     mazeCompleteASK = true;
     return;
   }
@@ -1097,6 +1093,7 @@ function addFrontierNeighborsASK(cellASK) {
 }
 
 function makeRectTopologyASK() {
+  let cellsASK = mazeASK.flat();
   cellSizeASK = min(
     mazeWidthNormASK / colsMazeASK,
     mazeHeightNormASK / rowsMazeASK
@@ -1152,6 +1149,10 @@ function makeRectTopologyASK() {
       if (rectNeighborsASK.leftASK) neighborsASK.push(rectNeighborsASK.leftASK);
 
       return neighborsASK;
+    },
+
+    getCellsASK() {
+      return cellsASK;
     },
 
     getBinaryTreeCandidatesASK(cellASK) {
@@ -1277,6 +1278,7 @@ function makeRectTopologyASK() {
 }
 
 function makeHexTopologyASK() {
+  let cellsASK = mazeASK.flat();
   const sqrtThreeASK = sqrt(3);
   const hexRadiusASK = min(
     mazeWidthNormASK / (sqrtThreeASK * (colsMazeASK + 0.5)),
@@ -1357,6 +1359,10 @@ function makeHexTopologyASK() {
         neighborsASK.leftASK,
         neighborsASK.topLeftASK
       ].filter(Boolean);
+    },
+
+    getCellsASK() {
+      return cellsASK;
     },
 
     getBinaryTreeCandidatesASK(cellASK) {
@@ -1481,6 +1487,7 @@ function makeHexTopologyASK() {
 }
 
 function makeTriangleTopologyASK() {
+  let cellsASK = mazeASK.flat();
   const sqrtThreeASK = sqrt(3);
   const triangleHeightASKFactorASK = sqrtThreeASK * 0.5;
   const triangleSideASK = min(
@@ -1598,6 +1605,10 @@ function makeTriangleTopologyASK() {
         neighborsASK.rightASK,
         neighborsASK.verticalASK
       ].filter(Boolean);
+    },
+
+    getCellsASK() {
+      return cellsASK;
     },
 
     getBinaryTreeCandidatesASK(cellASK) {
@@ -1737,6 +1748,10 @@ function getNeighborCellsASK(cellASK) {
   return topologyASK.getNeighborsASK(cellASK);
 }
 
+function getTopologyCellsASK() {
+  return topologyASK.getCellsASK();
+}
+
 function getBinaryTreeCandidatesASK(cellASK) {
   return topologyASK.getBinaryTreeCandidatesASK(cellASK);
 }
@@ -1744,10 +1759,8 @@ function getBinaryTreeCandidatesASK(cellASK) {
 function getKruskalEdgesASK() {
   let edgesASK = [];
 
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      edgesASK.push(...topologyASK.getKruskalEdgesASK(mazeASK[rowASK][colASK]));
-    }
+  for (let cellASK of getTopologyCellsASK()) {
+    edgesASK.push(...topologyASK.getKruskalEdgesASK(cellASK));
   }
 
   return edgesASK;
@@ -1814,13 +1827,22 @@ function removeWallsASK(cellAASK, cellBASK) {
 
 function getRandomUnvisitedCellASK() {
   let optionsASK = [];
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      let cellASK = mazeASK[rowASK][colASK];
-      if (!cellASK.visitedASK) optionsASK.push(cellASK);
-    }
+  for (let cellASK of getTopologyCellsASK()) {
+    if (!cellASK.visitedASK) optionsASK.push(cellASK);
   }
   return optionsASK.length > 0 ? random(optionsASK) : null;
+}
+
+function getTopologyFirstCellASK() {
+  let cellsASK = getTopologyCellsASK();
+  return cellsASK.length > 0 ? cellsASK[0] : null;
+}
+
+function getTopologyMiddleCellASK() {
+  let cellsASK = getTopologyCellsASK();
+  return cellsASK.length > 0
+    ? cellsASK[floor(cellsASK.length / 2)]
+    : null;
 }
 
 function cellKeyASK(cellASK) {
@@ -1892,32 +1914,29 @@ function shuffleArrayASK(arrayASK) {
 function drawVisitedFieldsASK() {
   noStroke();
 
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      let cellASK = mazeASK[rowASK][colASK];
-      if (!cellASK.visitedASK) continue;
+  for (let cellASK of getTopologyCellsASK()) {
+    if (!cellASK.visitedASK) continue;
 
-      let tASK =
-        cellASK.visitOrderASK <= 0
-          ? 0
-          : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
+    let tASK =
+      cellASK.visitOrderASK <= 0
+        ? 0
+        : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
 
-      let fillColorASK = colorLerpASK(
-        color2ASK,
-        color3ASK,
-        tASK,
-        mazeCompleteASK ? 34 : 20
-      );
+    let fillColorASK = colorLerpASK(
+      color2ASK,
+      color3ASK,
+      tASK,
+      mazeCompleteASK ? 34 : 20
+    );
 
-      fill(
-        red(fillColorASK),
-        green(fillColorASK),
-        blue(fillColorASK),
-        alpha(fillColorASK)
-      );
+    fill(
+      red(fillColorASK),
+      green(fillColorASK),
+      blue(fillColorASK),
+      alpha(fillColorASK)
+    );
 
-      drawCellPolygonASK(topologyASK.getCellPolygonASK(cellASK));
-    }
+    drawCellPolygonASK(topologyASK.getCellPolygonASK(cellASK));
   }
 
   noFill();
@@ -1926,10 +1945,8 @@ function drawVisitedFieldsASK() {
 function drawWallsASK() {
   strokeWeight(weightASK);
 
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      drawCellWallsASK(mazeASK[rowASK][colASK]);
-    }
+  for (let cellASK of getTopologyCellsASK()) {
+    drawCellWallsASK(cellASK);
   }
 }
 
