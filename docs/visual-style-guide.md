@@ -156,6 +156,29 @@ Hierarchy should be created first through:
 
 Only after those are working should color, opacity, or weight be used to reinforce emphasis.
 
+### Canonical aspect ratios
+
+Prefer canonical aspect ratios across mazeASK visual outputs for the sake of consistency.
+
+The canonical aspect ratios are:
+
+- `1:1`
+- `4:3`
+- `16:9`
+
+Using a small canonical set helps preserve structural consistency across outputs and reinforces the broader visual language of restraint, order, and repeatable layout logic.
+
+In general, orientation can vary by context.
+
+For didactic diagrams and visual explainers, horizontal composition will usually be preferred for layout and readability, but vertical composition is acceptable when the content genuinely benefits from it.
+
+For rendered output mode in the sketch, prefer horizontal outputs only:
+- `1:1`
+- `4:3`
+- `16:9`
+
+Aspect ratio should support clarity, structural legibility, and intentional presentation, not novelty.
+
 ## Color Philosophy
 
 ### Palette logic
