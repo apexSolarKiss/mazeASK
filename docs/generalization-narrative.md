@@ -178,7 +178,7 @@ The lesson is:
 > Some algorithms are structurally portable through neighbors and links.  
 > Others depend on topology-specific semantics that must be designed honestly.
 
-## Why `getCellsASK()` mattered
+## Why `getCells()` mattered
 
 Once the repo moved past matrix-like topologies, even shared iteration became a structural issue.
 
@@ -190,7 +190,7 @@ That assumption quietly breaks once a topology has:
 - sparse structure
 - non-matrix organization
 
-The topology-owned cell enumeration seam, `getCellsASK()`, mattered because it moved shared iteration onto topology truth.
+The topology-owned cell enumeration seam, `getCells()`, mattered because it moved shared iteration onto topology truth.
 
 That change did not just support a new helper.
 
