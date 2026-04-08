@@ -31,7 +31,7 @@ Same grid. Same constraints. Different rules.
 
 `mazeASK.js` is structured as a single p5.js sketch with three phases: initialization, incremental generation, and rendering. The `step...()` functions contain the algorithm-specific generation logic.
 
-For the conceptual generalization path from rectangular mazes to topology-owned structure, see [docs/generalization-narrative.md](docs/generalization-narrative.md).
+For the conceptual generalization path from rectangular mazes to topology-owned structure, see [docs/didactic/generalization-narrative.md](docs/didactic/generalization-narrative.md).
 
 ---
 
@@ -46,7 +46,7 @@ For the conceptual generalization path from rectangular mazes to topology-owned 
 - Wilson  
 - Aldous–Broder  
 
-See [mazeASK-algorithm-notes.md](mazeASK-algorithm-notes.md) for a breakdown of each algorithm and what it produces.
+See [docs/didactic/algorithm-notes.md](docs/didactic/algorithm-notes.md) for a breakdown of each algorithm and what it produces.
 
 ---
 

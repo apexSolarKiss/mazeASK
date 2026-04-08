@@ -159,6 +159,19 @@ Radial does not yet claim support for:
 
 Sidewinder and Eller remain intentionally rectangular-only for now.
 
+## Portability crosswalk
+
+| Algorithm | Rect | Hex | Triangle | Radial | Note |
+| --- | --- | --- | --- | --- | --- |
+| Recursive Backtracker | yes | yes | yes | yes | broadly portable through neighbors + links |
+| Binary Tree | yes | yes | yes | no | radial remains open because preferred-direction choice is semantic, not plumbing |
+| Prim | yes | yes | yes | yes | frontier growth ports through neighbors + links |
+| Sidewinder | yes | no | no | no | sweep semantics remain rectangular |
+| Eller | yes | no | no | no | row/layer semantics remain rectangular |
+| Kruskal | yes | yes | yes | yes | ports once topology owns candidate edges |
+| Wilson | yes | yes | yes | yes | loop-erased walk ports through adjacency |
+| Aldous-Broder | yes | yes | yes | yes | random-walk structure ports through adjacency |
+
 ---
 
 # Algorithms implemented in `mazeASK`
@@ -517,8 +530,14 @@ This is another random-walk algorithm that also produces a **uniform spanning tr
 - `7` Wilson
 - `8` Aldous-Broder
 
+## Save output
+- `click` save PNG output
+
 ## Regenerate
-- `space`
+- `space` regenerate
+
+## Recolor
+- `r` recolor
 
 ## Density
 - `[` decrease
@@ -527,14 +546,10 @@ This is another random-walk algorithm that also produces a **uniform spanning tr
 ## Speed
 - `-` slower
 - `+` faster
-- horizontal drag changes speed interactively
 
 ## Output mode
-- `o` toggle viewing/output mode
-- `p` toggle square/widescreen preset
-
-## Recolor
-- `r`
+- `o` toggle output mode
+- `p` cycle square / `4:3` / widescreen
 
 ## Topology
 - `h` toggle rectangular/hex

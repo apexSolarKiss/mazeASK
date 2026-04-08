@@ -74,6 +74,17 @@ Once the maze is understood that way, visible walls become a derived rendering o
 
 This is what makes generalization possible.
 
+## What was generalized
+
+The generalization move was not just "add more shapes."
+
+It was:
+
+- rectangular wall-thinking to topology plus carved links
+- matrix iteration to topology-owned cell enumeration
+- renderer-specific geometry to peer topology ownership
+- selective portability instead of pretending every algorithm generalizes equally
+
 ## The topology seam and ownership split
 
 mazeASK now separates four concerns:
