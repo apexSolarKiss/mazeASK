@@ -186,11 +186,9 @@ The current palette should be understood as the following named swatches:
 - `#725583` // `rgb(114, 85, 131)` // smokey plum 2
 - `#BE3FF6` // `rgb(190, 63, 246)` // violet 1
 
-Some swatches currently appear more than once in code.
+Some swatches carry more weight than others.
 
-That should be interpreted as **weighting**, not as a larger named swatch list.
-
-In future cleanup work, those repetitions should be represented explicitly as weights rather than as duplicate palette entries.
+That weighting is represented explicitly in code.
 
 ### Current contrast-floor parameters
 
