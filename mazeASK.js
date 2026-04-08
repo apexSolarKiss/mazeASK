@@ -159,6 +159,7 @@ let aspectMode = "widescreen";
 
 const renderPresets = {
   square: [2160, 2160],
+  fourThree: [2880, 2160],
   widescreen: [3840, 2160]
 };
 
@@ -2633,7 +2634,13 @@ function keyPressed() {
   }
 
   if (key === "p" || key === "P") {
-    aspectMode = aspectMode === "square" ? "widescreen" : "square";
+    if (aspectMode === "square") {
+      aspectMode = "fourThree";
+    } else if (aspectMode === "fourThree") {
+      aspectMode = "widescreen";
+    } else {
+      aspectMode = "square";
+    }
     if (output) {
       applyCanvasSize();
       initializeMaze();

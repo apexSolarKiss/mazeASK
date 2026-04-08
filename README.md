@@ -91,7 +91,7 @@ That structure is what you see.
 
 ### Output
 - `o` toggle output mode  
-- `p` toggle square / widescreen  
+- `p` cycle square / `4:3` / widescreen  
 
 ---
 
