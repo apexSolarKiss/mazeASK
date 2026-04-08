@@ -199,6 +199,7 @@ Subtle beauty is allowed as long as the relevant structure remains readable.
 
 The current palette should be understood as the following named swatches:
 
+- `#D4C6E1` // `rgb(212, 198, 225)` // lavenderASK
 - `#FFFFFF` // `rgb(255, 255, 255)` // white
 - `#8B79A2` // `rgb(139, 121, 162)` // smokey lavender 1
 - `#C19AD8` // `rgb(193, 154, 216)` // warm lavender 1

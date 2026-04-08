@@ -2407,6 +2407,7 @@ function drawLabOverlay() {
 
 function initColorsASK() {
   paletteSwatchesASK = [
+    { nameASK: "lavenderASK", rgbASK: [212, 198, 225], weightASK: 2 },
     { nameASK: "white", rgbASK: [255, 255, 255], weightASK: 1 },
     { nameASK: "smokey lavender 1", rgbASK: [139, 121, 162], weightASK: 2 },
     { nameASK: "warm lavender 1", rgbASK: [193, 154, 216], weightASK: 1 },
