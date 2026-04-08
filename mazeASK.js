@@ -169,6 +169,7 @@ const renderPresetsASK = {
 let colorBackgroundASK, color1ASK, color2ASK, color3ASK, color4ASK;
 let sizeASK;
 let weightASK = 0.0009;
+let paletteSwatchesASK = [];
 let colorsASK = [];
 let opacASK = 1;
 
@@ -2429,19 +2430,31 @@ function drawLabOverlayASK() {
 // =====================================================
 
 function initColorsASK() {
-  colorsASK = [
-    color(255, 255, 255),
-    color(139, 121, 162),
-    color(164, 146, 200),
-    color(226, 211, 240),
-    color(139, 121, 162),
-    color(132, 80, 155),
-    color(114, 85, 131),
-    color(190, 63, 246),
-    color(193, 154, 216),
-    color(164, 146, 200),
-    color(174, 135, 194)
+  paletteSwatchesASK = [
+    { nameASK: "white", rgbASK: [255, 255, 255], weightASK: 1 },
+    { nameASK: "smokey lavender 1", rgbASK: [139, 121, 162], weightASK: 2 },
+    { nameASK: "warm lavender 1", rgbASK: [193, 154, 216], weightASK: 1 },
+    { nameASK: "warm lavender 2", rgbASK: [164, 146, 200], weightASK: 2 },
+    { nameASK: "warm lavender 4", rgbASK: [174, 135, 194], weightASK: 1 },
+    { nameASK: "warm lavender 5", rgbASK: [226, 211, 240], weightASK: 1 },
+    { nameASK: "smokey plum 1", rgbASK: [132, 80, 155], weightASK: 1 },
+    { nameASK: "smokey plum 2", rgbASK: [114, 85, 131], weightASK: 1 },
+    { nameASK: "violet 1", rgbASK: [190, 63, 246], weightASK: 1 }
   ];
+
+  colorsASK = buildWeightedPaletteASK(paletteSwatchesASK);
+}
+
+function buildWeightedPaletteASK(swatchesASK) {
+  let weightedColorsASK = [];
+
+  for (let swatchASK of swatchesASK) {
+    for (let iASK = 0; iASK < swatchASK.weightASK; iASK++) {
+      weightedColorsASK.push(color(...swatchASK.rgbASK));
+    }
+  }
+
+  return weightedColorsASK;
 }
 
 function renderColorsASK() {
