@@ -178,12 +178,6 @@ let time = 0;
 let canvasWidth = 0;
 let canvasHeight = 0;
 
-let isMousePressed = false;
-let dragStart = null;
-let dragCurrent = null;
-let dragLength = 0;
-let dragVector = { x: 0, y: 0 };
-
 let zoom = 1.0;
 let centerX = 0.5;
 let centerY = 0.5;
@@ -278,7 +272,6 @@ function draw() {
   pushMazeView();
   updateMaze();
   drawMaze();
-  drawOverlay();
   pop();
 
   time += 0.02;
@@ -293,14 +286,6 @@ function drawMaze() {
   drawLabOverlay();
 }
 
-function drawOverlay() {
-  if (isMousePressed && dragStart && dragCurrent) {
-    stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 180);
-    strokeWeight(strokeWeightBase * 3.0);
-    line(dragStart.x, dragStart.y, dragCurrent.x, dragCurrent.y);
-  }
-}
-
 // =====================================================
 // VIEW / NORMALIZED SPACE
 // =====================================================
@@ -310,16 +295,6 @@ function pushMazeView() {
   scale(canvasWidth, canvasHeight);
   translate(centerX, centerY);
   scale(zoom);
-}
-
-function screenToWorld(px, py) {
-  let nx = px / canvasWidth;
-  let ny = py / canvasHeight;
-
-  return {
-    x: (nx - centerX) / zoom,
-    y: (ny - centerY) / zoom
-  };
 }
 
 // =====================================================
@@ -2525,47 +2500,20 @@ function pickPaletteColorASK(isValid, score = null) {
 // INTERACTION
 // =====================================================
 
-function mousePressed() {
-  isMousePressed = true;
-  dragStart = screenToWorld(mouseX, mouseY);
-  dragCurrent = screenToWorld(mouseX, mouseY);
-  dragLength = 0;
-  dragVector = { x: 0, y: 0 };
+function mouseClicked() {
+  const filename = generateFilename();
+  saveCanvas(filename, "png");
 }
 
-function mouseDragged() {
-  if (!isMousePressed || !dragStart) return;
-
-  dragCurrent = screenToWorld(mouseX, mouseY);
-  dragVector = {
-    x: dragCurrent.x - dragStart.x,
-    y: dragCurrent.y - dragStart.y
-  };
-
-  dragLength = dist(
-    dragStart.x,
-    dragStart.y,
-    dragCurrent.x,
-    dragCurrent.y
-  );
-
-  let dragAmount = constrain(abs(dragVector.x) * 240, 1, 240);
-  stepsPerFrame = floor(dragAmount);
-}
-
-function mouseReleased() {
-  let wasClick = dragLength < 0.015;
-
-  if (wasClick) {
-    renderColorsASK();
-    initializeMaze();
-  }
-
-  isMousePressed = false;
-  dragStart = null;
-  dragCurrent = null;
-  dragLength = 0;
-  dragVector = { x: 0, y: 0 };
+function generateFilename() {
+  const yyyy = nf(year(), 4);
+  const mm = nf(month(), 2);
+  const dd = nf(day(), 2);
+  const HH = nf(hour(), 2);
+  const MM = nf(minute(), 2);
+  const SS = nf(second(), 2);
+  const fc = nf(frameCount, 5);
+  return `mazeASK-${yyyy}-${mm}-${dd}-${HH}${MM}${SS}-${fc}`;
 }
 
 // =====================================================

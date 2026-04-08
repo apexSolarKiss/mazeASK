@@ -77,13 +77,13 @@ That structure is what you see.
 - `8` Aldous–Broder  
 
 ### Interaction
+- `click` save PNG output  
 - `space` regenerate  
 - `r` recolor  
 - `h` toggle rectangular / hex topology  
 - `c` toggle rectangular / radial topology  
 - `t` toggle rectangular / triangle topology  
 - `-` / `+` adjust speed  
-- drag horizontally to change speed  
 
 ### Density
 - `[` decrease grid  
