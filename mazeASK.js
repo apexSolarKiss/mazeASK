@@ -154,10 +154,10 @@ the drawing.
 // TOP-OF-FILE MODE SETTINGS
 // =====================================================
 
-let outputASK = false;
-let aspectModeASK = "widescreen";
+let output = false;
+let aspectMode = "widescreen";
 
-const renderPresetsASK = {
+const renderPresets = {
   square: [2160, 2160],
   widescreen: [3840, 2160]
 };
@@ -167,104 +167,104 @@ const renderPresetsASK = {
 // =====================================================
 
 let colorBackgroundASK, color1ASK, color2ASK, color3ASK, color4ASK;
-let sizeASK;
-let weightASK = 0.0009;
+let size;
+let strokeWeightBase = 0.0009;
 let paletteSwatchesASK = [];
 let colorsASK = [];
-let opacASK = 1;
+let opac = 1;
 
-let timeASK = 0;
-let canvasWidthASK = 0;
-let canvasHeightASK = 0;
+let time = 0;
+let canvasWidth = 0;
+let canvasHeight = 0;
 
-let mousePressedASK = false;
-let dragStartASK = null;
-let dragCurrentASK = null;
-let dragLengthASK = 0;
-let dragVectorASK = { x: 0, y: 0 };
+let isMousePressed = false;
+let dragStart = null;
+let dragCurrent = null;
+let dragLength = 0;
+let dragVector = { x: 0, y: 0 };
 
-let zoomASK = 1.0;
-let centerXASK = 0.5;
-let centerYASK = 0.5;
+let zoom = 1.0;
+let centerX = 0.5;
+let centerY = 0.5;
 
 // =====================================================
 // MAZE LAB STATE
 // =====================================================
 
 let mazeASK = [];
-let mazeStateASK = null;
-let topologyASK = null;
-let topologyModeASK = "rect";
-let colsMazeASK = 40;
-let rowsMazeASK = 24;
-let cellSizeASK = 0.02;
+let mazeState = null;
+let topology = null;
+let topologyMode = "rect";
+let mazeCols = 40;
+let mazeRows = 24;
+let cellSize = 0.02;
 
-let mazeOriginXASK = 0;
-let mazeOriginYASK = 0;
-let mazeWidthNormASK = 0.82;
-let mazeHeightNormASK = 0.62;
+let mazeOriginX = 0;
+let mazeOriginY = 0;
+let mazeWidthNorm = 0.82;
+let mazeHeightNorm = 0.62;
 
-let currentCellASK = null;
-let stackASK = [];
-let frontierASK = [];
-let mazeCompleteASK = false;
-let stepsPerFrameASK = 16;
+let currentCell = null;
+let stack = [];
+let frontier = [];
+let mazeComplete = false;
+let stepsPerFrame = 16;
 
-let algorithmASK = "recursiveBacktracker";
-let algorithmLabelASK = "Recursive Backtracker";
+let algorithm = "recursiveBacktracker";
+let algorithmLabel = "Recursive Backtracker";
 
-let sidewinderRowASK = 0;
-let sidewinderColASK = 0;
-let sidewinderRunASK = [];
+let sidewinderRow = 0;
+let sidewinderCol = 0;
+let sidewinderRun = [];
 
-let visitOrderCounterASK = 0;
-let visitedCountASK = 0;
-let manualColsASK = null;
-let manualRowsASK = null;
+let visitOrderCounter = 0;
+let visitedCount = 0;
+let manualCols = null;
+let manualRows = null;
 
 // Eller state
-let ellerCurrentRowASK = 0;
-let ellerSetsASK = [];
-let ellerNextSetIdASK = 1;
-let ellerPreparedASK = false;
+let ellerCurrentRow = 0;
+let ellerSets = [];
+let ellerNextSetId = 1;
+let ellerPrepared = false;
 
 // Kruskal state
-let kruskalWallsASK = [];
-let kruskalParentASK = [];
-let kruskalRankASK = [];
-let kruskalStepIndexASK = 0;
+let kruskalWalls = [];
+let kruskalParent = [];
+let kruskalRank = [];
+let kruskalStepIndex = 0;
 
 // Wilson state
-let wilsonWalkASK = [];
-let wilsonWalkIndexByKeyASK = {};
-let wilsonModeASK = "idle";
-let wilsonCarveIndexASK = 0;
+let wilsonWalk = [];
+let wilsonWalkIndexByKey = {};
+let wilsonMode = "idle";
+let wilsonCarveIndex = 0;
 
 // Aldous-Broder state
-let aldousCurrentASK = null;
+let aldousCurrent = null;
 
 // =====================================================
 // SETUP
 // =====================================================
 
 function setup() {
-  updateCanvasSizeASK();
-  createCanvas(canvasWidthASK, canvasHeightASK);
+  updateCanvasSize();
+  createCanvas(canvasWidth, canvasHeight);
 
   pixelDensity(1);
   noFill();
   smooth();
 
-  sizeASK = min(canvasWidthASK, canvasHeightASK);
+  size = min(canvasWidth, canvasHeight);
 
   initColorsASK();
   renderColorsASK();
-  setupASK();
+  setupMaze();
 }
 
-function setupASK() {
-  configureCompositionASK();
-  initializeMazeASK();
+function setupMaze() {
+  configureComposition();
+  initializeMaze();
 }
 
 // =====================================================
@@ -274,29 +274,29 @@ function setupASK() {
 function draw() {
   background(colorBackgroundASK);
 
-  pushASKView();
-  updateMazeASK();
-  drawASK();
-  drawASKOverlay();
+  pushMazeView();
+  updateMaze();
+  drawMaze();
+  drawOverlay();
   pop();
 
-  timeASK += 0.02;
+  time += 0.02;
 }
 
-function drawASK() {
-  drawVisitedFieldsASK();
-  drawWallsASK();
-  drawWilsonWalkOverlayASK();
-  drawCurrentCellASK();
-  drawBorderASK();
-  drawLabOverlayASK();
+function drawMaze() {
+  drawVisitedFields();
+  drawWalls();
+  drawWilsonWalkOverlay();
+  drawCurrentCell();
+  drawBorder();
+  drawLabOverlay();
 }
 
-function drawASKOverlay() {
-  if (mousePressedASK && dragStartASK && dragCurrentASK) {
+function drawOverlay() {
+  if (isMousePressed && dragStart && dragCurrent) {
     stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 180);
-    strokeWeight(weightASK * 3.0);
-    line(dragStartASK.x, dragStartASK.y, dragCurrentASK.x, dragCurrentASK.y);
+    strokeWeight(strokeWeightBase * 3.0);
+    line(dragStart.x, dragStart.y, dragCurrent.x, dragCurrent.y);
   }
 }
 
@@ -304,20 +304,20 @@ function drawASKOverlay() {
 // VIEW / NORMALIZED SPACE
 // =====================================================
 
-function pushASKView() {
+function pushMazeView() {
   push();
-  scale(canvasWidthASK, canvasHeightASK);
-  translate(centerXASK, centerYASK);
-  scale(zoomASK);
+  scale(canvasWidth, canvasHeight);
+  translate(centerX, centerY);
+  scale(zoom);
 }
 
-function screenToASK(pxASK, pyASK) {
-  let nxASK = pxASK / canvasWidthASK;
-  let nyASK = pyASK / canvasHeightASK;
+function screenToWorld(px, py) {
+  let nx = px / canvasWidth;
+  let ny = py / canvasHeight;
 
   return {
-    x: (nxASK - centerXASK) / zoomASK,
-    y: (nyASK - centerYASK) / zoomASK
+    x: (nx - centerX) / zoom,
+    y: (ny - centerY) / zoom
   };
 }
 
@@ -325,94 +325,94 @@ function screenToASK(pxASK, pyASK) {
 // CANVAS SIZE HELPERS
 // =====================================================
 
-function updateCanvasSizeASK() {
-  if (outputASK) {
-    let presetASK = renderPresetsASK[aspectModeASK] || renderPresetsASK.widescreen;
-    canvasWidthASK = presetASK[0];
-    canvasHeightASK = presetASK[1];
+function updateCanvasSize() {
+  if (output) {
+    let preset = renderPresets[aspectMode] || renderPresets.widescreen;
+    canvasWidth = preset[0];
+    canvasHeight = preset[1];
   } else {
-    canvasWidthASK = windowWidth;
-    canvasHeightASK = windowHeight;
+    canvasWidth = windowWidth;
+    canvasHeight = windowHeight;
   }
 }
 
-function applyCanvasSizeASK() {
-  updateCanvasSizeASK();
-  resizeCanvas(canvasWidthASK, canvasHeightASK);
-  sizeASK = min(canvasWidthASK, canvasHeightASK);
+function applyCanvasSize() {
+  updateCanvasSize();
+  resizeCanvas(canvasWidth, canvasHeight);
+  size = min(canvasWidth, canvasHeight);
 }
 
 // =====================================================
 // COMPOSITION
 // =====================================================
 
-function isSquareCompositionASK() {
-  if (outputASK) {
-    return aspectModeASK === "square";
+function isSquareComposition() {
+  if (output) {
+    return aspectMode === "square";
   }
-  return canvasWidthASK / canvasHeightASK < 1.15;
+  return canvasWidth / canvasHeight < 1.15;
 }
 
-function configureCompositionASK() {
-  let activeTopologyModeASK = getActiveTopologyModeASK();
+function configureComposition() {
+  let activeTopologyMode = getActiveTopologyMode();
 
-  if (isSquareCompositionASK()) {
-    zoomASK = 1.0;
-    centerXASK = 0.5;
-    centerYASK = 0.5;
-    mazeWidthNormASK = 0.78;
-    mazeHeightNormASK = 0.78;
+  if (isSquareComposition()) {
+    zoom = 1.0;
+    centerX = 0.5;
+    centerY = 0.5;
+    mazeWidthNorm = 0.78;
+    mazeHeightNorm = 0.78;
 
-    if (manualColsASK === null || manualRowsASK === null) {
-      if (activeTopologyModeASK === "hex") {
-        colsMazeASK = 20;
-        rowsMazeASK = 20;
-      } else if (activeTopologyModeASK === "radial") {
+    if (manualCols === null || manualRows === null) {
+      if (activeTopologyMode === "hex") {
+        mazeCols = 20;
+        mazeRows = 20;
+      } else if (activeTopologyMode === "radial") {
         // Radial density is expressed as max cells per ring and ring count.
-        colsMazeASK = 96;
-        rowsMazeASK = 10;
-      } else if (activeTopologyModeASK === "triangle") {
-        colsMazeASK = 34;
-        rowsMazeASK = 34;
-      } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
-        colsMazeASK = 34;
-        rowsMazeASK = 34;
+        mazeCols = 96;
+        mazeRows = 10;
+      } else if (activeTopologyMode === "triangle") {
+        mazeCols = 34;
+        mazeRows = 34;
+      } else if (algorithm === "sidewinder" || algorithm === "eller") {
+        mazeCols = 34;
+        mazeRows = 34;
       } else {
-        colsMazeASK = 36;
-        rowsMazeASK = 36;
+        mazeCols = 36;
+        mazeRows = 36;
       }
     } else {
-      colsMazeASK = manualColsASK;
-      rowsMazeASK = manualRowsASK;
+      mazeCols = manualCols;
+      mazeRows = manualRows;
     }
   } else {
-    zoomASK = 1.0;
-    centerXASK = 0.5;
-    centerYASK = 0.515;
-    mazeWidthNormASK = 0.82;
-    mazeHeightNormASK = 0.62;
+    zoom = 1.0;
+    centerX = 0.5;
+    centerY = 0.515;
+    mazeWidthNorm = 0.82;
+    mazeHeightNorm = 0.62;
 
-    if (manualColsASK === null || manualRowsASK === null) {
-      if (activeTopologyModeASK === "hex") {
-        colsMazeASK = 28;
-        rowsMazeASK = 16;
-      } else if (activeTopologyModeASK === "radial") {
+    if (manualCols === null || manualRows === null) {
+      if (activeTopologyMode === "hex") {
+        mazeCols = 28;
+        mazeRows = 16;
+      } else if (activeTopologyMode === "radial") {
         // Radial defaults keep enough rings for structure without overcrowding the outer arc.
-        colsMazeASK = 96;
-        rowsMazeASK = 8;
-      } else if (activeTopologyModeASK === "triangle") {
-        colsMazeASK = 46;
-        rowsMazeASK = 24;
-      } else if (algorithmASK === "sidewinder" || algorithmASK === "eller") {
-        colsMazeASK = 44;
-        rowsMazeASK = 24;
+        mazeCols = 96;
+        mazeRows = 8;
+      } else if (activeTopologyMode === "triangle") {
+        mazeCols = 46;
+        mazeRows = 24;
+      } else if (algorithm === "sidewinder" || algorithm === "eller") {
+        mazeCols = 44;
+        mazeRows = 24;
       } else {
-        colsMazeASK = 46;
-        rowsMazeASK = 24;
+        mazeCols = 46;
+        mazeRows = 24;
       }
     } else {
-      colsMazeASK = manualColsASK;
-      rowsMazeASK = manualRowsASK;
+      mazeCols = manualCols;
+      mazeRows = manualRows;
     }
   }
 }
@@ -421,76 +421,76 @@ function configureCompositionASK() {
 // MAZE INITIALIZATION
 // =====================================================
 
-function initializeMazeASK() {
-  configureCompositionASK();
+function initializeMaze() {
+  configureComposition();
 
   mazeASK = [];
-  mazeStateASK = {
-    linksASK: new Set()
+  mazeState = {
+    links: new Set()
   };
-  stackASK = [];
-  frontierASK = [];
-  sidewinderRunASK = [];
-  mazeCompleteASK = false;
-  currentCellASK = null;
-  visitOrderCounterASK = 0;
-  visitedCountASK = 0;
-  sidewinderRowASK = 0;
-  sidewinderColASK = 0;
+  stack = [];
+  frontier = [];
+  sidewinderRun = [];
+  mazeComplete = false;
+  currentCell = null;
+  visitOrderCounter = 0;
+  visitedCount = 0;
+  sidewinderRow = 0;
+  sidewinderCol = 0;
 
   // reset Eller
-  ellerCurrentRowASK = 0;
-  ellerSetsASK = [];
-  ellerNextSetIdASK = 1;
-  ellerPreparedASK = false;
+  ellerCurrentRow = 0;
+  ellerSets = [];
+  ellerNextSetId = 1;
+  ellerPrepared = false;
 
   // reset Kruskal
-  kruskalWallsASK = [];
-  kruskalParentASK = [];
-  kruskalRankASK = [];
-  kruskalStepIndexASK = 0;
+  kruskalWalls = [];
+  kruskalParent = [];
+  kruskalRank = [];
+  kruskalStepIndex = 0;
 
   // reset Wilson
-  wilsonWalkASK = [];
-  wilsonWalkIndexByKeyASK = {};
-  wilsonModeASK = "idle";
-  wilsonCarveIndexASK = 0;
+  wilsonWalk = [];
+  wilsonWalkIndexByKey = {};
+  wilsonMode = "idle";
+  wilsonCarveIndex = 0;
 
   // reset Aldous-Broder
-  aldousCurrentASK = null;
+  aldousCurrent = null;
 
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    let rowCellsASK = [];
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      rowCellsASK.push(makeCellASK(colASK, rowASK));
+  for (let row = 0; row < mazeRows; row++) {
+    let rowCells = [];
+    for (let col = 0; col < mazeCols; col++) {
+      rowCells.push(makeCell(col, row));
     }
-    mazeASK.push(rowCellsASK);
+    mazeASK.push(rowCells);
   }
 
-  topologyASK =
-    getActiveTopologyModeASK() === "hex"
-      ? makeHexTopologyASK()
-      : getActiveTopologyModeASK() === "radial"
-        ? makeRadialTopologyASK()
-      : getActiveTopologyModeASK() === "triangle"
-        ? makeTriangleTopologyASK()
-        : makeRectTopologyASK();
+  topology =
+    getActiveTopologyMode() === "hex"
+      ? makeHexTopology()
+      : getActiveTopologyMode() === "radial"
+        ? makeRadialTopology()
+      : getActiveTopologyMode() === "triangle"
+        ? makeTriangleTopology()
+        : makeRectTopology();
 
-  setupAlgorithmASK();
+  setupAlgorithm();
 }
 
-function makeCellASK(colASK, rowASK) {
+function makeCell(col, row) {
   return {
-    colASK,
-    rowASK,
-    visitedASK: false,
-    frontierASK: false,
-    depthASK: -1,
-    visitOrderASK: -1
+    col,
+    row,
+    visited: false,
+    frontier: false,
+    depth: -1,
+    visitOrder: -1
   };
 }
 
-function setupAlgorithmASK() {
+function setupAlgorithm() {
   // --------------------------------------------------
   // RECURSIVE BACKTRACKER
   // --------------------------------------------------
@@ -506,10 +506,10 @@ function setupAlgorithmASK() {
   // Cons:
   // - can make lots of deep branches
   // - not very balanced or uniform
-  if (algorithmASK === "recursiveBacktracker") {
-    algorithmLabelASK = "Recursive Backtracker";
-    currentCellASK = getTopologyFirstCellASK();
-    markVisitedASK(currentCellASK, 0);
+  if (algorithm === "recursiveBacktracker") {
+    algorithmLabel = "Recursive Backtracker";
+    currentCell = getTopologyFirstCell();
+    markVisited(currentCell, 0);
   }
 
   // --------------------------------------------------
@@ -526,8 +526,8 @@ function setupAlgorithmASK() {
   // Cons:
   // - strongly biased
   // - can feel artificial
-  else if (algorithmASK === "binaryTree") {
-    algorithmLabelASK = "Binary Tree";
+  else if (algorithm === "binaryTree") {
+    algorithmLabel = "Binary Tree";
   }
 
   // --------------------------------------------------
@@ -542,13 +542,13 @@ function setupAlgorithmASK() {
   //
   // Cons:
   // - often makes shorter dead ends
-  else if (algorithmASK === "prim") {
-    algorithmLabelASK = "Prim";
-    currentCellASK = getActiveTopologyModeASK() === "radial"
-      ? getTopologyFirstCellASK()
-      : getTopologyMiddleCellASK();
-    markVisitedASK(currentCellASK, 0);
-    addFrontierNeighborsASK(currentCellASK);
+  else if (algorithm === "prim") {
+    algorithmLabel = "Prim";
+    currentCell = getActiveTopologyMode() === "radial"
+      ? getTopologyFirstCell()
+      : getTopologyMiddleCell();
+    markVisited(currentCell, 0);
+    addFrontierNeighbors(currentCell);
   }
 
   // --------------------------------------------------
@@ -556,8 +556,8 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // Go across a row, making a run of connected rooms.
   // Every so often, punch one passage upward.
-  else if (algorithmASK === "sidewinder") {
-    algorithmLabelASK = "Sidewinder";
+  else if (algorithm === "sidewinder") {
+    algorithmLabel = "Sidewinder";
   }
 
   // --------------------------------------------------
@@ -565,9 +565,9 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // Build one row at a time while remembering which
   // rooms are already connected.
-  else if (algorithmASK === "eller") {
-    algorithmLabelASK = "Eller";
-    initializeEllerASK();
+  else if (algorithm === "eller") {
+    algorithmLabel = "Eller";
+    initializeEller();
   }
 
   // --------------------------------------------------
@@ -575,9 +575,9 @@ function setupAlgorithmASK() {
   // --------------------------------------------------
   // Look at possible walls and remove only the ones
   // that join two different regions.
-  else if (algorithmASK === "kruskal") {
-    algorithmLabelASK = "Kruskal";
-    initializeKruskalASK();
+  else if (algorithm === "kruskal") {
+    algorithmLabel = "Kruskal";
+    initializeKruskal();
   }
 
   // --------------------------------------------------
@@ -595,9 +595,9 @@ function setupAlgorithmASK() {
   // Cons:
   // - more complex to explain
   // - slower than the simpler starters
-  else if (algorithmASK === "wilson") {
-    algorithmLabelASK = "Wilson";
-    initializeWilsonASK();
+  else if (algorithm === "wilson") {
+    algorithmLabel = "Wilson";
+    initializeWilson();
   }
 
   // --------------------------------------------------
@@ -612,9 +612,9 @@ function setupAlgorithmASK() {
   //
   // Cons:
   // - very slow
-  else if (algorithmASK === "aldousBroder") {
-    algorithmLabelASK = "Aldous-Broder";
-    initializeAldousBroderASK();
+  else if (algorithm === "aldousBroder") {
+    algorithmLabel = "Aldous-Broder";
+    initializeAldousBroder();
   }
 }
 
@@ -622,35 +622,35 @@ function setupAlgorithmASK() {
 // MAZE UPDATE
 // =====================================================
 
-function updateMazeASK() {
-  if (mazeCompleteASK) return;
+function updateMaze() {
+  if (mazeComplete) return;
 
   // Binary Tree completes in one pass; the other algorithms advance incrementally.
-  if (algorithmASK === "binaryTree") {
-    runBinaryTreeASK();
-    mazeCompleteASK = true;
+  if (algorithm === "binaryTree") {
+    runBinaryTree();
+    mazeComplete = true;
     return;
   }
 
   // Run a bounded number of generation steps each frame for the active algorithm.
-  for (let iASK = 0; iASK < stepsPerFrameASK; iASK++) {
-    if (algorithmASK === "recursiveBacktracker") {
-      stepRecursiveBacktrackerASK();
-    } else if (algorithmASK === "prim") {
-      stepPrimASK();
-    } else if (algorithmASK === "sidewinder") {
-      stepSidewinderASK();
-    } else if (algorithmASK === "eller") {
-      stepEllerASK();
-    } else if (algorithmASK === "kruskal") {
-      stepKruskalASK();
-    } else if (algorithmASK === "wilson") {
-      stepWilsonASK();
-    } else if (algorithmASK === "aldousBroder") {
-      stepAldousBroderASK();
+  for (let i = 0; i < stepsPerFrame; i++) {
+    if (algorithm === "recursiveBacktracker") {
+      stepRecursiveBacktracker();
+    } else if (algorithm === "prim") {
+      stepPrim();
+    } else if (algorithm === "sidewinder") {
+      stepSidewinder();
+    } else if (algorithm === "eller") {
+      stepEller();
+    } else if (algorithm === "kruskal") {
+      stepKruskal();
+    } else if (algorithm === "wilson") {
+      stepWilson();
+    } else if (algorithm === "aldousBroder") {
+      stepAldousBroder();
     }
 
-    if (mazeCompleteASK) break;
+    if (mazeComplete) break;
   }
 }
 
@@ -658,102 +658,102 @@ function updateMazeASK() {
 // ALGORITHMS
 // =====================================================
 
-function stepRecursiveBacktrackerASK() {
-  let neighborsASK = getNeighborCellsASK(currentCellASK).filter(
-    (neighborASK) => !neighborASK.visitedASK
+function stepRecursiveBacktracker() {
+  let neighbors = getNeighborCells(currentCell).filter(
+    (neighbor) => !neighbor.visited
   );
 
-  if (neighborsASK.length > 0) {
-    let nextCellASK = random(neighborsASK);
-    stackASK.push(currentCellASK);
-    linkCellsASK(currentCellASK, nextCellASK);
-    markVisitedASK(nextCellASK, stackASK.length);
-    currentCellASK = nextCellASK;
+  if (neighbors.length > 0) {
+    let nextCell = random(neighbors);
+    stack.push(currentCell);
+    linkCells(currentCell, nextCell);
+    markVisited(nextCell, stack.length);
+    currentCell = nextCell;
     return;
   }
 
-  if (stackASK.length > 0) {
-    currentCellASK = stackASK.pop();
+  if (stack.length > 0) {
+    currentCell = stack.pop();
     return;
   }
 
-  mazeCompleteASK = true;
+  mazeComplete = true;
 }
 
-function runBinaryTreeASK() {
-  for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-    for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-      let cellASK = mazeASK[rowASK][colASK];
-      markVisitedASK(cellASK, rowASK + colASK);
+function runBinaryTree() {
+  for (let row = 0; row < mazeRows; row++) {
+    for (let col = 0; col < mazeCols; col++) {
+      let cell = mazeASK[row][col];
+      markVisited(cell, row + col);
 
-      let neighborsASK = getBinaryTreeCandidatesASK(cellASK).filter(Boolean);
+      let neighbors = getBinaryTreeCandidates(cell).filter(Boolean);
 
-      if (neighborsASK.length > 0) {
-        removeWallsASK(cellASK, random(neighborsASK));
+      if (neighbors.length > 0) {
+        removeWalls(cell, random(neighbors));
       }
     }
   }
 }
 
-function stepPrimASK() {
-  if (frontierASK.length === 0) {
-    mazeCompleteASK = true;
+function stepPrim() {
+  if (frontier.length === 0) {
+    mazeComplete = true;
     return;
   }
 
-  let frontierIndexASK = floor(random(frontierASK.length));
-  let cellASK = frontierASK.splice(frontierIndexASK, 1)[0];
-  cellASK.frontierASK = false;
+  let frontierIndex = floor(random(frontier.length));
+  let cell = frontier.splice(frontierIndex, 1)[0];
+  cell.frontier = false;
 
-  let visitedNeighborsASK = getVisitedNeighborsASK(cellASK);
-  if (visitedNeighborsASK.length > 0) {
-    let connectASK = random(visitedNeighborsASK);
-    removeWallsASK(cellASK, connectASK);
+  let visitedNeighbors = getVisitedNeighbors(cell);
+  if (visitedNeighbors.length > 0) {
+    let connect = random(visitedNeighbors);
+    removeWalls(cell, connect);
   }
 
-  let depthASK = visitedNeighborsASK.length > 0
-    ? minVisitedNeighborDepthASK(visitedNeighborsASK) + 1
+  let depth = visitedNeighbors.length > 0
+    ? minVisitedNeighborDepth(visitedNeighbors) + 1
     : 0;
 
-  markVisitedASK(cellASK, depthASK);
-  currentCellASK = cellASK;
-  addFrontierNeighborsASK(cellASK);
+  markVisited(cell, depth);
+  currentCell = cell;
+  addFrontierNeighbors(cell);
 }
 
-function stepSidewinderASK() {
-  if (sidewinderRowASK >= rowsMazeASK) {
-    mazeCompleteASK = true;
+function stepSidewinder() {
+  if (sidewinderRow >= mazeRows) {
+    mazeComplete = true;
     return;
   }
 
-  let cellASK = mazeASK[sidewinderRowASK][sidewinderColASK];
-  markVisitedASK(cellASK, sidewinderRowASK);
-  currentCellASK = cellASK;
-  sidewinderRunASK.push(cellASK);
+  let cell = mazeASK[sidewinderRow][sidewinderCol];
+  markVisited(cell, sidewinderRow);
+  currentCell = cell;
+  sidewinderRun.push(cell);
 
-  let atEasternBoundaryASK = sidewinderColASK === colsMazeASK - 1;
-  let atNorthernBoundaryASK = sidewinderRowASK === 0;
+  let atEasternBoundary = sidewinderCol === mazeCols - 1;
+  let atNorthernBoundary = sidewinderRow === 0;
 
-  let carveNorthASK =
-    atEasternBoundaryASK || (!atNorthernBoundaryASK && random() < 0.33);
+  let carveNorth =
+    atEasternBoundary || (!atNorthernBoundary && random() < 0.33);
 
-  if (carveNorthASK) {
-    if (!atNorthernBoundaryASK) {
-      let memberASK = random(sidewinderRunASK);
-      let northASK = getCellASK(memberASK.colASK, memberASK.rowASK - 1);
-      if (northASK) removeWallsASK(memberASK, northASK);
+  if (carveNorth) {
+    if (!atNorthernBoundary) {
+      let member = random(sidewinderRun);
+      let north = getCell(member.col, member.row - 1);
+      if (north) removeWalls(member, north);
     }
-    sidewinderRunASK = [];
+    sidewinderRun = [];
   } else {
-    let eastASK = getCellASK(sidewinderColASK + 1, sidewinderRowASK);
-    if (eastASK) removeWallsASK(cellASK, eastASK);
+    let east = getCell(sidewinderCol + 1, sidewinderRow);
+    if (east) removeWalls(cell, east);
   }
 
-  sidewinderColASK++;
-  if (sidewinderColASK >= colsMazeASK) {
-    sidewinderColASK = 0;
-    sidewinderRowASK++;
-    sidewinderRunASK = [];
+  sidewinderCol++;
+  if (sidewinderCol >= mazeCols) {
+    sidewinderCol = 0;
+    sidewinderRow++;
+    sidewinderRun = [];
   }
 }
 
@@ -761,131 +761,131 @@ function stepSidewinderASK() {
 // ELLER
 // =====================================================
 
-function initializeEllerASK() {
-  ellerCurrentRowASK = 0;
-  ellerNextSetIdASK = 1;
-  ellerPreparedASK = false;
-  ellerSetsASK = new Array(colsMazeASK).fill(0);
+function initializeEller() {
+  ellerCurrentRow = 0;
+  ellerNextSetId = 1;
+  ellerPrepared = false;
+  ellerSets = new Array(mazeCols).fill(0);
 }
 
-function stepEllerASK() {
-  if (ellerCurrentRowASK >= rowsMazeASK) {
-    mazeCompleteASK = true;
+function stepEller() {
+  if (ellerCurrentRow >= mazeRows) {
+    mazeComplete = true;
     return;
   }
 
-  if (!ellerPreparedASK) {
-    prepareEllerRowASK(ellerCurrentRowASK);
-    currentCellASK = mazeASK[ellerCurrentRowASK][0];
-    ellerPreparedASK = true;
+  if (!ellerPrepared) {
+    prepareEllerRow(ellerCurrentRow);
+    currentCell = mazeASK[ellerCurrentRow][0];
+    ellerPrepared = true;
     return;
   }
 
-  let rowASK = ellerCurrentRowASK;
+  let row = ellerCurrentRow;
 
-  if (rowASK === rowsMazeASK - 1) {
-    finishLastEllerRowASK(rowASK);
-    markEntireRowVisitedASK(rowASK, rowASK);
-    currentCellASK = mazeASK[rowASK][colsMazeASK - 1];
-    ellerCurrentRowASK++;
-    mazeCompleteASK = true;
+  if (row === mazeRows - 1) {
+    finishLastEllerRow(row);
+    markEntireRowVisited(row, row);
+    currentCell = mazeASK[row][mazeCols - 1];
+    ellerCurrentRow++;
+    mazeComplete = true;
     return;
   }
 
-  let nextRowSetsASK = new Array(colsMazeASK).fill(0);
-  let groupsASK = groupColumnsBySetASK(ellerSetsASK);
+  let nextRowSets = new Array(mazeCols).fill(0);
+  let groups = groupColumnsBySet(ellerSets);
 
-  for (let setIdASK in groupsASK) {
-    let colsInSetASK = groupsASK[setIdASK].slice();
-    shuffleArrayASK(colsInSetASK);
+  for (let setId in groups) {
+    let colsInSet = groups[setId].slice();
+    shuffleArray(colsInSet);
 
-    let requiredCountASK = 1 + floor(random(colsInSetASK.length));
-    for (let iASK = 0; iASK < requiredCountASK; iASK++) {
-      let colASK = colsInSetASK[iASK];
-      let cellASK = mazeASK[rowASK][colASK];
-      let downASK = getCellASK(colASK, rowASK + 1);
-      if (downASK) {
-        removeWallsASK(cellASK, downASK);
-        nextRowSetsASK[colASK] = int(setIdASK);
+    let requiredCount = 1 + floor(random(colsInSet.length));
+    for (let i = 0; i < requiredCount; i++) {
+      let col = colsInSet[i];
+      let cell = mazeASK[row][col];
+      let down = getCell(col, row + 1);
+      if (down) {
+        removeWalls(cell, down);
+        nextRowSets[col] = int(setId);
       }
     }
   }
 
-  markEntireRowVisitedASK(rowASK, rowASK);
-  currentCellASK = mazeASK[rowASK][colsMazeASK - 1];
+  markEntireRowVisited(row, row);
+  currentCell = mazeASK[row][mazeCols - 1];
 
-  ellerSetsASK = nextRowSetsASK;
-  ellerCurrentRowASK++;
-  ellerPreparedASK = false;
+  ellerSets = nextRowSets;
+  ellerCurrentRow++;
+  ellerPrepared = false;
 }
 
-function prepareEllerRowASK(rowASK) {
-  for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-    if (ellerSetsASK[colASK] === 0) {
-      ellerSetsASK[colASK] = ellerNextSetIdASK++;
+function prepareEllerRow(row) {
+  for (let col = 0; col < mazeCols; col++) {
+    if (ellerSets[col] === 0) {
+      ellerSets[col] = ellerNextSetId++;
     }
   }
 
-  for (let colASK = 0; colASK < colsMazeASK - 1; colASK++) {
-    if (ellerSetsASK[colASK] === ellerSetsASK[colASK + 1]) continue;
+  for (let col = 0; col < mazeCols - 1; col++) {
+    if (ellerSets[col] === ellerSets[col + 1]) continue;
 
-    let shouldJoinASK = rowASK === rowsMazeASK - 1 || random() < 0.5;
+    let shouldJoin = row === mazeRows - 1 || random() < 0.5;
 
-    if (shouldJoinASK) {
-      let leftCellASK = mazeASK[rowASK][colASK];
-      let rightCellASK = mazeASK[rowASK][colASK + 1];
-      removeWallsASK(leftCellASK, rightCellASK);
+    if (shouldJoin) {
+      let leftCell = mazeASK[row][col];
+      let rightCell = mazeASK[row][col + 1];
+      removeWalls(leftCell, rightCell);
 
-      let oldSetASK = ellerSetsASK[colASK + 1];
-      let newSetASK = ellerSetsASK[colASK];
+      let oldSet = ellerSets[col + 1];
+      let newSet = ellerSets[col];
 
-      for (let iASK = 0; iASK < colsMazeASK; iASK++) {
-        if (ellerSetsASK[iASK] === oldSetASK) {
-          ellerSetsASK[iASK] = newSetASK;
+      for (let i = 0; i < mazeCols; i++) {
+        if (ellerSets[i] === oldSet) {
+          ellerSets[i] = newSet;
         }
       }
     }
   }
 }
 
-function finishLastEllerRowASK(rowASK) {
-  for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-    if (ellerSetsASK[colASK] === 0) {
-      ellerSetsASK[colASK] = ellerNextSetIdASK++;
+function finishLastEllerRow(row) {
+  for (let col = 0; col < mazeCols; col++) {
+    if (ellerSets[col] === 0) {
+      ellerSets[col] = ellerNextSetId++;
     }
   }
 
-  for (let colASK = 0; colASK < colsMazeASK - 1; colASK++) {
-    if (ellerSetsASK[colASK] !== ellerSetsASK[colASK + 1]) {
-      let leftCellASK = mazeASK[rowASK][colASK];
-      let rightCellASK = mazeASK[rowASK][colASK + 1];
-      removeWallsASK(leftCellASK, rightCellASK);
+  for (let col = 0; col < mazeCols - 1; col++) {
+    if (ellerSets[col] !== ellerSets[col + 1]) {
+      let leftCell = mazeASK[row][col];
+      let rightCell = mazeASK[row][col + 1];
+      removeWalls(leftCell, rightCell);
 
-      let oldSetASK = ellerSetsASK[colASK + 1];
-      let newSetASK = ellerSetsASK[colASK];
+      let oldSet = ellerSets[col + 1];
+      let newSet = ellerSets[col];
 
-      for (let iASK = 0; iASK < colsMazeASK; iASK++) {
-        if (ellerSetsASK[iASK] === oldSetASK) {
-          ellerSetsASK[iASK] = newSetASK;
+      for (let i = 0; i < mazeCols; i++) {
+        if (ellerSets[i] === oldSet) {
+          ellerSets[i] = newSet;
         }
       }
     }
   }
 }
 
-function groupColumnsBySetASK(setArrayASK) {
-  let groupsASK = {};
-  for (let colASK = 0; colASK < setArrayASK.length; colASK++) {
-    let setIdASK = setArrayASK[colASK];
-    if (!groupsASK[setIdASK]) groupsASK[setIdASK] = [];
-    groupsASK[setIdASK].push(colASK);
+function groupColumnsBySet(setArray) {
+  let groups = {};
+  for (let col = 0; col < setArray.length; col++) {
+    let setId = setArray[col];
+    if (!groups[setId]) groups[setId] = [];
+    groups[setId].push(col);
   }
-  return groupsASK;
+  return groups;
 }
 
-function markEntireRowVisitedASK(rowASK, depthASK) {
-  for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-    markVisitedASK(mazeASK[rowASK][colASK], depthASK);
+function markEntireRowVisited(row, depth) {
+  for (let col = 0; col < mazeCols; col++) {
+    markVisited(mazeASK[row][col], depth);
   }
 }
 
@@ -893,80 +893,80 @@ function markEntireRowVisitedASK(rowASK, depthASK) {
 // KRUSKAL
 // =====================================================
 
-function initializeKruskalASK() {
-  kruskalParentASK = {};
-  kruskalRankASK = {};
+function initializeKruskal() {
+  kruskalParent = {};
+  kruskalRank = {};
 
-  for (let cellASK of getTopologyCellsASK()) {
-    let cellIdASK = cellKeyASK(cellASK);
-    kruskalParentASK[cellIdASK] = cellIdASK;
-    kruskalRankASK[cellIdASK] = 0;
+  for (let cell of getTopologyCells()) {
+    let cellId = cellKey(cell);
+    kruskalParent[cellId] = cellId;
+    kruskalRank[cellId] = 0;
   }
 
-  kruskalWallsASK = getKruskalEdgesASK();
+  kruskalWalls = getKruskalEdges();
 
-  shuffleArrayASK(kruskalWallsASK);
-  kruskalStepIndexASK = 0;
-  currentCellASK = getTopologyFirstCellASK();
+  shuffleArray(kruskalWalls);
+  kruskalStepIndex = 0;
+  currentCell = getTopologyFirstCell();
 }
 
-function stepKruskalASK() {
-  if (kruskalStepIndexASK >= kruskalWallsASK.length) {
-    markAllCellsVisitedASK();
-    mazeCompleteASK = true;
+function stepKruskal() {
+  if (kruskalStepIndex >= kruskalWalls.length) {
+    markAllCellsVisited();
+    mazeComplete = true;
     return;
   }
 
-  let wallASK = kruskalWallsASK[kruskalStepIndexASK++];
-  let cellAASK = wallASK.cellAASK;
-  let cellBASK = wallASK.cellBASK;
+  let wall = kruskalWalls[kruskalStepIndex++];
+  let cellA = wall.cellA;
+  let cellB = wall.cellB;
 
-  let idAASK = cellKeyASK(cellAASK);
-  let idBASK = cellKeyASK(cellBASK);
+  let idA = cellKey(cellA);
+  let idB = cellKey(cellB);
 
-  let rootAASK = kruskalFindASK(idAASK);
-  let rootBASK = kruskalFindASK(idBASK);
+  let rootA = kruskalFind(idA);
+  let rootB = kruskalFind(idB);
 
-  currentCellASK = cellAASK;
+  currentCell = cellA;
 
-  if (rootAASK !== rootBASK) {
-    removeWallsASK(cellAASK, cellBASK);
-    kruskalUnionASK(rootAASK, rootBASK);
+  if (rootA !== rootB) {
+    removeWalls(cellA, cellB);
+    kruskalUnion(rootA, rootB);
 
-    let depthASK = floor(kruskalStepIndexASK / max(1, colsMazeASK));
-    markVisitedASK(cellAASK, depthASK);
-    markVisitedASK(cellBASK, depthASK);
-    currentCellASK = cellBASK;
+    let depth = floor(kruskalStepIndex / max(1, mazeCols));
+    markVisited(cellA, depth);
+    markVisited(cellB, depth);
+    currentCell = cellB;
   }
 }
 
-function kruskalFindASK(indexASK) {
-  if (kruskalParentASK[indexASK] !== indexASK) {
-    kruskalParentASK[indexASK] = kruskalFindASK(kruskalParentASK[indexASK]);
+function kruskalFind(index) {
+  if (kruskalParent[index] !== index) {
+    kruskalParent[index] = kruskalFind(kruskalParent[index]);
   }
-  return kruskalParentASK[indexASK];
+  return kruskalParent[index];
 }
 
-function kruskalUnionASK(aASK, bASK) {
-  let rootAASK = kruskalFindASK(aASK);
-  let rootBASK = kruskalFindASK(bASK);
+function kruskalUnion(a, b) {
+  let rootA = kruskalFind(a);
+  let rootB = kruskalFind(b);
 
-  if (rootAASK === rootBASK) return;
+  if (rootA === rootB) return;
 
-  if (kruskalRankASK[rootAASK] < kruskalRankASK[rootBASK]) {
-    kruskalParentASK[rootAASK] = rootBASK;
-  } else if (kruskalRankASK[rootAASK] > kruskalRankASK[rootBASK]) {
-    kruskalParentASK[rootBASK] = rootAASK;
+  if (kruskalRank[rootA] < kruskalRank[rootB]) {
+    kruskalParent[rootA] = rootB;
+  } else if (kruskalRank[rootA] > kruskalRank[rootB]) {
+    kruskalParent[rootB] = rootA;
   } else {
-    kruskalParentASK[rootBASK] = rootAASK;
-    kruskalRankASK[rootAASK]++;
+    kruskalParent[rootB] = rootA;
+    kruskalRank[rootA]++;
   }
 }
 
-function markAllCellsVisitedASK() {
-  let cellsASK = getTopologyCellsASK();
-  for (let iASK = 0; iASK < cellsASK.length; iASK++) {
-    markVisitedASK(cellsASK[iASK], iASK);
+function markAllCellsVisited() {
+  let cells = getTopologyCells();
+  for (let i = 0; i < cells.length; i++) {
+    markVisited(cells[i], i);
   }
 }
 
@@ -974,81 +974,81 @@ function markAllCellsVisitedASK() {
 // WILSON
 // =====================================================
 
-function initializeWilsonASK() {
-  let seedASK = getTopologyFirstCellASK();
-  markVisitedASK(seedASK, 0);
-  currentCellASK = seedASK;
-  wilsonModeASK = "chooseStart";
+function initializeWilson() {
+  let seed = getTopologyFirstCell();
+  markVisited(seed, 0);
+  currentCell = seed;
+  wilsonMode = "chooseStart";
 }
 
-function stepWilsonASK() {
-  if (visitedCountASK >= getTopologyCellsASK().length) {
-    mazeCompleteASK = true;
+function stepWilson() {
+  if (visitedCount >= getTopologyCells().length) {
+    mazeComplete = true;
     return;
   }
 
-  if (wilsonModeASK === "chooseStart") {
-    let startASK = getRandomUnvisitedCellASK();
-    if (!startASK) {
-      mazeCompleteASK = true;
+  if (wilsonMode === "chooseStart") {
+    let start = getRandomUnvisitedCell();
+    if (!start) {
+      mazeComplete = true;
       return;
     }
 
-    wilsonWalkASK = [startASK];
-    wilsonWalkIndexByKeyASK = {};
-    wilsonWalkIndexByKeyASK[cellKeyASK(startASK)] = 0;
-    wilsonCarveIndexASK = 0;
-    currentCellASK = startASK;
-    wilsonModeASK = "walk";
+    wilsonWalk = [start];
+    wilsonWalkIndexByKey = {};
+    wilsonWalkIndexByKey[cellKey(start)] = 0;
+    wilsonCarveIndex = 0;
+    currentCell = start;
+    wilsonMode = "walk";
     return;
   }
 
-  if (wilsonModeASK === "walk") {
-    let tailASK = wilsonWalkASK[wilsonWalkASK.length - 1];
-    let neighborsASK = getNeighborCellsASK(tailASK);
-    let nextASK = random(neighborsASK);
-    currentCellASK = nextASK;
+  if (wilsonMode === "walk") {
+    let tail = wilsonWalk[wilsonWalk.length - 1];
+    let neighbors = getNeighborCells(tail);
+    let next = random(neighbors);
+    currentCell = next;
 
-    if (nextASK.visitedASK) {
-      wilsonWalkASK.push(nextASK);
-      wilsonModeASK = "carve";
-      wilsonCarveIndexASK = 0;
+    if (next.visited) {
+      wilsonWalk.push(next);
+      wilsonMode = "carve";
+      wilsonCarveIndex = 0;
       return;
     }
 
-    let keyASK = cellKeyASK(nextASK);
-    if (wilsonWalkIndexByKeyASK.hasOwnProperty(keyASK)) {
-      let loopStartASK = wilsonWalkIndexByKeyASK[keyASK];
-      wilsonWalkASK = wilsonWalkASK.slice(0, loopStartASK + 1);
+    let key = cellKey(next);
+    if (wilsonWalkIndexByKey.hasOwnProperty(key)) {
+      let loopStart = wilsonWalkIndexByKey[key];
+      wilsonWalk = wilsonWalk.slice(0, loopStart + 1);
 
-      wilsonWalkIndexByKeyASK = {};
-      for (let iASK = 0; iASK < wilsonWalkASK.length; iASK++) {
-        wilsonWalkIndexByKeyASK[cellKeyASK(wilsonWalkASK[iASK])] = iASK;
+      wilsonWalkIndexByKey = {};
+      for (let i = 0; i < wilsonWalk.length; i++) {
+        wilsonWalkIndexByKey[cellKey(wilsonWalk[i])] = i;
       }
-      currentCellASK = wilsonWalkASK[wilsonWalkASK.length - 1];
+      currentCell = wilsonWalk[wilsonWalk.length - 1];
       return;
     }
 
-    wilsonWalkASK.push(nextASK);
-    wilsonWalkIndexByKeyASK[keyASK] = wilsonWalkASK.length - 1;
+    wilsonWalk.push(next);
+    wilsonWalkIndexByKey[key] = wilsonWalk.length - 1;
     return;
   }
 
-  if (wilsonModeASK === "carve") {
-    if (wilsonCarveIndexASK >= wilsonWalkASK.length - 1) {
-      wilsonWalkASK = [];
-      wilsonWalkIndexByKeyASK = {};
-      wilsonModeASK = "chooseStart";
+  if (wilsonMode === "carve") {
+    if (wilsonCarveIndex >= wilsonWalk.length - 1) {
+      wilsonWalk = [];
+      wilsonWalkIndexByKey = {};
+      wilsonMode = "chooseStart";
       return;
     }
 
-    let cellAASK = wilsonWalkASK[wilsonCarveIndexASK];
-    let cellBASK = wilsonWalkASK[wilsonCarveIndexASK + 1];
-    removeWallsASK(cellAASK, cellBASK);
-    markVisitedASK(cellAASK, wilsonCarveIndexASK);
-    markVisitedASK(cellBASK, wilsonCarveIndexASK + 1);
-    currentCellASK = cellBASK;
-    wilsonCarveIndexASK++;
+    let cellA = wilsonWalk[wilsonCarveIndex];
+    let cellB = wilsonWalk[wilsonCarveIndex + 1];
+    removeWalls(cellA, cellB);
+    markVisited(cellA, wilsonCarveIndex);
+    markVisited(cellB, wilsonCarveIndex + 1);
+    currentCell = cellB;
+    wilsonCarveIndex++;
   }
 }
 
@@ -1056,1238 +1056,1238 @@ function stepWilsonASK() {
 // ALDOUS-BRODER
 // =====================================================
 
-function initializeAldousBroderASK() {
-  aldousCurrentASK = getTopologyFirstCellASK();
-  currentCellASK = aldousCurrentASK;
-  markVisitedASK(aldousCurrentASK, 0);
+function initializeAldousBroder() {
+  aldousCurrent = getTopologyFirstCell();
+  currentCell = aldousCurrent;
+  markVisited(aldousCurrent, 0);
 }
 
-function stepAldousBroderASK() {
-  if (visitedCountASK >= getTopologyCellsASK().length) {
-    mazeCompleteASK = true;
+function stepAldousBroder() {
+  if (visitedCount >= getTopologyCells().length) {
+    mazeComplete = true;
     return;
   }
 
-  let neighborsASK = getNeighborCellsASK(aldousCurrentASK);
-  let nextASK = random(neighborsASK);
+  let neighbors = getNeighborCells(aldousCurrent);
+  let next = random(neighbors);
 
-  if (!nextASK.visitedASK) {
-    removeWallsASK(aldousCurrentASK, nextASK);
-    markVisitedASK(nextASK, visitedCountASK);
+  if (!next.visited) {
+    removeWalls(aldousCurrent, next);
+    markVisited(next, visitedCount);
   }
 
-  aldousCurrentASK = nextASK;
-  currentCellASK = nextASK;
+  aldousCurrent = next;
+  currentCell = next;
 }
 
 // =====================================================
 // MAZE HELPERS
 // =====================================================
 
-function markVisitedASK(cellASK, depthASK) {
-  if (!cellASK.visitedASK) {
-    cellASK.visitedASK = true;
-    cellASK.depthASK = depthASK;
-    cellASK.visitOrderASK = visitOrderCounterASK;
-    visitOrderCounterASK++;
-    visitedCountASK++;
+function markVisited(cell, depth) {
+  if (!cell.visited) {
+    cell.visited = true;
+    cell.depth = depth;
+    cell.visitOrder = visitOrderCounter;
+    visitOrderCounter++;
+    visitedCount++;
   }
 }
 
-function addFrontierNeighborsASK(cellASK) {
-  let neighborsASK = getNeighborCellsASK(cellASK);
+function addFrontierNeighbors(cell) {
+  let neighbors = getNeighborCells(cell);
 
-  for (let neighborASK of neighborsASK) {
-    if (!neighborASK.visitedASK && !neighborASK.frontierASK) {
-      neighborASK.frontierASK = true;
-      frontierASK.push(neighborASK);
+  for (let neighbor of neighbors) {
+    if (!neighbor.visited && !neighbor.frontier) {
+      neighbor.frontier = true;
+      frontier.push(neighbor);
     }
   }
 }
 
-function makeRectTopologyASK() {
-  let cellsASK = mazeASK.flat();
-  cellSizeASK = min(
-    mazeWidthNormASK / colsMazeASK,
-    mazeHeightNormASK / rowsMazeASK
+function makeRectTopology() {
+  let cells = mazeASK.flat();
+  cellSize = min(
+    mazeWidthNorm / mazeCols,
+    mazeHeightNorm / mazeRows
   );
 
-  let mazeWidthASK = colsMazeASK * cellSizeASK;
-  let mazeHeightASK = rowsMazeASK * cellSizeASK;
+  let mazeWidth = mazeCols * cellSize;
+  let mazeHeight = mazeRows * cellSize;
 
-  mazeOriginXASK = -mazeWidthASK * 0.5;
-  mazeOriginYASK = isSquareCompositionASK()
-    ? -mazeHeightASK * 0.5
-    : -mazeHeightASK * 0.42;
+  mazeOriginX = -mazeWidth * 0.5;
+  mazeOriginY = isSquareComposition()
+    ? -mazeHeight * 0.5
+    : -mazeHeight * 0.42;
 
   return {
-    modeASK: "rect",
+    mode: "rect",
 
-    getNeighborCellASK(cellASK, directionASK) {
-      if (!cellASK) return null;
+    getNeighborCell(cell, direction) {
+      if (!cell) return null;
 
-      if (directionASK === "topASK") {
-        return getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+      if (direction === "top") {
+        return getCell(cell.col, cell.row - 1);
       }
-      if (directionASK === "rightASK") {
-        return getCellASK(cellASK.colASK + 1, cellASK.rowASK);
+      if (direction === "right") {
+        return getCell(cell.col + 1, cell.row);
       }
-      if (directionASK === "bottomASK") {
-        return getCellASK(cellASK.colASK, cellASK.rowASK + 1);
+      if (direction === "bottom") {
+        return getCell(cell.col, cell.row + 1);
       }
-      if (directionASK === "leftASK") {
-        return getCellASK(cellASK.colASK - 1, cellASK.rowASK);
+      if (direction === "left") {
+        return getCell(cell.col - 1, cell.row);
       }
 
       return null;
     },
 
-    getRectNeighborsASK(cellASK) {
+    getRectNeighbors(cell) {
       return {
-        topASK: this.getNeighborCellASK(cellASK, "topASK"),
-        rightASK: this.getNeighborCellASK(cellASK, "rightASK"),
-        bottomASK: this.getNeighborCellASK(cellASK, "bottomASK"),
-        leftASK: this.getNeighborCellASK(cellASK, "leftASK")
+        top: this.getNeighborCell(cell, "top"),
+        right: this.getNeighborCell(cell, "right"),
+        bottom: this.getNeighborCell(cell, "bottom"),
+        left: this.getNeighborCell(cell, "left")
       };
     },
 
-    getNeighborsASK(cellASK) {
-      if (!cellASK) return [];
-      let neighborsASK = [];
-      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+    getNeighbors(cell) {
+      if (!cell) return [];
+      let neighbors = [];
+      let rectNeighbors = this.getRectNeighbors(cell);
 
-      if (rectNeighborsASK.topASK) neighborsASK.push(rectNeighborsASK.topASK);
-      if (rectNeighborsASK.rightASK) neighborsASK.push(rectNeighborsASK.rightASK);
-      if (rectNeighborsASK.bottomASK) neighborsASK.push(rectNeighborsASK.bottomASK);
-      if (rectNeighborsASK.leftASK) neighborsASK.push(rectNeighborsASK.leftASK);
+      if (rectNeighbors.top) neighbors.push(rectNeighbors.top);
+      if (rectNeighbors.right) neighbors.push(rectNeighbors.right);
+      if (rectNeighbors.bottom) neighbors.push(rectNeighbors.bottom);
+      if (rectNeighbors.left) neighbors.push(rectNeighbors.left);
 
-      return neighborsASK;
+      return neighbors;
     },
 
-    getCellsASK() {
-      return cellsASK;
+    getCells() {
+      return cells;
     },
 
-    getBinaryTreeCandidatesASK(cellASK) {
-      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+    getBinaryTreeCandidates(cell) {
+      let rectNeighbors = this.getRectNeighbors(cell);
       return [
-        rectNeighborsASK.topASK,
-        rectNeighborsASK.rightASK
+        rectNeighbors.top,
+        rectNeighbors.right
       ];
     },
 
-    getKruskalEdgesASK(cellASK) {
-      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
-      let edgesASK = [];
+    getKruskalEdges(cell) {
+      let rectNeighbors = this.getRectNeighbors(cell);
+      let edges = [];
 
-      if (rectNeighborsASK.rightASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: rectNeighborsASK.rightASK
+      if (rectNeighbors.right) {
+        edges.push({
+          cellA: cell,
+          cellB: rectNeighbors.right
         });
       }
 
-      if (rectNeighborsASK.bottomASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: rectNeighborsASK.bottomASK
+      if (rectNeighbors.bottom) {
+        edges.push({
+          cellA: cell,
+          cellB: rectNeighbors.bottom
         });
       }
 
-      return edgesASK;
+      return edges;
     },
 
-    areAdjacentCellsASK(cellAASK, cellBASK) {
-      if (!cellAASK || !cellBASK) return false;
-      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    areAdjacentCells(cellA, cellB) {
+      if (!cellA || !cellB) return false;
+      return this.getNeighbors(cellA).includes(cellB);
     },
 
-    getCellCenterASK(cellASK) {
+    getCellCenter(cell) {
       return {
-        x: mazeOriginXASK + cellASK.colASK * cellSizeASK + cellSizeASK * 0.5,
-        y: mazeOriginYASK + cellASK.rowASK * cellSizeASK + cellSizeASK * 0.5
+        x: mazeOriginX + cell.col * cellSize + cellSize * 0.5,
+        y: mazeOriginY + cell.row * cellSize + cellSize * 0.5
       };
     },
 
-    getCellPolygonASK(cellASK, insetASK = 0) {
-      let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK + insetASK;
-      let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK + insetASK;
-      let sizeASK = max(0, cellSizeASK - insetASK * 2);
+    getCellPolygon(cell, inset = 0) {
+      let x = mazeOriginX + cell.col * cellSize + inset;
+      let y = mazeOriginY + cell.row * cellSize + inset;
+      let size = max(0, cellSize - inset * 2);
 
       return [
-        { xASK, yASK },
-        { xASK: xASK + sizeASK, yASK },
-        { xASK: xASK + sizeASK, yASK: yASK + sizeASK },
-        { xASK, yASK: yASK + sizeASK }
+        { x, y },
+        { x: x + size, y },
+        { x: x + size, y: y + size },
+        { x, y: y + size }
       ];
     },
 
-    getCellEdgeSegmentsASK(cellASK) {
-      let xASK = mazeOriginXASK + cellASK.colASK * cellSizeASK;
-      let yASK = mazeOriginYASK + cellASK.rowASK * cellSizeASK;
-      let rectNeighborsASK = this.getRectNeighborsASK(cellASK);
+    getCellEdgeSegments(cell) {
+      let x = mazeOriginX + cell.col * cellSize;
+      let y = mazeOriginY + cell.row * cellSize;
+      let rectNeighbors = this.getRectNeighbors(cell);
 
       return [
         {
-          neighborASK: rectNeighborsASK.topASK,
-          axASK: xASK,
-          ayASK: yASK,
-          bxASK: xASK + cellSizeASK,
-          byASK: yASK
+          neighbor: rectNeighbors.top,
+          ax: x,
+          ay: y,
+          bx: x + cellSize,
+          by: y
         },
         {
-          neighborASK: rectNeighborsASK.rightASK,
-          axASK: xASK + cellSizeASK,
-          ayASK: yASK,
-          bxASK: xASK + cellSizeASK,
-          byASK: yASK + cellSizeASK
+          neighbor: rectNeighbors.right,
+          ax: x + cellSize,
+          ay: y,
+          bx: x + cellSize,
+          by: y + cellSize
         },
         {
-          neighborASK: rectNeighborsASK.bottomASK,
-          axASK: xASK,
-          ayASK: yASK + cellSizeASK,
-          bxASK: xASK + cellSizeASK,
-          byASK: yASK + cellSizeASK
+          neighbor: rectNeighbors.bottom,
+          ax: x,
+          ay: y + cellSize,
+          bx: x + cellSize,
+          by: y + cellSize
         },
         {
-          neighborASK: rectNeighborsASK.leftASK,
-          axASK: xASK,
-          ayASK: yASK,
-          bxASK: xASK,
-          byASK: yASK + cellSizeASK
+          neighbor: rectNeighbors.left,
+          ax: x,
+          ay: y,
+          bx: x,
+          by: y + cellSize
         }
       ];
     },
 
-    getBorderSegmentsASK() {
+    getBorderSegments() {
       return [
         {
-          axASK: mazeOriginXASK,
-          ayASK: mazeOriginYASK,
-          bxASK: mazeOriginXASK + mazeWidthASK,
-          byASK: mazeOriginYASK
+          ax: mazeOriginX,
+          ay: mazeOriginY,
+          bx: mazeOriginX + mazeWidth,
+          by: mazeOriginY
         },
         {
-          axASK: mazeOriginXASK + mazeWidthASK,
-          ayASK: mazeOriginYASK,
-          bxASK: mazeOriginXASK + mazeWidthASK,
-          byASK: mazeOriginYASK + mazeHeightASK
+          ax: mazeOriginX + mazeWidth,
+          ay: mazeOriginY,
+          bx: mazeOriginX + mazeWidth,
+          by: mazeOriginY + mazeHeight
         },
         {
-          axASK: mazeOriginXASK + mazeWidthASK,
-          ayASK: mazeOriginYASK + mazeHeightASK,
-          bxASK: mazeOriginXASK,
-          byASK: mazeOriginYASK + mazeHeightASK
+          ax: mazeOriginX + mazeWidth,
+          ay: mazeOriginY + mazeHeight,
+          bx: mazeOriginX,
+          by: mazeOriginY + mazeHeight
         },
         {
-          axASK: mazeOriginXASK,
-          ayASK: mazeOriginYASK + mazeHeightASK,
-          bxASK: mazeOriginXASK,
-          byASK: mazeOriginYASK
+          ax: mazeOriginX,
+          ay: mazeOriginY + mazeHeight,
+          bx: mazeOriginX,
+          by: mazeOriginY
         }
       ];
     }
   };
 }
 
-function makeHexTopologyASK() {
-  let cellsASK = mazeASK.flat();
-  const sqrtThreeASK = sqrt(3);
-  const hexRadiusASK = min(
-    mazeWidthNormASK / (sqrtThreeASK * (colsMazeASK + 0.5)),
-    mazeHeightNormASK / (rowsMazeASK * 1.5 + 0.5)
+function makeHexTopology() {
+  let cells = mazeASK.flat();
+  const sqrtThree = sqrt(3);
+  const hexRadius = min(
+    mazeWidthNorm / (sqrtThree * (mazeCols + 0.5)),
+    mazeHeightNorm / (mazeRows * 1.5 + 0.5)
   );
-  const hexWidthASK = sqrtThreeASK * hexRadiusASK;
-  const mazeWidthASK = hexWidthASK * (colsMazeASK + 0.5);
-  const mazeHeightASK = hexRadiusASK * (rowsMazeASK * 1.5 + 0.5);
+  const hexWidth = sqrtThree * hexRadius;
+  const mazeWidth = hexWidth * (mazeCols + 0.5);
+  const mazeHeight = hexRadius * (mazeRows * 1.5 + 0.5);
 
-  cellSizeASK = hexRadiusASK;
-  mazeOriginXASK = -mazeWidthASK * 0.5;
-  mazeOriginYASK = isSquareCompositionASK()
-    ? -mazeHeightASK * 0.5
-    : -mazeHeightASK * 0.42;
+  cellSize = hexRadius;
+  mazeOriginX = -mazeWidth * 0.5;
+  mazeOriginY = isSquareComposition()
+    ? -mazeHeight * 0.5
+    : -mazeHeight * 0.42;
 
-  function getOffsetNeighborsASK(cellASK) {
-    let rowOffsetASK = cellASK.rowASK % 2 === 0 ? 0 : 1;
+  function getOffsetNeighbors(cell) {
+    let rowOffset = cell.row % 2 === 0 ? 0 : 1;
 
     return {
-      topRightASK: getCellASK(cellASK.colASK + rowOffsetASK, cellASK.rowASK - 1),
-      rightASK: getCellASK(cellASK.colASK + 1, cellASK.rowASK),
-      bottomRightASK: getCellASK(cellASK.colASK + rowOffsetASK, cellASK.rowASK + 1),
-      bottomLeftASK: getCellASK(cellASK.colASK - 1 + rowOffsetASK, cellASK.rowASK + 1),
-      leftASK: getCellASK(cellASK.colASK - 1, cellASK.rowASK),
-      topLeftASK: getCellASK(cellASK.colASK - 1 + rowOffsetASK, cellASK.rowASK - 1)
+      topRight: getCell(cell.col + rowOffset, cell.row - 1),
+      right: getCell(cell.col + 1, cell.row),
+      bottomRight: getCell(cell.col + rowOffset, cell.row + 1),
+      bottomLeft: getCell(cell.col - 1 + rowOffset, cell.row + 1),
+      left: getCell(cell.col - 1, cell.row),
+      topLeft: getCell(cell.col - 1 + rowOffset, cell.row - 1)
     };
   }
 
-  function getHexCenterASK(cellASK) {
+  function getHexCenter(cell) {
     return {
-      x: mazeOriginXASK + hexWidthASK * (cellASK.colASK + 0.5 * (cellASK.rowASK % 2)) + hexWidthASK * 0.5,
-      y: mazeOriginYASK + cellASK.rowASK * hexRadiusASK * 1.5 + hexRadiusASK
+      x: mazeOriginX + hexWidth * (cell.col + 0.5 * (cell.row % 2)) + hexWidth * 0.5,
+      y: mazeOriginY + cell.row * hexRadius * 1.5 + hexRadius
     };
   }
 
-  function getHexPolygonASK(cellASK, insetASK = 0) {
-    let centerASK = getHexCenterASK(cellASK);
-    let radiusASK = max(0, hexRadiusASK - insetASK);
-    let halfWidthASK = sqrtThreeASK * 0.5 * radiusASK;
+  function getHexPolygon(cell, inset = 0) {
+    let center = getHexCenter(cell);
+    let radius = max(0, hexRadius - inset);
+    let halfWidth = sqrtThree * 0.5 * radius;
 
     return [
-      { xASK: centerASK.x, yASK: centerASK.y - radiusASK },
-      { xASK: centerASK.x + halfWidthASK, yASK: centerASK.y - radiusASK * 0.5 },
-      { xASK: centerASK.x + halfWidthASK, yASK: centerASK.y + radiusASK * 0.5 },
-      { xASK: centerASK.x, yASK: centerASK.y + radiusASK },
-      { xASK: centerASK.x - halfWidthASK, yASK: centerASK.y + radiusASK * 0.5 },
-      { xASK: centerASK.x - halfWidthASK, yASK: centerASK.y - radiusASK * 0.5 }
+      { x: center.x, y: center.y - radius },
+      { x: center.x + halfWidth, y: center.y - radius * 0.5 },
+      { x: center.x + halfWidth, y: center.y + radius * 0.5 },
+      { x: center.x, y: center.y + radius },
+      { x: center.x - halfWidth, y: center.y + radius * 0.5 },
+      { x: center.x - halfWidth, y: center.y - radius * 0.5 }
     ];
   }
 
   return {
-    modeASK: "hex",
+    mode: "hex",
 
-    getNeighborCellASK(cellASK, directionASK) {
-      if (!cellASK) return null;
-      let neighborsASK = getOffsetNeighborsASK(cellASK);
-      return neighborsASK[directionASK] || null;
+    getNeighborCell(cell, direction) {
+      if (!cell) return null;
+      let neighbors = getOffsetNeighbors(cell);
+      return neighbors[direction] || null;
     },
 
-    getRectNeighborsASK() {
+    getRectNeighbors() {
       return {
-        topASK: null,
-        rightASK: null,
-        bottomASK: null,
-        leftASK: null
+        top: null,
+        right: null,
+        bottom: null,
+        left: null
       };
     },
 
-    getNeighborsASK(cellASK) {
-      if (!cellASK) return [];
-      let neighborsASK = getOffsetNeighborsASK(cellASK);
+    getNeighbors(cell) {
+      if (!cell) return [];
+      let neighbors = getOffsetNeighbors(cell);
 
       return [
-        neighborsASK.topRightASK,
-        neighborsASK.rightASK,
-        neighborsASK.bottomRightASK,
-        neighborsASK.bottomLeftASK,
-        neighborsASK.leftASK,
-        neighborsASK.topLeftASK
+        neighbors.topRight,
+        neighbors.right,
+        neighbors.bottomRight,
+        neighbors.bottomLeft,
+        neighbors.left,
+        neighbors.topLeft
       ].filter(Boolean);
     },
 
-    getCellsASK() {
-      return cellsASK;
+    getCells() {
+      return cells;
     },
 
-    getBinaryTreeCandidatesASK(cellASK) {
-      if (!cellASK) return [];
-      let neighborsASK = getOffsetNeighborsASK(cellASK);
+    getBinaryTreeCandidates(cell) {
+      if (!cell) return [];
+      let neighbors = getOffsetNeighbors(cell);
       return [
-        neighborsASK.topRightASK,
-        neighborsASK.rightASK
+        neighbors.topRight,
+        neighbors.right
       ];
     },
 
-    getKruskalEdgesASK(cellASK) {
-      if (!cellASK) return [];
-      let neighborsASK = getOffsetNeighborsASK(cellASK);
-      let edgesASK = [];
+    getKruskalEdges(cell) {
+      if (!cell) return [];
+      let neighbors = getOffsetNeighbors(cell);
+      let edges = [];
 
-      if (neighborsASK.rightASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: neighborsASK.rightASK
+      if (neighbors.right) {
+        edges.push({
+          cellA: cell,
+          cellB: neighbors.right
         });
       }
 
-      if (neighborsASK.bottomRightASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: neighborsASK.bottomRightASK
+      if (neighbors.bottomRight) {
+        edges.push({
+          cellA: cell,
+          cellB: neighbors.bottomRight
         });
       }
 
-      if (neighborsASK.bottomLeftASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: neighborsASK.bottomLeftASK
+      if (neighbors.bottomLeft) {
+        edges.push({
+          cellA: cell,
+          cellB: neighbors.bottomLeft
         });
       }
 
-      return edgesASK;
+      return edges;
     },
 
-    areAdjacentCellsASK(cellAASK, cellBASK) {
-      if (!cellAASK || !cellBASK) return false;
-      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    areAdjacentCells(cellA, cellB) {
+      if (!cellA || !cellB) return false;
+      return this.getNeighbors(cellA).includes(cellB);
     },
 
-    getCellCenterASK(cellASK) {
-      return getHexCenterASK(cellASK);
+    getCellCenter(cell) {
+      return getHexCenter(cell);
     },
 
-    getCellPolygonASK(cellASK, insetASK = 0) {
-      return getHexPolygonASK(cellASK, insetASK);
+    getCellPolygon(cell, inset = 0) {
+      return getHexPolygon(cell, inset);
     },
 
-    getCellEdgeSegmentsASK(cellASK) {
-      let polygonASK = getHexPolygonASK(cellASK);
-      let neighborsASK = getOffsetNeighborsASK(cellASK);
+    getCellEdgeSegments(cell) {
+      let polygon = getHexPolygon(cell);
+      let neighbors = getOffsetNeighbors(cell);
 
       return [
         {
-          neighborASK: neighborsASK.topRightASK,
-          axASK: polygonASK[0].xASK,
-          ayASK: polygonASK[0].yASK,
-          bxASK: polygonASK[1].xASK,
-          byASK: polygonASK[1].yASK
+          neighbor: neighbors.topRight,
+          ax: polygon[0].x,
+          ay: polygon[0].y,
+          bx: polygon[1].x,
+          by: polygon[1].y
         },
         {
-          neighborASK: neighborsASK.rightASK,
-          axASK: polygonASK[1].xASK,
-          ayASK: polygonASK[1].yASK,
-          bxASK: polygonASK[2].xASK,
-          byASK: polygonASK[2].yASK
+          neighbor: neighbors.right,
+          ax: polygon[1].x,
+          ay: polygon[1].y,
+          bx: polygon[2].x,
+          by: polygon[2].y
         },
         {
-          neighborASK: neighborsASK.bottomRightASK,
-          axASK: polygonASK[2].xASK,
-          ayASK: polygonASK[2].yASK,
-          bxASK: polygonASK[3].xASK,
-          byASK: polygonASK[3].yASK
+          neighbor: neighbors.bottomRight,
+          ax: polygon[2].x,
+          ay: polygon[2].y,
+          bx: polygon[3].x,
+          by: polygon[3].y
         },
         {
-          neighborASK: neighborsASK.bottomLeftASK,
-          axASK: polygonASK[3].xASK,
-          ayASK: polygonASK[3].yASK,
-          bxASK: polygonASK[4].xASK,
-          byASK: polygonASK[4].yASK
+          neighbor: neighbors.bottomLeft,
+          ax: polygon[3].x,
+          ay: polygon[3].y,
+          bx: polygon[4].x,
+          by: polygon[4].y
         },
         {
-          neighborASK: neighborsASK.leftASK,
-          axASK: polygonASK[4].xASK,
-          ayASK: polygonASK[4].yASK,
-          bxASK: polygonASK[5].xASK,
-          byASK: polygonASK[5].yASK
+          neighbor: neighbors.left,
+          ax: polygon[4].x,
+          ay: polygon[4].y,
+          bx: polygon[5].x,
+          by: polygon[5].y
         },
         {
-          neighborASK: neighborsASK.topLeftASK,
-          axASK: polygonASK[5].xASK,
-          ayASK: polygonASK[5].yASK,
-          bxASK: polygonASK[0].xASK,
-          byASK: polygonASK[0].yASK
+          neighbor: neighbors.topLeft,
+          ax: polygon[5].x,
+          ay: polygon[5].y,
+          bx: polygon[0].x,
+          by: polygon[0].y
         }
       ];
     },
 
-    getBorderSegmentsASK() {
-      let borderSegmentsASK = [];
+    getBorderSegments() {
+      let borderSegments = [];
 
-      for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-        for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-          let edgeSegmentsASK = this.getCellEdgeSegmentsASK(mazeASK[rowASK][colASK]);
+      for (let row = 0; row < mazeRows; row++) {
+        for (let col = 0; col < mazeCols; col++) {
+          let edgeSegments = this.getCellEdgeSegments(mazeASK[row][col]);
 
-          for (let edgeASK of edgeSegmentsASK) {
-            if (!edgeASK.neighborASK) {
-              borderSegmentsASK.push(edgeASK);
+          for (let edge of edgeSegments) {
+            if (!edge.neighbor) {
+              borderSegments.push(edge);
             }
           }
         }
       }
 
-      return borderSegmentsASK;
+      return borderSegments;
     }
   };
 }
 
-function makeRadialTopologyASK() {
-  let ringCountASK = rowsMazeASK;
-  let maxCellsPerRingASK = colsMazeASK;
-  let cellsASK = [];
+function makeRadialTopology() {
+  let ringCount = mazeRows;
+  let maxCellsPerRing = mazeCols;
+  let cells = [];
 
-  let radiusASK = min(mazeWidthNormASK, mazeHeightNormASK) * 0.5;
-  let ringThicknessASK = radiusASK / max(1, ringCountASK);
-  let centerASK = { xASK: 0, yASK: 0 };
+  let radius = min(mazeWidthNorm, mazeHeightNorm) * 0.5;
+  let ringThickness = radius / max(1, ringCount);
+  let center = { x: 0, y: 0 };
 
-  mazeOriginXASK = -radiusASK;
-  mazeOriginYASK = -radiusASK;
-  cellSizeASK = ringThicknessASK;
+  mazeOriginX = -radius;
+  mazeOriginY = -radius;
+  cellSize = ringThickness;
 
-  function buildRingCountsASK() {
-    let countsASK = [];
+  function buildRingCounts() {
+    let counts = [];
 
-    for (let ringASK = 0; ringASK < ringCountASK; ringASK++) {
-      if (ringASK === 0) {
-        countsASK.push(1);
+    for (let ring = 0; ring < ringCount; ring++) {
+      if (ring === 0) {
+        counts.push(1);
         continue;
       }
 
-      if (ringASK === 1) {
-        countsASK.push(min(maxCellsPerRingASK, 6));
+      if (ring === 1) {
+        counts.push(min(maxCellsPerRing, 6));
         continue;
       }
 
-      let previousCountASK = countsASK[ringASK - 1];
-      let circumferenceASK = TWO_PI * (ringASK + 0.5);
-      let arcLengthASK = circumferenceASK / previousCountASK;
+      let previousCount = counts[ring - 1];
+      let circumference = TWO_PI * (ring + 0.5);
+      let arcLength = circumference / previousCount;
       // Split only when the next ring would become too stretched at the current density.
-      let shouldSplitASK = arcLengthASK > 1.8 && previousCountASK * 2 <= maxCellsPerRingASK;
+      let shouldSplit = arcLength > 1.8 && previousCount * 2 <= maxCellsPerRing;
 
-      countsASK.push(shouldSplitASK ? previousCountASK * 2 : previousCountASK);
+      counts.push(shouldSplit ? previousCount * 2 : previousCount);
     }
 
-    return countsASK;
+    return counts;
   }
 
-  let ringCountsASK = buildRingCountsASK();
-  let ringsASK = [];
+  let ringCounts = buildRingCounts();
+  let rings = [];
 
-  for (let ringASK = 0; ringASK < ringCountASK; ringASK++) {
-    let cellCountASK = ringCountsASK[ringASK];
-    let ringCellsASK = [];
+  for (let ring = 0; ring < ringCount; ring++) {
+    let cellCount = ringCounts[ring];
+    let ringCells = [];
 
-    for (let indexASK = 0; indexASK < cellCountASK; indexASK++) {
+    for (let index = 0; index < cellCount; index++) {
       // The prebuilt matrix stays in place, but only the true ring cells become part of the radial topology.
-      let cellASK = mazeASK[ringASK][indexASK];
-      cellASK.ringASK = ringASK;
-      cellASK.indexInRingASK = indexASK;
-      cellASK.ringCellCountASK = cellCountASK;
-      ringCellsASK.push(cellASK);
-      cellsASK.push(cellASK);
+      let cell = mazeASK[ring][index];
+      cell.ring = ring;
+      cell.indexInRing = index;
+      cell.ringCellCount = cellCount;
+      ringCells.push(cell);
+      cells.push(cell);
     }
 
-    ringsASK.push(ringCellsASK);
+    rings.push(ringCells);
   }
 
-  function getRingCellASK(ringASK, indexASK) {
-    if (ringASK < 0 || ringASK >= ringsASK.length) return null;
-    let ringCellsASK = ringsASK[ringASK];
-    if (ringCellsASK.length === 0) return null;
-    let wrappedIndexASK = ((indexASK % ringCellsASK.length) + ringCellsASK.length) % ringCellsASK.length;
-    return ringCellsASK[wrappedIndexASK];
+  function getRingCell(ring, index) {
+    if (ring < 0 || ring >= rings.length) return null;
+    let ringCells = rings[ring];
+    if (ringCells.length === 0) return null;
+    let wrappedIndex = ((index % ringCells.length) + ringCells.length) % ringCells.length;
+    return ringCells[wrappedIndex];
   }
 
-  function getCellAnglesASK(cellASK, insetASK = 0) {
-    let countASK = max(1, cellASK.ringCellCountASK);
-    let startAngleASK = -HALF_PI + TWO_PI * (cellASK.indexInRingASK / countASK);
-    let endAngleASK = -HALF_PI + TWO_PI * ((cellASK.indexInRingASK + 1) / countASK);
+  function getCellAngles(cell, inset = 0) {
+    let count = max(1, cell.ringCellCount);
+    let startAngle = -HALF_PI + TWO_PI * (cell.indexInRing / count);
+    let endAngle = -HALF_PI + TWO_PI * ((cell.indexInRing + 1) / count);
 
-    if (insetASK <= 0 || cellASK.ringASK === 0) {
-      return { startAngleASK, endAngleASK };
+    if (inset <= 0 || cell.ring === 0) {
+      return { startAngle, endAngle };
     }
 
-    let midRadiusASK = (cellASK.ringASK + 0.5) * ringThicknessASK;
-    let angleInsetASK = min((endAngleASK - startAngleASK) * 0.25, insetASK / max(midRadiusASK, 0.0001));
+    let midRadius = (cell.ring + 0.5) * ringThickness;
+    let angleInset = min((endAngle - startAngle) * 0.25, inset / max(midRadius, 0.0001));
 
     return {
-      startAngleASK: startAngleASK + angleInsetASK,
-      endAngleASK: endAngleASK - angleInsetASK
+      startAngle: startAngle + angleInset,
+      endAngle: endAngle - angleInset
     };
   }
 
-  function getArcPointsASK(radiusASKValue, startAngleASK, endAngleASK) {
-    let pointCountASK = max(2, ceil(abs(endAngleASK - startAngleASK) / (PI / 18)) + 1);
-    let pointsASK = [];
+  function getArcPoints(radiusASKValue, startAngle, endAngle) {
+    let pointCount = max(2, ceil(abs(endAngle - startAngle) / (PI / 18)) + 1);
+    let points = [];
 
-    for (let iASK = 0; iASK < pointCountASK; iASK++) {
-      let tASK = pointCountASK === 1 ? 0 : iASK / (pointCountASK - 1);
-      let angleASK = lerp(startAngleASK, endAngleASK, tASK);
-      pointsASK.push({
-        xASK: centerASK.xASK + cos(angleASK) * radiusASKValue,
-        yASK: centerASK.yASK + sin(angleASK) * radiusASKValue
+    for (let i = 0; i < pointCount; i++) {
+      let t = pointCount === 1 ? 0 : i / (pointCount - 1);
+      let angle = lerp(startAngle, endAngle, t);
+      points.push({
+        x: center.x + cos(angle) * radiusASKValue,
+        y: center.y + sin(angle) * radiusASKValue
       });
     }
 
-    return pointsASK;
+    return points;
   }
 
-  function getRadialLinePointsASK(radiusAASK, radiusBASK, angleASK) {
+  function getRadialLinePoints(radiusA, radiusB, angle) {
     return [
       {
-        xASK: centerASK.xASK + cos(angleASK) * radiusAASK,
-        yASK: centerASK.yASK + sin(angleASK) * radiusAASK
+        x: center.x + cos(angle) * radiusA,
+        y: center.y + sin(angle) * radiusA
       },
       {
-        xASK: centerASK.xASK + cos(angleASK) * radiusBASK,
-        yASK: centerASK.yASK + sin(angleASK) * radiusBASK
+        x: center.x + cos(angle) * radiusB,
+        y: center.y + sin(angle) * radiusB
       }
     ];
   }
 
-  function segmentsFromPointsASK(pointsASK, neighborASK) {
-    let segmentsASK = [];
+  function segmentsFromPoints(points, neighbor) {
+    let segments = [];
 
-    for (let iASK = 0; iASK < pointsASK.length - 1; iASK++) {
-      segmentsASK.push({
-        neighborASK,
-        axASK: pointsASK[iASK].xASK,
-        ayASK: pointsASK[iASK].yASK,
-        bxASK: pointsASK[iASK + 1].xASK,
-        byASK: pointsASK[iASK + 1].yASK
+    for (let i = 0; i < points.length - 1; i++) {
+      segments.push({
+        neighbor,
+        ax: points[i].x,
+        ay: points[i].y,
+        bx: points[i + 1].x,
+        by: points[i + 1].y
       });
     }
 
-    return segmentsASK;
+    return segments;
   }
 
-  function getInwardNeighborASK(cellASK) {
-    if (!cellASK || cellASK.ringASK === 0) return null;
+  function getInwardNeighbor(cell) {
+    if (!cell || cell.ring === 0) return null;
 
-    let innerCellsASK = ringsASK[cellASK.ringASK - 1];
+    let innerCells = rings[cell.ring - 1];
     // Uneven rings map each outer wedge back to the inner wedge that spans the same angle.
-    let ratioASK = cellASK.ringCellCountASK / innerCellsASK.length;
-    return innerCellsASK[floor(cellASK.indexInRingASK / ratioASK)] || null;
+    let ratio = cell.ringCellCount / innerCells.length;
+    return innerCells[floor(cell.indexInRing / ratio)] || null;
   }
 
-  function getOutwardNeighborsASK(cellASK) {
-    if (!cellASK || cellASK.ringASK >= ringsASK.length - 1) return [];
+  function getOutwardNeighbors(cell) {
+    if (!cell || cell.ring >= rings.length - 1) return [];
 
-    let outerCellsASK = ringsASK[cellASK.ringASK + 1];
+    let outerCells = rings[cell.ring + 1];
     // A ring can fan out to multiple outer neighbors when the next ring has more cells.
-    let ratioASK = outerCellsASK.length / cellASK.ringCellCountASK;
-    let startIndexASK = floor(cellASK.indexInRingASK * ratioASK);
-    let endIndexASK = floor((cellASK.indexInRingASK + 1) * ratioASK);
-    let neighborsASK = [];
+    let ratio = outerCells.length / cell.ringCellCount;
+    let startIndex = floor(cell.indexInRing * ratio);
+    let endIndex = floor((cell.indexInRing + 1) * ratio);
+    let neighbors = [];
 
-    for (let indexASK = startIndexASK; indexASK < endIndexASK; indexASK++) {
-      let neighborASK = outerCellsASK[indexASK];
-      if (neighborASK) neighborsASK.push(neighborASK);
+    for (let index = startIndex; index < endIndex; index++) {
+      let neighbor = outerCells[index];
+      if (neighbor) neighbors.push(neighbor);
     }
 
-    return neighborsASK;
+    return neighbors;
   }
 
-  function getRingNeighborsASK(cellASK) {
-    if (!cellASK || cellASK.ringCellCountASK <= 1) {
-      return { clockwiseASK: null, counterClockwiseASK: null };
+  function getRingNeighbors(cell) {
+    if (!cell || cell.ringCellCount <= 1) {
+      return { clockwise: null, counterClockwise: null };
     }
 
     return {
-      clockwiseASK: getRingCellASK(cellASK.ringASK, cellASK.indexInRingASK + 1),
-      counterClockwiseASK: getRingCellASK(cellASK.ringASK, cellASK.indexInRingASK - 1)
+      clockwise: getRingCell(cell.ring, cell.indexInRing + 1),
+      counterClockwise: getRingCell(cell.ring, cell.indexInRing - 1)
     };
   }
 
-  function getRadialPolygonASK(cellASK, insetASK = 0) {
-    if (!cellASK) return [];
+  function getRadialPolygon(cell, inset = 0) {
+    if (!cell) return [];
 
-    let outerRadiusASK = max(0, (cellASK.ringASK + 1) * ringThicknessASK - insetASK);
+    let outerRadius = max(0, (cell.ring + 1) * ringThickness - inset);
 
-    if (cellASK.ringASK === 0) {
-      return getArcPointsASK(outerRadiusASK, -HALF_PI, 1.5 * PI).slice(0, -1);
+    if (cell.ring === 0) {
+      return getArcPoints(outerRadius, -HALF_PI, 1.5 * PI).slice(0, -1);
     }
 
-    let innerRadiusASK = max(0, cellASK.ringASK * ringThicknessASK + insetASK);
-    let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, insetASK);
-    let outerArcASK = getArcPointsASK(outerRadiusASK, startAngleASK, endAngleASK);
-    let innerArcASK = getArcPointsASK(innerRadiusASK, endAngleASK, startAngleASK);
+    let innerRadius = max(0, cell.ring * ringThickness + inset);
+    let { startAngle, endAngle } = getCellAngles(cell, inset);
+    let outerArc = getArcPoints(outerRadius, startAngle, endAngle);
+    let innerArc = getArcPoints(innerRadius, endAngle, startAngle);
 
-    return [...outerArcASK, ...innerArcASK];
+    return [...outerArc, ...innerArc];
   }
 
-  function getRadialEdgeSegmentsASK(cellASK) {
-    if (!cellASK) return [];
+  function getRadialEdgeSegments(cell) {
+    if (!cell) return [];
 
-    let innerRadiusASK = cellASK.ringASK * ringThicknessASK;
-    let outerRadiusASK = (cellASK.ringASK + 1) * ringThicknessASK;
-    let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, 0);
-    let ringNeighborsASK = getRingNeighborsASK(cellASK);
-    let inwardNeighborASK = getInwardNeighborASK(cellASK);
-    let outwardNeighborsASK = getOutwardNeighborsASK(cellASK);
-    let edgeSegmentsASK = [];
+    let innerRadius = cell.ring * ringThickness;
+    let outerRadius = (cell.ring + 1) * ringThickness;
+    let { startAngle, endAngle } = getCellAngles(cell, 0);
+    let ringNeighbors = getRingNeighbors(cell);
+    let inwardNeighbor = getInwardNeighbor(cell);
+    let outwardNeighbors = getOutwardNeighbors(cell);
+    let edgeSegments = [];
 
-    if (cellASK.ringCellCountASK > 1) {
+    if (cell.ringCellCount > 1) {
       // Same-ring wall ownership stays canonical by emitting only the clockwise boundary.
-      edgeSegmentsASK.push(
-        ...segmentsFromPointsASK(
-          getRadialLinePointsASK(innerRadiusASK, outerRadiusASK, endAngleASK),
-          ringNeighborsASK.clockwiseASK
+      edgeSegments.push(
+        ...segmentsFromPoints(
+          getRadialLinePoints(innerRadius, outerRadius, endAngle),
+          ringNeighbors.clockwise
         )
       );
     }
 
-    if (cellASK.ringASK > 0) {
-      edgeSegmentsASK.push(
-        ...segmentsFromPointsASK(
-          getArcPointsASK(innerRadiusASK, startAngleASK, endAngleASK),
-          inwardNeighborASK
+    if (cell.ring > 0) {
+      edgeSegments.push(
+        ...segmentsFromPoints(
+          getArcPoints(innerRadius, startAngle, endAngle),
+          inwardNeighbor
         )
       );
     }
 
-    if (outwardNeighborsASK.length === 0) {
-      edgeSegmentsASK.push(
-        ...segmentsFromPointsASK(
-          getArcPointsASK(outerRadiusASK, startAngleASK, endAngleASK),
+    if (outwardNeighbors.length === 0) {
+      edgeSegments.push(
+        ...segmentsFromPoints(
+          getArcPoints(outerRadius, startAngle, endAngle),
           null
         )
       );
     } else {
-      let outerCountASK = outwardNeighborsASK.length;
-      for (let iASK = 0; iASK < outerCountASK; iASK++) {
-        let segmentStartASK = lerp(startAngleASK, endAngleASK, iASK / outerCountASK);
-        let segmentEndASK = lerp(startAngleASK, endAngleASK, (iASK + 1) / outerCountASK);
-        edgeSegmentsASK.push(
-          ...segmentsFromPointsASK(
-            getArcPointsASK(outerRadiusASK, segmentStartASK, segmentEndASK),
-            outwardNeighborsASK[iASK]
+      let outerCount = outwardNeighbors.length;
+      for (let i = 0; i < outerCount; i++) {
+        let segmentStart = lerp(startAngle, endAngle, i / outerCount);
+        let segmentEnd = lerp(startAngle, endAngle, (i + 1) / outerCount);
+        edgeSegments.push(
+          ...segmentsFromPoints(
+            getArcPoints(outerRadius, segmentStart, segmentEnd),
+            outwardNeighbors[i]
           )
         );
       }
     }
 
-    return edgeSegmentsASK;
+    return edgeSegments;
   }
 
   return {
-    modeASK: "radial",
+    mode: "radial",
 
-    getNeighborCellASK(cellASK, directionASK) {
-      if (!cellASK) return null;
+    getNeighborCell(cell, direction) {
+      if (!cell) return null;
 
-      if (directionASK === "inwardASK") {
-        return getInwardNeighborASK(cellASK);
+      if (direction === "inward") {
+        return getInwardNeighbor(cell);
       }
-      if (directionASK === "outwardASK") {
-        return getOutwardNeighborsASK(cellASK)[0] || null;
+      if (direction === "outward") {
+        return getOutwardNeighbors(cell)[0] || null;
       }
-      if (directionASK === "clockwiseASK") {
-        return getRingNeighborsASK(cellASK).clockwiseASK;
+      if (direction === "clockwise") {
+        return getRingNeighbors(cell).clockwise;
       }
-      if (directionASK === "counterClockwiseASK") {
-        return getRingNeighborsASK(cellASK).counterClockwiseASK;
+      if (direction === "counterClockwise") {
+        return getRingNeighbors(cell).counterClockwise;
       }
 
       return null;
     },
 
-    getRectNeighborsASK() {
+    getRectNeighbors() {
       return {
-        topASK: null,
-        rightASK: null,
-        bottomASK: null,
-        leftASK: null
+        top: null,
+        right: null,
+        bottom: null,
+        left: null
       };
     },
 
-    getNeighborsASK(cellASK) {
-      if (!cellASK) return [];
+    getNeighbors(cell) {
+      if (!cell) return [];
 
-      let ringNeighborsASK = getRingNeighborsASK(cellASK);
+      let ringNeighbors = getRingNeighbors(cell);
       return [
-        getInwardNeighborASK(cellASK),
-        ...getOutwardNeighborsASK(cellASK),
-        ringNeighborsASK.clockwiseASK,
-        ringNeighborsASK.counterClockwiseASK
+        getInwardNeighbor(cell),
+        ...getOutwardNeighbors(cell),
+        ringNeighbors.clockwise,
+        ringNeighbors.counterClockwise
       ].filter(Boolean);
     },
 
-    getCellsASK() {
-      return cellsASK;
+    getCells() {
+      return cells;
     },
 
-    getBinaryTreeCandidatesASK() {
+    getBinaryTreeCandidates() {
       return [];
     },
 
-    getKruskalEdgesASK(cellASK) {
-      if (!cellASK) return [];
+    getKruskalEdges(cell) {
+      if (!cell) return [];
 
-      let edgesASK = [];
-      let ringNeighborsASK = getRingNeighborsASK(cellASK);
+      let edges = [];
+      let ringNeighbors = getRingNeighbors(cell);
 
-      if (ringNeighborsASK.clockwiseASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: ringNeighborsASK.clockwiseASK
+      if (ringNeighbors.clockwise) {
+        edges.push({
+          cellA: cell,
+          cellB: ringNeighbors.clockwise
         });
       }
 
-      for (let outwardNeighborASK of getOutwardNeighborsASK(cellASK)) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: outwardNeighborASK
+      for (let outwardNeighbor of getOutwardNeighbors(cell)) {
+        edges.push({
+          cellA: cell,
+          cellB: outwardNeighbor
         });
       }
 
-      return edgesASK;
+      return edges;
     },
 
-    areAdjacentCellsASK(cellAASK, cellBASK) {
-      if (!cellAASK || !cellBASK) return false;
-      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    areAdjacentCells(cellA, cellB) {
+      if (!cellA || !cellB) return false;
+      return this.getNeighbors(cellA).includes(cellB);
     },
 
-    getCellCenterASK(cellASK) {
-      if (!cellASK) return centerASK;
-      if (cellASK.ringASK === 0) return centerASK;
+    getCellCenter(cell) {
+      if (!cell) return center;
+      if (cell.ring === 0) return center;
 
-      let { startAngleASK, endAngleASK } = getCellAnglesASK(cellASK, 0);
-      let midAngleASK = (startAngleASK + endAngleASK) * 0.5;
-      let midRadiusASK = (cellASK.ringASK + 0.5) * ringThicknessASK;
+      let { startAngle, endAngle } = getCellAngles(cell, 0);
+      let midAngle = (startAngle + endAngle) * 0.5;
+      let midRadius = (cell.ring + 0.5) * ringThickness;
 
       return {
-        x: centerASK.xASK + cos(midAngleASK) * midRadiusASK,
-        y: centerASK.yASK + sin(midAngleASK) * midRadiusASK
+        x: center.x + cos(midAngle) * midRadius,
+        y: center.y + sin(midAngle) * midRadius
       };
     },
 
-    getCellPolygonASK(cellASK, insetASK = 0) {
-      return getRadialPolygonASK(cellASK, insetASK);
+    getCellPolygon(cell, inset = 0) {
+      return getRadialPolygon(cell, inset);
     },
 
-    getCellEdgeSegmentsASK(cellASK) {
-      return getRadialEdgeSegmentsASK(cellASK);
+    getCellEdgeSegments(cell) {
+      return getRadialEdgeSegments(cell);
     },
 
-    getBorderSegmentsASK() {
-      let borderSegmentsASK = [];
+    getBorderSegments() {
+      let borderSegments = [];
 
-      for (let cellASK of cellsASK) {
-        let edgeSegmentsASK = this.getCellEdgeSegmentsASK(cellASK);
-        for (let edgeASK of edgeSegmentsASK) {
-          if (!edgeASK.neighborASK) {
-            borderSegmentsASK.push(edgeASK);
+      for (let cell of cells) {
+        let edgeSegments = this.getCellEdgeSegments(cell);
+        for (let edge of edgeSegments) {
+          if (!edge.neighbor) {
+            borderSegments.push(edge);
           }
         }
       }
 
-      return borderSegmentsASK;
+      return borderSegments;
     }
   };
 }
 
-function makeTriangleTopologyASK() {
-  let cellsASK = mazeASK.flat();
-  const sqrtThreeASK = sqrt(3);
-  const triangleHeightASKFactorASK = sqrtThreeASK * 0.5;
-  const triangleSideASK = min(
-    (mazeWidthNormASK * 2) / (colsMazeASK + 1),
-    mazeHeightNormASK / (rowsMazeASK * triangleHeightASKFactorASK)
+function makeTriangleTopology() {
+  let cells = mazeASK.flat();
+  const sqrtThree = sqrt(3);
+  const triangleHeightASKFactor = sqrtThree * 0.5;
+  const triangleSide = min(
+    (mazeWidthNorm * 2) / (mazeCols + 1),
+    mazeHeightNorm / (mazeRows * triangleHeightASKFactor)
   );
-  const triangleHeightASK = triangleSideASK * triangleHeightASKFactorASK;
-  const mazeWidthASK = triangleSideASK * (colsMazeASK + 1) * 0.5;
-  const mazeHeightASK = triangleHeightASK * rowsMazeASK;
+  const triangleHeight = triangleSide * triangleHeightASKFactor;
+  const mazeWidth = triangleSide * (mazeCols + 1) * 0.5;
+  const mazeHeight = triangleHeight * mazeRows;
 
-  cellSizeASK = triangleSideASK;
-  mazeOriginXASK = -mazeWidthASK * 0.5;
-  mazeOriginYASK = isSquareCompositionASK()
-    ? -mazeHeightASK * 0.5
-    : -mazeHeightASK * 0.42;
+  cellSize = triangleSide;
+  mazeOriginX = -mazeWidth * 0.5;
+  mazeOriginY = isSquareComposition()
+    ? -mazeHeight * 0.5
+    : -mazeHeight * 0.42;
 
-  function isUpTriangleASK(cellASK) {
-    return (cellASK.colASK + cellASK.rowASK) % 2 === 0;
+  function isUpTriangle(cell) {
+    return (cell.col + cell.row) % 2 === 0;
   }
 
-  function getTriangleNeighborsASK(cellASK) {
-    let isUpASK = isUpTriangleASK(cellASK);
-    let verticalASK = isUpASK
-      ? getCellASK(cellASK.colASK, cellASK.rowASK + 1)
-      : getCellASK(cellASK.colASK, cellASK.rowASK - 1);
+  function getTriangleNeighbors(cell) {
+    let isUp = isUpTriangle(cell);
+    let vertical = isUp
+      ? getCell(cell.col, cell.row + 1)
+      : getCell(cell.col, cell.row - 1);
 
     return {
-      topASK: isUpASK ? null : verticalASK,
-      rightASK: getCellASK(cellASK.colASK + 1, cellASK.rowASK),
-      bottomASK: isUpASK ? verticalASK : null,
-      leftASK: getCellASK(cellASK.colASK - 1, cellASK.rowASK),
-      verticalASK
+      top: isUp ? null : vertical,
+      right: getCell(cell.col + 1, cell.row),
+      bottom: isUp ? vertical : null,
+      left: getCell(cell.col - 1, cell.row),
+      vertical
     };
   }
 
-  function getTriangleMidXASK(cellASK) {
-    return mazeOriginXASK + triangleSideASK * (cellASK.colASK + 1) * 0.5;
+  function getTriangleMidX(cell) {
+    return mazeOriginX + triangleSide * (cell.col + 1) * 0.5;
   }
 
-  function getTriangleTopYASK(cellASK) {
-    return mazeOriginYASK + cellASK.rowASK * triangleHeightASK;
+  function getTriangleTopY(cell) {
+    return mazeOriginY + cell.row * triangleHeight;
   }
 
-  function getTriangleCenterASK(cellASK) {
-    let isUpASK = isUpTriangleASK(cellASK);
+  function getTriangleCenter(cell) {
+    let isUp = isUpTriangle(cell);
     return {
-      x: getTriangleMidXASK(cellASK),
-      y: getTriangleTopYASK(cellASK) + triangleHeightASK * (isUpASK ? 2 / 3 : 1 / 3)
+      x: getTriangleMidX(cell),
+      y: getTriangleTopY(cell) + triangleHeight * (isUp ? 2 / 3 : 1 / 3)
     };
   }
 
-  function insetTrianglePolygonASK(polygonASK, centerASK, insetASK) {
-    if (insetASK <= 0) return polygonASK;
+  function insetTrianglePolygon(polygon, center, inset) {
+    if (inset <= 0) return polygon;
 
-    return polygonASK.map((pointASK) => {
-      let dxASK = pointASK.xASK - centerASK.x;
-      let dyASK = pointASK.yASK - centerASK.y;
-      let distanceASK = sqrt(dxASK * dxASK + dyASK * dyASK);
+    return polygon.map((point) => {
+      let dx = point.x - center.x;
+      let dy = point.y - center.y;
+      let distance = sqrt(dx * dx + dy * dy);
 
-      if (distanceASK === 0) return pointASK;
+      if (distance === 0) return point;
 
-      let scaleASK = max(0, (distanceASK - insetASK) / distanceASK);
+      let scale = max(0, (distance - inset) / distance);
       return {
-        xASK: centerASK.x + dxASK * scaleASK,
-        yASK: centerASK.y + dyASK * scaleASK
+        x: center.x + dx * scale,
+        y: center.y + dy * scale
       };
     });
   }
 
-  function getTrianglePolygonASK(cellASK, insetASK = 0) {
-    let midXASK = getTriangleMidXASK(cellASK);
-    let topYASK = getTriangleTopYASK(cellASK);
-    let isUpASK = isUpTriangleASK(cellASK);
+  function getTrianglePolygon(cell, inset = 0) {
+    let midX = getTriangleMidX(cell);
+    let topY = getTriangleTopY(cell);
+    let isUp = isUpTriangle(cell);
 
-    let polygonASK = isUpASK
+    let polygon = isUp
       ? [
-          { xASK: midXASK, yASK: topYASK },
-          { xASK: midXASK + triangleSideASK * 0.5, yASK: topYASK + triangleHeightASK },
-          { xASK: midXASK - triangleSideASK * 0.5, yASK: topYASK + triangleHeightASK }
+          { x: midX, y: topY },
+          { x: midX + triangleSide * 0.5, y: topY + triangleHeight },
+          { x: midX - triangleSide * 0.5, y: topY + triangleHeight }
         ]
       : [
-          { xASK: midXASK - triangleSideASK * 0.5, yASK: topYASK },
-          { xASK: midXASK + triangleSideASK * 0.5, yASK: topYASK },
-          { xASK: midXASK, yASK: topYASK + triangleHeightASK }
+          { x: midX - triangleSide * 0.5, y: topY },
+          { x: midX + triangleSide * 0.5, y: topY },
+          { x: midX, y: topY + triangleHeight }
         ];
 
-    return insetTrianglePolygonASK(polygonASK, getTriangleCenterASK(cellASK), insetASK);
+    return insetTrianglePolygon(polygon, getTriangleCenter(cell), inset);
   }
 
   return {
-    modeASK: "triangle",
+    mode: "triangle",
 
-    getNeighborCellASK(cellASK, directionASK) {
-      if (!cellASK) return null;
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
-      return neighborsASK[directionASK] || null;
+    getNeighborCell(cell, direction) {
+      if (!cell) return null;
+      let neighbors = getTriangleNeighbors(cell);
+      return neighbors[direction] || null;
     },
 
-    getRectNeighborsASK(cellASK) {
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
+    getRectNeighbors(cell) {
+      let neighbors = getTriangleNeighbors(cell);
       return {
-        topASK: neighborsASK.topASK,
-        rightASK: neighborsASK.rightASK,
-        bottomASK: neighborsASK.bottomASK,
-        leftASK: neighborsASK.leftASK
+        top: neighbors.top,
+        right: neighbors.right,
+        bottom: neighbors.bottom,
+        left: neighbors.left
       };
     },
 
-    getNeighborsASK(cellASK) {
-      if (!cellASK) return [];
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
+    getNeighbors(cell) {
+      if (!cell) return [];
+      let neighbors = getTriangleNeighbors(cell);
 
       return [
-        neighborsASK.leftASK,
-        neighborsASK.rightASK,
-        neighborsASK.verticalASK
+        neighbors.left,
+        neighbors.right,
+        neighbors.vertical
       ].filter(Boolean);
     },
 
-    getCellsASK() {
-      return cellsASK;
+    getCells() {
+      return cells;
     },
 
-    getBinaryTreeCandidatesASK(cellASK) {
-      if (!cellASK) return [];
+    getBinaryTreeCandidates(cell) {
+      if (!cell) return [];
 
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
-      let horizontalASK = cellASK.rowASK % 2 === 0
-        ? neighborsASK.rightASK
-        : neighborsASK.leftASK;
-      let verticalASK = isUpTriangleASK(cellASK)
+      let neighbors = getTriangleNeighbors(cell);
+      let horizontal = cell.row % 2 === 0
+        ? neighbors.right
+        : neighbors.left;
+      let vertical = isUpTriangle(cell)
         ? null
-        : neighborsASK.topASK;
+        : neighbors.top;
 
-      return [verticalASK, horizontalASK];
+      return [vertical, horizontal];
     },
 
-    getKruskalEdgesASK(cellASK) {
-      if (!cellASK) return [];
+    getKruskalEdges(cell) {
+      if (!cell) return [];
 
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
-      let edgesASK = [];
+      let neighbors = getTriangleNeighbors(cell);
+      let edges = [];
 
-      if (neighborsASK.rightASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: neighborsASK.rightASK
+      if (neighbors.right) {
+        edges.push({
+          cellA: cell,
+          cellB: neighbors.right
         });
       }
 
-      if (neighborsASK.verticalASK) {
-        edgesASK.push({
-          cellAASK: cellASK,
-          cellBASK: neighborsASK.verticalASK
+      if (neighbors.vertical) {
+        edges.push({
+          cellA: cell,
+          cellB: neighbors.vertical
         });
       }
 
-      return edgesASK;
+      return edges;
     },
 
-    areAdjacentCellsASK(cellAASK, cellBASK) {
-      if (!cellAASK || !cellBASK) return false;
-      return this.getNeighborsASK(cellAASK).includes(cellBASK);
+    areAdjacentCells(cellA, cellB) {
+      if (!cellA || !cellB) return false;
+      return this.getNeighbors(cellA).includes(cellB);
     },
 
-    getCellCenterASK(cellASK) {
-      return getTriangleCenterASK(cellASK);
+    getCellCenter(cell) {
+      return getTriangleCenter(cell);
     },
 
-    getCellPolygonASK(cellASK, insetASK = 0) {
-      return getTrianglePolygonASK(cellASK, insetASK);
+    getCellPolygon(cell, inset = 0) {
+      return getTrianglePolygon(cell, inset);
     },
 
-    getCellEdgeSegmentsASK(cellASK) {
-      let polygonASK = getTrianglePolygonASK(cellASK);
-      let neighborsASK = getTriangleNeighborsASK(cellASK);
+    getCellEdgeSegments(cell) {
+      let polygon = getTrianglePolygon(cell);
+      let neighbors = getTriangleNeighbors(cell);
 
-      if (isUpTriangleASK(cellASK)) {
+      if (isUpTriangle(cell)) {
         return [
           {
-            neighborASK: neighborsASK.rightASK,
-            axASK: polygonASK[0].xASK,
-            ayASK: polygonASK[0].yASK,
-            bxASK: polygonASK[1].xASK,
-            byASK: polygonASK[1].yASK
+            neighbor: neighbors.right,
+            ax: polygon[0].x,
+            ay: polygon[0].y,
+            bx: polygon[1].x,
+            by: polygon[1].y
           },
           {
-            neighborASK: neighborsASK.bottomASK,
-            axASK: polygonASK[1].xASK,
-            ayASK: polygonASK[1].yASK,
-            bxASK: polygonASK[2].xASK,
-            byASK: polygonASK[2].yASK
+            neighbor: neighbors.bottom,
+            ax: polygon[1].x,
+            ay: polygon[1].y,
+            bx: polygon[2].x,
+            by: polygon[2].y
           },
           {
-            neighborASK: neighborsASK.leftASK,
-            axASK: polygonASK[2].xASK,
-            ayASK: polygonASK[2].yASK,
-            bxASK: polygonASK[0].xASK,
-            byASK: polygonASK[0].yASK
+            neighbor: neighbors.left,
+            ax: polygon[2].x,
+            ay: polygon[2].y,
+            bx: polygon[0].x,
+            by: polygon[0].y
           }
         ];
       }
 
       return [
         {
-          neighborASK: neighborsASK.leftASK,
-          axASK: polygonASK[0].xASK,
-          ayASK: polygonASK[0].yASK,
-          bxASK: polygonASK[2].xASK,
-          byASK: polygonASK[2].yASK
+          neighbor: neighbors.left,
+          ax: polygon[0].x,
+          ay: polygon[0].y,
+          bx: polygon[2].x,
+          by: polygon[2].y
         },
         {
-          neighborASK: neighborsASK.rightASK,
-          axASK: polygonASK[2].xASK,
-          ayASK: polygonASK[2].yASK,
-          bxASK: polygonASK[1].xASK,
-          byASK: polygonASK[1].yASK
+          neighbor: neighbors.right,
+          ax: polygon[2].x,
+          ay: polygon[2].y,
+          bx: polygon[1].x,
+          by: polygon[1].y
         },
         {
-          neighborASK: neighborsASK.topASK,
-          axASK: polygonASK[1].xASK,
-          ayASK: polygonASK[1].yASK,
-          bxASK: polygonASK[0].xASK,
-          byASK: polygonASK[0].yASK
+          neighbor: neighbors.top,
+          ax: polygon[1].x,
+          ay: polygon[1].y,
+          bx: polygon[0].x,
+          by: polygon[0].y
         }
       ];
     },
 
-    getBorderSegmentsASK() {
-      let borderSegmentsASK = [];
+    getBorderSegments() {
+      let borderSegments = [];
 
-      for (let rowASK = 0; rowASK < rowsMazeASK; rowASK++) {
-        for (let colASK = 0; colASK < colsMazeASK; colASK++) {
-          let edgeSegmentsASK = this.getCellEdgeSegmentsASK(mazeASK[rowASK][colASK]);
+      for (let row = 0; row < mazeRows; row++) {
+        for (let col = 0; col < mazeCols; col++) {
+          let edgeSegments = this.getCellEdgeSegments(mazeASK[row][col]);
 
-          for (let edgeASK of edgeSegmentsASK) {
-            if (!edgeASK.neighborASK) {
-              borderSegmentsASK.push(edgeASK);
+          for (let edge of edgeSegments) {
+            if (!edge.neighbor) {
+              borderSegments.push(edge);
             }
           }
         }
       }
 
-      return borderSegmentsASK;
+      return borderSegments;
     }
   };
 }
 
-function getNeighborCellASK(cellASK, directionASK) {
-  return topologyASK.getNeighborCellASK(cellASK, directionASK);
+function getNeighborCell(cell, direction) {
+  return topology.getNeighborCell(cell, direction);
 }
 
-function getRectNeighborsASK(cellASK) {
-  return topologyASK.getRectNeighborsASK(cellASK);
+function getRectNeighbors(cell) {
+  return topology.getRectNeighbors(cell);
 }
 
-function getNeighborCellsASK(cellASK) {
-  return topologyASK.getNeighborsASK(cellASK);
+function getNeighborCells(cell) {
+  return topology.getNeighbors(cell);
 }
 
-function getTopologyCellsASK() {
-  return topologyASK.getCellsASK();
+function getTopologyCells() {
+  return topology.getCells();
 }
 
-function getBinaryTreeCandidatesASK(cellASK) {
-  return topologyASK.getBinaryTreeCandidatesASK(cellASK);
+function getBinaryTreeCandidates(cell) {
+  return topology.getBinaryTreeCandidates(cell);
 }
 
-function getKruskalEdgesASK() {
-  let edgesASK = [];
+function getKruskalEdges() {
+  let edges = [];
 
-  for (let cellASK of getTopologyCellsASK()) {
-    edgesASK.push(...topologyASK.getKruskalEdgesASK(cellASK));
+  for (let cell of getTopologyCells()) {
+    edges.push(...topology.getKruskalEdges(cell));
   }
 
-  return edgesASK;
+  return edges;
 }
 
-function getUnvisitedNeighborsASK(cellASK) {
-  if (!cellASK) return [];
-  return getNeighborCellsASK(cellASK).filter(
-    (neighborASK) => !neighborASK.visitedASK
+function getUnvisitedNeighbors(cell) {
+  if (!cell) return [];
+  return getNeighborCells(cell).filter(
+    (neighbor) => !neighbor.visited
   );
 }
 
-function getVisitedNeighborsASK(cellASK) {
-  return getNeighborCellsASK(cellASK).filter(
-    (neighborASK) => neighborASK.visitedASK
+function getVisitedNeighbors(cell) {
+  return getNeighborCells(cell).filter(
+    (neighbor) => neighbor.visited
   );
 }
 
-function minVisitedNeighborDepthASK(neighborsASK) {
-  let minDepthASK = Infinity;
-  for (let neighborASK of neighborsASK) {
-    minDepthASK = min(minDepthASK, neighborASK.depthASK);
+function minVisitedNeighborDepth(neighbors) {
+  let minDepth = Infinity;
+  for (let neighbor of neighbors) {
+    minDepth = min(minDepth, neighbor.depth);
   }
-  return minDepthASK === Infinity ? 0 : minDepthASK;
+  return minDepth === Infinity ? 0 : minDepth;
 }
 
-function getCellASK(colASK, rowASK) {
+function getCell(col, row) {
   if (
-    colASK < 0 ||
-    colASK >= colsMazeASK ||
-    rowASK < 0 ||
-    rowASK >= rowsMazeASK
+    col < 0 ||
+    col >= mazeCols ||
+    row < 0 ||
+    row >= mazeRows
   ) {
     return null;
   }
-  return mazeASK[rowASK][colASK];
+  return mazeASK[row][col];
 }
 
-function areAdjacentCellsASK(cellAASK, cellBASK) {
-  return topologyASK.areAdjacentCellsASK(cellAASK, cellBASK);
+function areAdjacentCells(cellA, cellB) {
+  return topology.areAdjacentCells(cellA, cellB);
 }
 
-function makeLinkKeyASK(cellAASK, cellBASK) {
-  let keyAASK = cellKeyASK(cellAASK);
-  let keyBASK = cellKeyASK(cellBASK);
-  return keyAASK < keyBASK
-    ? keyAASK + "|" + keyBASK
-    : keyBASK + "|" + keyAASK;
+function makeLinkKey(cellA, cellB) {
+  let keyA = cellKey(cellA);
+  let keyB = cellKey(cellB);
+  return keyA < keyB
+    ? keyA + "|" + keyB
+    : keyB + "|" + keyA;
 }
 
-function linkCellsASK(cellAASK, cellBASK) {
-  if (!areAdjacentCellsASK(cellAASK, cellBASK)) return;
-  mazeStateASK.linksASK.add(makeLinkKeyASK(cellAASK, cellBASK));
+function linkCells(cellA, cellB) {
+  if (!areAdjacentCells(cellA, cellB)) return;
+  mazeState.links.add(makeLinkKey(cellA, cellB));
 }
 
-function areCellsLinkedASK(cellAASK, cellBASK) {
-  if (!areAdjacentCellsASK(cellAASK, cellBASK)) return false;
-  return mazeStateASK.linksASK.has(makeLinkKeyASK(cellAASK, cellBASK));
+function areCellsLinked(cellA, cellB) {
+  if (!areAdjacentCells(cellA, cellB)) return false;
+  return mazeState.links.has(makeLinkKey(cellA, cellB));
 }
 
-function removeWallsASK(cellAASK, cellBASK) {
-  linkCellsASK(cellAASK, cellBASK);
+function removeWalls(cellA, cellB) {
+  linkCells(cellA, cellB);
 }
 
-function getRandomUnvisitedCellASK() {
-  let optionsASK = [];
-  for (let cellASK of getTopologyCellsASK()) {
-    if (!cellASK.visitedASK) optionsASK.push(cellASK);
+function getRandomUnvisitedCell() {
+  let options = [];
+  for (let cell of getTopologyCells()) {
+    if (!cell.visited) options.push(cell);
   }
-  return optionsASK.length > 0 ? random(optionsASK) : null;
+  return options.length > 0 ? random(options) : null;
 }
 
-function getTopologyFirstCellASK() {
-  let cellsASK = getTopologyCellsASK();
-  return cellsASK.length > 0 ? cellsASK[0] : null;
+function getTopologyFirstCell() {
+  let cells = getTopologyCells();
+  return cells.length > 0 ? cells[0] : null;
 }
 
-function getTopologyMiddleCellASK() {
-  let cellsASK = getTopologyCellsASK();
-  return cellsASK.length > 0
-    ? cellsASK[floor(cellsASK.length / 2)]
+function getTopologyMiddleCell() {
+  let cells = getTopologyCells();
+  return cells.length > 0
+    ? cells[floor(cells.length / 2)]
     : null;
 }
 
-function cellKeyASK(cellASK) {
-  return cellASK.colASK + "," + cellASK.rowASK;
+function cellKey(cell) {
+  return cell.col + "," + cell.row;
 }
 
-function setAlgorithmASK(nameASK) {
-  algorithmASK = nameASK;
-  manualColsASK = null;
-  manualRowsASK = null;
-  initializeMazeASK();
+function setAlgorithm(name) {
+  algorithm = name;
+  manualCols = null;
+  manualRows = null;
+  initializeMaze();
 }
 
-function setTopologyASK(modeASK) {
-  topologyModeASK =
-    modeASK === "hex" || modeASK === "triangle" || modeASK === "radial"
-      ? modeASK
+function setTopology(mode) {
+  topologyMode =
+    mode === "hex" || mode === "triangle" || mode === "radial"
+      ? mode
       : "rect";
-  manualColsASK = null;
-  manualRowsASK = null;
-  initializeMazeASK();
+  manualCols = null;
+  manualRows = null;
+  initializeMaze();
 }
 
-function isHexEnabledAlgorithmASK() {
+function isHexEnabledAlgorithm() {
   return (
-    algorithmASK === "recursiveBacktracker" ||
-    algorithmASK === "binaryTree" ||
-    algorithmASK === "prim" ||
-    algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson" ||
-    algorithmASK === "kruskal"
+    algorithm === "recursiveBacktracker" ||
+    algorithm === "binaryTree" ||
+    algorithm === "prim" ||
+    algorithm === "aldousBroder" ||
+    algorithm === "wilson" ||
+    algorithm === "kruskal"
   );
 }
 
-function isTriangleEnabledAlgorithmASK() {
+function isTriangleEnabledAlgorithm() {
   return (
-    algorithmASK === "recursiveBacktracker" ||
-    algorithmASK === "binaryTree" ||
-    algorithmASK === "prim" ||
-    algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson" ||
-    algorithmASK === "kruskal"
+    algorithm === "recursiveBacktracker" ||
+    algorithm === "binaryTree" ||
+    algorithm === "prim" ||
+    algorithm === "aldousBroder" ||
+    algorithm === "wilson" ||
+    algorithm === "kruskal"
   );
 }
 
-function isRadialEnabledAlgorithmASK() {
+function isRadialEnabledAlgorithm() {
   // Radial activation stays limited to the algorithms that already run cleanly through neighbors + links.
   return (
-    algorithmASK === "recursiveBacktracker" ||
-    algorithmASK === "prim" ||
-    algorithmASK === "aldousBroder" ||
-    algorithmASK === "wilson" ||
-    algorithmASK === "kruskal"
+    algorithm === "recursiveBacktracker" ||
+    algorithm === "prim" ||
+    algorithm === "aldousBroder" ||
+    algorithm === "wilson" ||
+    algorithm === "kruskal"
   );
 }
 
-function getActiveTopologyModeASK() {
-  if (topologyModeASK === "hex" && isHexEnabledAlgorithmASK()) {
+function getActiveTopologyMode() {
+  if (topologyMode === "hex" && isHexEnabledAlgorithm()) {
     return "hex";
   }
-  if (topologyModeASK === "radial" && isRadialEnabledAlgorithmASK()) {
+  if (topologyMode === "radial" && isRadialEnabledAlgorithm()) {
     return "radial";
   }
-  if (topologyModeASK === "triangle" && isTriangleEnabledAlgorithmASK()) {
+  if (topologyMode === "triangle" && isTriangleEnabledAlgorithm()) {
     return "triangle";
   }
   return "rect";
 }
 
-function shuffleArrayASK(arrayASK) {
-  for (let iASK = arrayASK.length - 1; iASK > 0; iASK--) {
-    let jASK = floor(random(iASK + 1));
-    let tempASK = arrayASK[iASK];
-    arrayASK[iASK] = arrayASK[jASK];
-    arrayASK[jASK] = tempASK;
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = floor(random(i + 1));
+    let temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
   }
 }
 
@@ -2295,132 +2295,132 @@ function shuffleArrayASK(arrayASK) {
 // DRAWING
 // =====================================================
 
-function drawVisitedFieldsASK() {
+function drawVisitedFields() {
   noStroke();
 
-  for (let cellASK of getTopologyCellsASK()) {
-    if (!cellASK.visitedASK) continue;
+  for (let cell of getTopologyCells()) {
+    if (!cell.visited) continue;
 
-    let tASK =
-      cellASK.visitOrderASK <= 0
+    let t =
+      cell.visitOrder <= 0
         ? 0
-        : cellASK.visitOrderASK / max(1, visitOrderCounterASK - 1);
+        : cell.visitOrder / max(1, visitOrderCounter - 1);
 
-    let fillColorASK = colorLerpASK(
+    let fillColor = colorLerpASK(
       color2ASK,
       color3ASK,
-      tASK,
-      mazeCompleteASK ? 34 : 20
+      t,
+      mazeComplete ? 34 : 20
     );
 
     fill(
-      red(fillColorASK),
-      green(fillColorASK),
-      blue(fillColorASK),
-      alpha(fillColorASK)
+      red(fillColor),
+      green(fillColor),
+      blue(fillColor),
+      alpha(fillColor)
     );
 
-    drawCellPolygonASK(topologyASK.getCellPolygonASK(cellASK));
+    drawCellPolygon(topology.getCellPolygon(cell));
   }
 
   noFill();
 }
 
-function drawWallsASK() {
-  strokeWeight(weightASK);
+function drawWalls() {
+  strokeWeight(strokeWeightBase);
 
-  for (let cellASK of getTopologyCellsASK()) {
-    drawCellWallsASK(cellASK);
+  for (let cell of getTopologyCells()) {
+    drawCellWalls(cell);
   }
 }
 
-function drawCellWallsASK(cellASK) {
-  let edgeSegmentsASK = topologyASK.getCellEdgeSegmentsASK(cellASK);
+function drawCellWalls(cell) {
+  let edgeSegments = topology.getCellEdgeSegments(cell);
 
-  let mixASK = getEdgeMixASK(cellASK);
-  let wallColorASK = colorLerpASK(color1ASK, color4ASK, mixASK, 255);
+  let mix = getEdgeMix(cell);
+  let wallColor = colorLerpASK(color1ASK, color4ASK, mix, 255);
 
   stroke(
-    red(wallColorASK),
-    green(wallColorASK),
-    blue(wallColorASK),
-    alpha(wallColorASK)
+    red(wallColor),
+    green(wallColor),
+    blue(wallColor),
+    alpha(wallColor)
   );
 
-  for (let edgeASK of edgeSegmentsASK) {
-    if (!edgeASK.neighborASK || !areCellsLinkedASK(cellASK, edgeASK.neighborASK)) {
-      line(edgeASK.axASK, edgeASK.ayASK, edgeASK.bxASK, edgeASK.byASK);
+  for (let edge of edgeSegments) {
+    if (!edge.neighbor || !areCellsLinked(cell, edge.neighbor)) {
+      line(edge.ax, edge.ay, edge.bx, edge.by);
     }
   }
 }
 
-function drawWilsonWalkOverlayASK() {
-  if (algorithmASK !== "wilson") return;
-  if (wilsonModeASK !== "walk" && wilsonModeASK !== "carve") return;
-  if (wilsonWalkASK.length < 2) return;
+function drawWilsonWalkOverlay() {
+  if (algorithm !== "wilson") return;
+  if (wilsonMode !== "walk" && wilsonMode !== "carve") return;
+  if (wilsonWalk.length < 2) return;
 
   stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 80);
-  strokeWeight(weightASK * 2.0);
+  strokeWeight(strokeWeightBase * 2.0);
 
-  for (let iASK = 0; iASK < wilsonWalkASK.length - 1; iASK++) {
-    let aASK = wilsonWalkASK[iASK];
-    let bASK = wilsonWalkASK[iASK + 1];
-    let centerAASK = topologyASK.getCellCenterASK(aASK);
-    let centerBASK = topologyASK.getCellCenterASK(bASK);
+  for (let i = 0; i < wilsonWalk.length - 1; i++) {
+    let a = wilsonWalk[i];
+    let b = wilsonWalk[i + 1];
+    let centerA = topology.getCellCenter(a);
+    let centerB = topology.getCellCenter(b);
 
-    line(centerAASK.x, centerAASK.y, centerBASK.x, centerBASK.y);
+    line(centerA.x, centerA.y, centerB.x, centerB.y);
   }
 }
 
-function getEdgeMixASK(cellASK) {
-  let nxASK = colsMazeASK <= 1 ? 0.5 : cellASK.colASK / (colsMazeASK - 1);
-  let nyASK = rowsMazeASK <= 1 ? 0.5 : cellASK.rowASK / (rowsMazeASK - 1);
+function getEdgeMix(cell) {
+  let nx = mazeCols <= 1 ? 0.5 : cell.col / (mazeCols - 1);
+  let ny = mazeRows <= 1 ? 0.5 : cell.row / (mazeRows - 1);
 
-  let dxASK = abs(nxASK - 0.5) * 2.0;
-  let dyASK = abs(nyASK - 0.5) * 2.0;
-  return constrain((dxASK + dyASK) * 0.35, 0, 1);
+  let dx = abs(nx - 0.5) * 2.0;
+  let dy = abs(ny - 0.5) * 2.0;
+  return constrain((dx + dy) * 0.35, 0, 1);
 }
 
-function drawCurrentCellASK() {
-  if (!currentCellASK || mazeCompleteASK) return;
+function drawCurrentCell() {
+  if (!currentCell || mazeComplete) return;
 
   noStroke();
   fill(red(color4ASK), green(color4ASK), blue(color4ASK), 120);
-  drawCellPolygonASK(topologyASK.getCellPolygonASK(currentCellASK, cellSizeASK * 0.12));
+  drawCellPolygon(topology.getCellPolygon(currentCell, cellSize * 0.12));
   noFill();
 }
 
-function drawBorderASK() {
+function drawBorder() {
   stroke(red(color4ASK), green(color4ASK), blue(color4ASK), 90);
-  strokeWeight(weightASK * 2.0);
+  strokeWeight(strokeWeightBase * 2.0);
   noFill();
 
-  let borderSegmentsASK = topologyASK.getBorderSegmentsASK();
-  for (let segmentASK of borderSegmentsASK) {
-    line(segmentASK.axASK, segmentASK.ayASK, segmentASK.bxASK, segmentASK.byASK);
+  let borderSegments = topology.getBorderSegments();
+  for (let segment of borderSegments) {
+    line(segment.ax, segment.ay, segment.bx, segment.by);
   }
 }
 
-function drawLabOverlayASK() {
-  let overlayXASK = mazeOriginXASK;
-  let overlayYASK = mazeOriginYASK - 0.04;
+function drawLabOverlay() {
+  let overlayX = mazeOriginX;
+  let overlayY = mazeOriginY - 0.04;
 
   noStroke();
   fill(red(color1ASK), green(color1ASK), blue(color1ASK), 160);
   textAlign(LEFT, TOP);
   textSize(0.018);
   text(
-    algorithmLabelASK +
+    algorithmLabel +
       "  //  " +
-      getActiveTopologyModeASK() +
+      getActiveTopologyMode() +
       "  //  " +
-      colsMazeASK +
+      mazeCols +
       "x" +
-      rowsMazeASK +
+      mazeRows +
       "  //  speed " +
-      stepsPerFrameASK,
-    overlayXASK,
-    overlayYASK
+      stepsPerFrame,
+    overlayX,
+    overlayY
   );
   noFill();
 }
@@ -2445,79 +2445,79 @@ function initColorsASK() {
   colorsASK = buildWeightedPaletteASK(paletteSwatchesASK);
 }
 
-function buildWeightedPaletteASK(swatchesASK) {
-  let weightedColorsASK = [];
+function buildWeightedPaletteASK(swatches) {
+  let weightedColors = [];
 
-  for (let swatchASK of swatchesASK) {
-    for (let iASK = 0; iASK < swatchASK.weightASK; iASK++) {
-      weightedColorsASK.push(color(...swatchASK.rgbASK));
+  for (let swatch of swatches) {
+    for (let i = 0; i < swatch.weightASK; i++) {
+      weightedColors.push(color(...swatch.rgbASK));
     }
   }
 
-  return weightedColorsASK;
+  return weightedColors;
 }
 
 function renderColorsASK() {
   // Stronger floor for the active cell, border, and overlay role against the background.
-  const color4FloorASK = 95;
+  const color4Floor = 95;
   // Lighter floor for wall readability without forcing every reroll into high contrast.
-  const color1FloorASK = 52;
+  const color1Floor = 52;
 
   colorBackgroundASK = pickPaletteColorASK(
-    (candidateASK) => !isBannedBackgroundColorASK(candidateASK)
+    (candidate) => !isBannedBackgroundColorASK(candidate)
   );
   color4ASK = pickPaletteColorASK(
-    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK) >= color4FloorASK,
-    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK)
+    (candidate) => colorDistanceASK(colorBackgroundASK, candidate) >= color4Floor,
+    (candidate) => colorDistanceASK(colorBackgroundASK, candidate)
   );
   color1ASK = pickPaletteColorASK(
-    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK) >= color1FloorASK,
-    (candidateASK) => colorDistanceASK(colorBackgroundASK, candidateASK)
+    (candidate) => colorDistanceASK(colorBackgroundASK, candidate) >= color1Floor,
+    (candidate) => colorDistanceASK(colorBackgroundASK, candidate)
   );
   color2ASK = random(colorsASK);
   color3ASK = random(colorsASK);
 }
 
-function isBannedBackgroundColorASK(colorASK) {
+function isBannedBackgroundColorASK(color) {
   return (
-    red(colorASK) === 190 &&
-    green(colorASK) === 63 &&
-    blue(colorASK) === 246
+    red(color) === 190 &&
+    green(color) === 63 &&
+    blue(color) === 246
   );
 }
 
-function colorDistanceASK(colorAASK, colorBASK) {
-  let drASK = red(colorAASK) - red(colorBASK);
-  let dgASK = green(colorAASK) - green(colorBASK);
-  let dbASK = blue(colorAASK) - blue(colorBASK);
-  return sqrt(drASK * drASK + dgASK * dgASK + dbASK * dbASK);
+function colorDistanceASK(colorA, colorB) {
+  let dr = red(colorA) - red(colorB);
+  let dg = green(colorA) - green(colorB);
+  let db = blue(colorA) - blue(colorB);
+  return sqrt(dr * dr + dg * dg + db * db);
 }
 
-function pickPaletteColorASK(isValidASK, scoreASK = null) {
-  let validColorsASK = colorsASK.filter(isValidASK);
-  if (validColorsASK.length > 0) {
-    return random(validColorsASK);
+function pickPaletteColorASK(isValid, score = null) {
+  let validColors = colorsASK.filter(isValid);
+  if (validColors.length > 0) {
+    return random(validColors);
   }
 
-  if (!scoreASK) {
+  if (!score) {
     return random(colorsASK);
   }
 
-  let bestScoreASK = -Infinity;
-  let fallbackColorsASK = [];
+  let bestScore = -Infinity;
+  let fallbackColors = [];
 
-  for (let candidateASK of colorsASK) {
-    let candidateScoreASK = scoreASK(candidateASK);
+  for (let candidate of colorsASK) {
+    let candidateScore = score(candidate);
 
-    if (candidateScoreASK > bestScoreASK) {
-      bestScoreASK = candidateScoreASK;
-      fallbackColorsASK = [candidateASK];
-    } else if (candidateScoreASK === bestScoreASK) {
-      fallbackColorsASK.push(candidateASK);
+    if (candidateScore > bestScore) {
+      bestScore = candidateScore;
+      fallbackColors = [candidate];
+    } else if (candidateScore === bestScore) {
+      fallbackColors.push(candidate);
     }
   }
 
-  return random(fallbackColorsASK);
+  return random(fallbackColors);
 }
 
 // =====================================================
@@ -2525,46 +2525,46 @@ function pickPaletteColorASK(isValidASK, scoreASK = null) {
 // =====================================================
 
 function mousePressed() {
-  mousePressedASK = true;
-  dragStartASK = screenToASK(mouseX, mouseY);
-  dragCurrentASK = screenToASK(mouseX, mouseY);
-  dragLengthASK = 0;
-  dragVectorASK = { x: 0, y: 0 };
+  isMousePressed = true;
+  dragStart = screenToWorld(mouseX, mouseY);
+  dragCurrent = screenToWorld(mouseX, mouseY);
+  dragLength = 0;
+  dragVector = { x: 0, y: 0 };
 }
 
 function mouseDragged() {
-  if (!mousePressedASK || !dragStartASK) return;
+  if (!isMousePressed || !dragStart) return;
 
-  dragCurrentASK = screenToASK(mouseX, mouseY);
-  dragVectorASK = {
-    x: dragCurrentASK.x - dragStartASK.x,
-    y: dragCurrentASK.y - dragStartASK.y
+  dragCurrent = screenToWorld(mouseX, mouseY);
+  dragVector = {
+    x: dragCurrent.x - dragStart.x,
+    y: dragCurrent.y - dragStart.y
   };
 
-  dragLengthASK = dist(
-    dragStartASK.x,
-    dragStartASK.y,
-    dragCurrentASK.x,
-    dragCurrentASK.y
+  dragLength = dist(
+    dragStart.x,
+    dragStart.y,
+    dragCurrent.x,
+    dragCurrent.y
   );
 
-  let dragAmountASK = constrain(abs(dragVectorASK.x) * 240, 1, 240);
-  stepsPerFrameASK = floor(dragAmountASK);
+  let dragAmount = constrain(abs(dragVector.x) * 240, 1, 240);
+  stepsPerFrame = floor(dragAmount);
 }
 
 function mouseReleased() {
-  let wasClickASK = dragLengthASK < 0.015;
+  let wasClick = dragLength < 0.015;
 
-  if (wasClickASK) {
+  if (wasClick) {
     renderColorsASK();
-    initializeMazeASK();
+    initializeMaze();
   }
 
-  mousePressedASK = false;
-  dragStartASK = null;
-  dragCurrentASK = null;
-  dragLengthASK = 0;
-  dragVectorASK = { x: 0, y: 0 };
+  isMousePressed = false;
+  dragStart = null;
+  dragCurrent = null;
+  dragLength = 0;
+  dragVector = { x: 0, y: 0 };
 }
 
 // =====================================================
@@ -2577,74 +2577,74 @@ function keyPressed() {
   }
 
   if (key === " ") {
-    initializeMazeASK();
+    initializeMaze();
   }
 
   if (key === "h" || key === "H") {
-    setTopologyASK(topologyModeASK === "hex" ? "rect" : "hex");
+    setTopology(topologyMode === "hex" ? "rect" : "hex");
   }
 
   if (key === "c" || key === "C") {
     // C keeps radial as a separate opt-in topology toggle alongside hex and triangle.
-    setTopologyASK(topologyModeASK === "radial" ? "rect" : "radial");
+    setTopology(topologyMode === "radial" ? "rect" : "radial");
   }
 
   if (key === "t" || key === "T") {
-    setTopologyASK(topologyModeASK === "triangle" ? "rect" : "triangle");
+    setTopology(topologyMode === "triangle" ? "rect" : "triangle");
   }
 
-  if (key === "1") setAlgorithmASK("recursiveBacktracker");
-  if (key === "2") setAlgorithmASK("binaryTree");
-  if (key === "3") setAlgorithmASK("prim");
-  if (key === "4") setAlgorithmASK("sidewinder");
-  if (key === "5") setAlgorithmASK("eller");
-  if (key === "6") setAlgorithmASK("kruskal");
-  if (key === "7") setAlgorithmASK("wilson");
-  if (key === "8") setAlgorithmASK("aldousBroder");
+  if (key === "1") setAlgorithm("recursiveBacktracker");
+  if (key === "2") setAlgorithm("binaryTree");
+  if (key === "3") setAlgorithm("prim");
+  if (key === "4") setAlgorithm("sidewinder");
+  if (key === "5") setAlgorithm("eller");
+  if (key === "6") setAlgorithm("kruskal");
+  if (key === "7") setAlgorithm("wilson");
+  if (key === "8") setAlgorithm("aldousBroder");
 
   if (key === "[") {
-    colsMazeASK = max(8, colsMazeASK - 2);
-    rowsMazeASK = max(8, rowsMazeASK - 2);
-    manualColsASK = colsMazeASK;
-    manualRowsASK = rowsMazeASK;
-    initializeMazeASK();
+    mazeCols = max(8, mazeCols - 2);
+    mazeRows = max(8, mazeRows - 2);
+    manualCols = mazeCols;
+    manualRows = mazeRows;
+    initializeMaze();
   }
 
   if (key === "]") {
-    colsMazeASK = min(120, colsMazeASK + 2);
-    rowsMazeASK = min(120, rowsMazeASK + 2);
-    manualColsASK = colsMazeASK;
-    manualRowsASK = rowsMazeASK;
-    initializeMazeASK();
+    mazeCols = min(120, mazeCols + 2);
+    mazeRows = min(120, mazeRows + 2);
+    manualCols = mazeCols;
+    manualRows = mazeRows;
+    initializeMaze();
   }
 
   if (key === "-") {
-    stepsPerFrameASK = max(1, stepsPerFrameASK - 1);
+    stepsPerFrame = max(1, stepsPerFrame - 1);
   }
 
   if (key === "=" || key === "+") {
-    stepsPerFrameASK = min(240, stepsPerFrameASK + 1);
+    stepsPerFrame = min(240, stepsPerFrame + 1);
   }
 
   if (key === "o" || key === "O") {
-    outputASK = !outputASK;
-    applyCanvasSizeASK();
-    initializeMazeASK();
+    output = !output;
+    applyCanvasSize();
+    initializeMaze();
   }
 
   if (key === "p" || key === "P") {
-    aspectModeASK = aspectModeASK === "square" ? "widescreen" : "square";
-    if (outputASK) {
-      applyCanvasSizeASK();
-      initializeMazeASK();
+    aspectMode = aspectMode === "square" ? "widescreen" : "square";
+    if (output) {
+      applyCanvasSize();
+      initializeMaze();
     }
   }
 }
 
 function windowResized() {
-  if (!outputASK) {
-    applyCanvasSizeASK();
-    initializeMazeASK();
+  if (!output) {
+    applyCanvasSize();
+    initializeMaze();
   }
 }
 
@@ -2652,20 +2652,20 @@ function windowResized() {
 // OPTIONAL HELPERS
 // =====================================================
 
-function colorLerpASK(colorAASK, colorBASK, amtASK, alphaASK = 255) {
-  let mixedASK = lerpColor(colorAASK, colorBASK, amtASK);
+function colorLerpASK(colorA, colorB, amt, alpha = 255) {
+  let mixed = lerpColor(colorA, colorB, amt);
   return color(
-    red(mixedASK),
-    green(mixedASK),
-    blue(mixedASK),
-    alphaASK
+    red(mixed),
+    green(mixed),
+    blue(mixed),
+    alpha
   );
 }
 
-function drawCellPolygonASK(pointsASK) {
+function drawCellPolygon(points) {
   beginShape();
-  for (let pointASK of pointsASK) {
-    vertex(pointASK.xASK, pointASK.yASK);
+  for (let point of points) {
+    vertex(point.x, point.y);
   }
   endShape(CLOSE);
 }
