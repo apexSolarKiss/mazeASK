@@ -19,6 +19,14 @@ Most of the algorithms here try to make a **perfect maze**:
 
 That means the maze is really a kind of connected tree drawn on a topology.
 
+This does not mean “one unique path from a predeclared start to finish.”
+
+It means the maze is connected and has no cycles — in graph terms, it is a tree over the set of cells.
+
+That is why any two cells in a perfect maze already have exactly one simple path between them.
+
+Start and finish are a later puzzle-framing layer, not part of the structural definition.
+
 ---
 
 ## Core Pattern // across all algorithms

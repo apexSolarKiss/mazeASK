@@ -182,6 +182,8 @@ They are blocked by semantics:
 
 That is why mazeASK treats portability as selective rather than universal.
 
+That open Binary Tree-on-radial question has since been resolved through a topology-owned preferred-direction analogue.
+
 The lesson is not "everything generalizes if you try hard enough."
 
 The lesson is:
