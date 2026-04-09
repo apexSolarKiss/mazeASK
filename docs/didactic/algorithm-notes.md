@@ -147,13 +147,13 @@ Triangle currently works for:
 
 Radial currently works for:
 - Recursive Backtracker
+- Binary Tree
 - Prim
 - Aldous-Broder
 - Wilson
 - Kruskal
 
 Radial does not yet claim support for:
-- Binary Tree
 - Sidewinder
 - Eller
 
@@ -164,7 +164,7 @@ Sidewinder and Eller remain intentionally rectangular-only for now.
 | Algorithm | Rect | Hex | Triangle | Radial | Note |
 | --- | --- | --- | --- | --- | --- |
 | Recursive Backtracker | yes | yes | yes | yes | broadly portable through neighbors + links |
-| Binary Tree | yes | yes | yes | no | radial remains open because preferred-direction choice is semantic, not plumbing |
+| Binary Tree | yes | yes | yes | yes | radial uses an analogue built from topology-owned inward + lateral preferred directions |
 | Prim | yes | yes | yes | yes | frontier growth ports through neighbors + links |
 | Sidewinder | yes | no | no | no | sweep semantics remain rectangular |
 | Eller | yes | no | no | no | row/layer semantics remain rectangular |
@@ -223,8 +223,8 @@ This is depth-first search with backtracking.
 
 ## 2. Binary Tree
 
-1. For each cell in the grid:  
-2. Look in two directions (for example: north and east).  
+1. For each cell in the topology:  
+2. Ask the topology for the cell's two preferred directions.  
 3. If one or both neighbors exist:  
    - pick one at random  
    - remove the wall between them  
@@ -241,6 +241,12 @@ For example, each room might connect either:
 - or east
 
 So every room makes one simple little decision.
+
+In radial mode, mazeASK uses a Binary Tree analogue built from topology-owned preferred directions:
+- inward
+- lateral
+
+Here, lateral means the topology's canonical same-ring forward neighbor.
 
 ### Note
 This is a very simple biased carving rule.
