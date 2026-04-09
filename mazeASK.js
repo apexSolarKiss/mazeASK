@@ -216,6 +216,12 @@ let visitOrderCounter = 0;
 let visitedCount = 0;
 let manualCols = null;
 let manualRows = null;
+let showStartFinishOverlay = false;
+let showSolutionOverlay = false;
+let puzzleStartCell = null;
+let puzzleFinishCell = null;
+let puzzleSolutionPath = [];
+let puzzleOverlayReady = false;
 
 // Eller state
 let ellerCurrentRow = 0;
@@ -283,6 +289,8 @@ function drawMaze() {
   drawWilsonWalkOverlay();
   drawCurrentCell();
   drawBorder();
+  drawSolutionOverlay();
+  drawStartFinishOverlay();
   drawLabOverlay();
 }
 
@@ -434,6 +442,10 @@ function initializeMaze() {
 
   // reset Aldous-Broder
   aldousCurrent = null;
+  puzzleStartCell = null;
+  puzzleFinishCell = null;
+  puzzleSolutionPath = [];
+  puzzleOverlayReady = false;
 
   for (let row = 0; row < mazeRows; row++) {
     let rowCells = [];
@@ -1144,6 +1156,16 @@ function makeRectTopology() {
       return cells;
     },
 
+    getBoundaryCells() {
+      return cells.filter(
+        (cell) =>
+          cell.row === 0 ||
+          cell.col === 0 ||
+          cell.row === mazeRows - 1 ||
+          cell.col === mazeCols - 1
+      );
+    },
+
     getBinaryTreeCandidates(cell) {
       let rectNeighbors = this.getRectNeighbors(cell);
       return [
@@ -1352,6 +1374,12 @@ function makeHexTopology() {
 
     getCells() {
       return cells;
+    },
+
+    getBoundaryCells() {
+      return cells.filter(
+        (cell) => this.getCellEdgeSegments(cell).some((edge) => !edge.neighbor)
+      );
     },
 
     getBinaryTreeCandidates(cell) {
@@ -1765,6 +1793,10 @@ function makeRadialTopology() {
       return cells;
     },
 
+    getBoundaryCells() {
+      return rings.length > 0 ? rings[rings.length - 1].slice() : cells.slice();
+    },
+
     getBinaryTreeCandidates(cell) {
       if (!cell) return [];
 
@@ -1966,6 +1998,12 @@ function makeTriangleTopology() {
       return cells;
     },
 
+    getBoundaryCells() {
+      return cells.filter(
+        (cell) => this.getCellEdgeSegments(cell).some((edge) => !edge.neighbor)
+      );
+    },
+
     getBinaryTreeCandidates(cell) {
       if (!cell) return [];
 
@@ -2107,6 +2145,10 @@ function getTopologyCells() {
   return topology.getCells();
 }
 
+function getBoundaryCells() {
+  return topology.getBoundaryCells();
+}
+
 function getBinaryTreeCandidates(cell) {
   return topology.getBinaryTreeCandidates(cell);
 }
@@ -2200,8 +2242,127 @@ function getTopologyMiddleCell() {
     : null;
 }
 
+function getLinkedNeighbors(cell) {
+  return getNeighborCells(cell).filter(
+    (neighbor) => areCellsLinked(cell, neighbor)
+  );
+}
+
 function cellKey(cell) {
   return cell.col + "," + cell.row;
+}
+
+function getMazeDistanceMap(startCell) {
+  let distances = {};
+  let queue = [startCell];
+  let queueIndex = 0;
+
+  distances[cellKey(startCell)] = 0;
+
+  while (queueIndex < queue.length) {
+    let cell = queue[queueIndex++];
+    let depth = distances[cellKey(cell)];
+
+    for (let neighbor of getLinkedNeighbors(cell)) {
+      let neighborKey = cellKey(neighbor);
+      if (distances.hasOwnProperty(neighborKey)) continue;
+      distances[neighborKey] = depth + 1;
+      queue.push(neighbor);
+    }
+  }
+
+  return distances;
+}
+
+function choosePuzzleEndpoints() {
+  let boundaryCells = getBoundaryCells().filter(Boolean);
+
+  if (boundaryCells.length === 0) {
+    let cells = getTopologyCells();
+    return {
+      start: cells[0] || null,
+      finish: cells[cells.length - 1] || null
+    };
+  }
+
+  if (boundaryCells.length === 1) {
+    return {
+      start: boundaryCells[0],
+      finish: boundaryCells[0]
+    };
+  }
+
+  let bestStart = boundaryCells[0];
+  let bestFinish = boundaryCells[1];
+  let bestDistance = -1;
+
+  for (let i = 0; i < boundaryCells.length; i++) {
+    let start = boundaryCells[i];
+    let distances = getMazeDistanceMap(start);
+
+    for (let j = i + 1; j < boundaryCells.length; j++) {
+      let finish = boundaryCells[j];
+      let distance = distances[cellKey(finish)];
+
+      if (distance !== undefined && distance > bestDistance) {
+        bestDistance = distance;
+        bestStart = start;
+        bestFinish = finish;
+      }
+    }
+  }
+
+  return {
+    start: bestStart,
+    finish: bestFinish
+  };
+}
+
+function getMazePath(startCell, finishCell) {
+  if (!startCell || !finishCell) return [];
+  if (startCell === finishCell) return [startCell];
+
+  let queue = [startCell];
+  let queueIndex = 0;
+  let parentByKey = {};
+
+  parentByKey[cellKey(startCell)] = null;
+
+  while (queueIndex < queue.length) {
+    let cell = queue[queueIndex++];
+
+    if (cell === finishCell) break;
+
+    for (let neighbor of getLinkedNeighbors(cell)) {
+      let neighborKey = cellKey(neighbor);
+      if (parentByKey.hasOwnProperty(neighborKey)) continue;
+      parentByKey[neighborKey] = cell;
+      queue.push(neighbor);
+    }
+  }
+
+  let finishKey = cellKey(finishCell);
+  if (!parentByKey.hasOwnProperty(finishKey)) return [];
+
+  let path = [];
+  let current = finishCell;
+
+  while (current) {
+    path.push(current);
+    current = parentByKey[cellKey(current)];
+  }
+
+  return path.reverse();
+}
+
+function ensurePuzzleOverlayData() {
+  if (puzzleOverlayReady || !mazeComplete) return;
+
+  let endpoints = choosePuzzleEndpoints();
+  puzzleStartCell = endpoints.start;
+  puzzleFinishCell = endpoints.finish;
+  puzzleSolutionPath = getMazePath(puzzleStartCell, puzzleFinishCell);
+  puzzleOverlayReady = true;
 }
 
 function setAlgorithm(name) {
@@ -2387,6 +2548,61 @@ function drawBorder() {
   }
 }
 
+function drawSolutionOverlay() {
+  if (!showSolutionOverlay) return;
+
+  ensurePuzzleOverlayData();
+  if (puzzleSolutionPath.length < 2) return;
+
+  stroke(255, 0, 255);
+  strokeWeight(strokeWeightBase * 3.0);
+  noFill();
+
+  for (let i = 0; i < puzzleSolutionPath.length - 1; i++) {
+    let centerA = topology.getCellCenter(puzzleSolutionPath[i]);
+    let centerB = topology.getCellCenter(puzzleSolutionPath[i + 1]);
+    line(centerA.x, centerA.y, centerB.x, centerB.y);
+  }
+}
+
+function drawEndpointMarker(cell, markerFill, markerStroke = null) {
+  if (!cell) return;
+
+  if (markerStroke) {
+    noFill();
+    stroke(
+      red(markerStroke),
+      green(markerStroke),
+      blue(markerStroke),
+      220
+    );
+    strokeWeight(strokeWeightBase * 2.4);
+    drawCellPolygon(topology.getCellPolygon(cell, cellSize * 0.22));
+    noStroke();
+    return;
+  }
+
+  noStroke();
+  fill(
+    red(markerFill),
+    green(markerFill),
+    blue(markerFill),
+    200
+  );
+  drawCellPolygon(topology.getCellPolygon(cell, cellSize * 0.3));
+  noFill();
+}
+
+function drawStartFinishOverlay() {
+  if (!showStartFinishOverlay) return;
+
+  ensurePuzzleOverlayData();
+  if (!puzzleStartCell || !puzzleFinishCell) return;
+
+  drawEndpointMarker(puzzleStartCell, color4ASK);
+  drawEndpointMarker(puzzleFinishCell, null, color1ASK);
+}
+
 function drawLabOverlay() {
   let overlayX = mazeOriginX;
   let overlayY = mazeOriginY - 0.04;
@@ -2534,6 +2750,14 @@ function generateFilename() {
 function keyPressed() {
   if (key === "r" || key === "R") {
     renderColorsASK();
+  }
+
+  if (key === "e" || key === "E") {
+    showStartFinishOverlay = !showStartFinishOverlay;
+  }
+
+  if (key === "s" || key === "S") {
+    showSolutionOverlay = !showSolutionOverlay;
   }
 
   if (key === " ") {

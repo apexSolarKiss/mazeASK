@@ -78,6 +78,8 @@ That structure is what you see.
 
 ### Interaction
 - `click` save PNG output  
+- `e` toggle start + finish overlay  
+- `s` toggle solution path overlay  
 - `space` regenerate  
 - `r` recolor  
 - `h` toggle rectangular / hex topology  
