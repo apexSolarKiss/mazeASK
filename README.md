@@ -109,13 +109,13 @@ Hex is opt-in through the `H` toggle and currently works for:
 
 Radial is opt-in through the `C` toggle and currently works for:
 - Recursive Backtracker
+- Binary Tree
 - Prim
 - Aldous–Broder
 - Wilson
 - Kruskal
 
 Radial does not yet claim support for:
-- Binary Tree
 - Sidewinder
 - Eller
 

@@ -657,16 +657,16 @@ function stepRecursiveBacktracker() {
 }
 
 function runBinaryTree() {
-  for (let row = 0; row < mazeRows; row++) {
-    for (let col = 0; col < mazeCols; col++) {
-      let cell = mazeASK[row][col];
-      markVisited(cell, row + col);
+  let cells = getTopologyCells();
 
-      let neighbors = getBinaryTreeCandidates(cell).filter(Boolean);
+  for (let i = 0; i < cells.length; i++) {
+    let cell = cells[i];
+    markVisited(cell, i);
 
-      if (neighbors.length > 0) {
-        removeWalls(cell, random(neighbors));
-      }
+    let neighbors = getBinaryTreeCandidates(cell).filter(Boolean);
+
+    if (neighbors.length > 0) {
+      removeWalls(cell, random(neighbors));
     }
   }
 }
@@ -1643,6 +1643,10 @@ function makeRadialTopology() {
     };
   }
 
+  function getRingForwardNeighbor(cell) {
+    return getRingNeighbors(cell).clockwise;
+  }
+
   function getRadialPolygon(cell, inset = 0) {
     if (!cell) return [];
 
@@ -1761,8 +1765,13 @@ function makeRadialTopology() {
       return cells;
     },
 
-    getBinaryTreeCandidates() {
-      return [];
+    getBinaryTreeCandidates(cell) {
+      if (!cell) return [];
+
+      return [
+        getInwardNeighbor(cell),
+        getRingForwardNeighbor(cell)
+      ];
     },
 
     getKruskalEdges(cell) {
@@ -2235,9 +2244,10 @@ function isTriangleEnabledAlgorithm() {
 }
 
 function isRadialEnabledAlgorithm() {
-  // Radial activation stays limited to the algorithms that already run cleanly through neighbors + links.
+  // Radial activation stays limited to algorithms that run cleanly through neighbors + links or topology-owned preferred directions.
   return (
     algorithm === "recursiveBacktracker" ||
+    algorithm === "binaryTree" ||
     algorithm === "prim" ||
     algorithm === "aldousBroder" ||
     algorithm === "wilson" ||
