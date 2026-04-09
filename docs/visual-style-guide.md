@@ -214,6 +214,32 @@ Some swatches carry more weight than others.
 
 That weighting is represented explicitly in code.
 
+### ASK brand color
+
+The ASK brand color is:
+
+- `#D4C6E1` // `rgb(212, 198, 225)` // lavenderASK
+
+### Emphasis accent
+
+For overlays and other high-emphasis diagrammatic / visual needs, use:
+
+- `#FF00FF` // `rgb(255, 0, 255)` // magenta
+
+It is **not** part of the `colorsASK` sketch palette.
+
+### Diagram / overlay neutrals
+
+For future diagrams, overlays, and other visual needs, prefer:
+
+- `#0A090C` // `rgb(10, 9, 12)` // black 1
+- `#201D26` // `rgb(32, 29, 38)` // black 2
+
+These are **not** part of the `colorsASK` sketch palette.
+
+For background:
+- `#D4C6E1` // `rgb(212, 198, 225)` // lavenderASK
+
 ### Current contrast-floor parameters
 
 The current p5.js role-assignment floors are:
@@ -240,6 +266,13 @@ That means:
 - labels should help the viewer parse the system, not entertain them
 
 When possible, a diagram should feel like a visual extension of the sketch's own logic rather than an externally imposed illustration style.
+
+### Typography for diagrams and future UI
+
+Preferred typefaces / weights for diagrams and future visual/UI needs are:
+
+- Inter Extra Light
+- Inter Regular
 
 ## Tone and Exclusions
 
