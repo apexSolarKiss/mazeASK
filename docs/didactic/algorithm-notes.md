@@ -547,6 +547,10 @@ This is another random-walk algorithm that also produces a **uniform spanning tr
 ## Save output
 - `click` save PNG output
 
+## Overlay
+- `e` toggle start + finish overlay
+- `s` toggle solution path overlay
+
 ## Regenerate
 - `space` regenerate
 
