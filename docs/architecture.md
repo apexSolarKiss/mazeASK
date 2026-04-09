@@ -223,10 +223,13 @@ This milestone includes:
 - topology-owned radial cell construction, adjacency, geometry, edge segments, and border segments
 - radial activation for:
   - Recursive Backtracker
+  - Binary Tree
   - Prim
   - Aldous-Broder
   - Wilson
   - Kruskal
+
+Radial Binary Tree is enabled through a topology-owned inward + lateral preferred pair.
 
 This milestone proves that:
 - the shared topology seam can support an uneven-ring radial structure without redesigning Maze State
@@ -234,7 +237,6 @@ This milestone proves that:
 - rendering can stay link-derived while topology owns radial boundary structure
 
 This milestone does not claim radial support for:
-- Binary Tree
 - Sidewinder
 - Eller
 
