@@ -342,6 +342,8 @@ Then start a new run.
 
 ### Note
 This is a row-based algorithm with a directional bias, but it is more interesting than Binary Tree.
+In mazeASK, radial got closest to a possible analogue because topology already owns rings, same-ring forward continuation, and inward prior-structure.
+But Sidewinder still remains rectangular-only because its current shape depends on bounded row closure, while radial rings are cyclic rather than bounded.
 
 ### What it tends to look like
 - horizontal runs

@@ -180,6 +180,10 @@ They are blocked by semantics:
 - run behavior
 - row/layer propagation
 
+For Sidewinder specifically, radial was the closest serious non-rectangular candidate because topology already owns rings, same-ring forward continuation, and inward prior-structure.
+
+But that analogy still fails on current repo truth because Sidewinder depends on bounded band closure, while radial rings are cyclic rather than bounded.
+
 That is why mazeASK treats portability as selective rather than universal.
 
 That open Binary Tree-on-radial question has since been resolved through a topology-owned preferred-direction analogue.
