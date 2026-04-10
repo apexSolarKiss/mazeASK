@@ -190,7 +190,8 @@ Milestone 6 remains a semantic design boundary, not an implementation track.
 Current outcome:
 - Sidewinder remains explicitly rectangular-only for now
 - radial was the only serious non-rectangular candidate, but the analogy still fails on current repo truth because Sidewinder depends on bounded band closure while radial rings are cyclic
-- Eller remains the more open remaining semantic-design question
+- Eller also remains explicitly rectangular-only on current repo truth
+- Eller fails for a different semantic reason: its blocker is not generic layers alone, but successor-layer carry semantics with preserved set identity; radial comes closest, but uneven ring sizes and fan-out break that carry model
 
 This milestone is a design problem first.
 
