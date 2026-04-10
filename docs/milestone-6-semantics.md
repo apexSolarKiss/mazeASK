@@ -115,6 +115,32 @@ The blocker is semantic, not plumbing.
 
 Any future generalization would require a deliberate topology-owned layer/frontier model first.
 
+## Current Eller Conclusion
+
+Eller remains explicitly rectangular-only on current repo truth.
+
+The blocker is narrower than a generic layer/frontier abstraction.
+
+Eller depends on successor-layer carry semantics with preserved set identity.
+
+Its defining shape requires:
+- ordered current and successor layers
+- intra-layer merge adjacency
+- guaranteed carry from each current-layer set into the successor layer
+- identity continuity across that carry
+- a terminal convergence rule
+
+Current non-rectangular peer topologies do not provide an honest topology-owned carry model comparable to rectangular same-column downward propagation.
+
+Radial comes closest because it has ordered rings and inter-ring adjacency.
+
+But uneven ring sizes and fan-out break the stability of the carry relation in a way that changes the algorithm rather than honestly extending it.
+
+So the current conclusion is:
+- Eller is still useful for clarifying the semantic boundary
+- no honest non-rectangular Eller analogue is currently available from the existing topology seam
+- Eller should remain explicitly rectangular-only unless a future topology-owned successor-layer carry model exists without forcing an artificial mapping
+
 ## Required Decisions Before Implementation
 
 For Sidewinder:
@@ -152,5 +178,10 @@ Future decision boundary for Sidewinder:
 - current repo truth is not yet honest enough for a radial Sidewinder analogue
 - Sidewinder should remain explicitly rectangular-only
 - only a future topology-owned bounded-band story would justify reopening the question
+
+Future decision boundary for Eller:
+- current repo truth is not yet honest enough for a non-rectangular Eller analogue
+- Eller should remain explicitly rectangular-only
+- only a future topology-owned successor-layer carry model would justify reopening the question
 
 Only after those decisions are made should implementation branches be created.
