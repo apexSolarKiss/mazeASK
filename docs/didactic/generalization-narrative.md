@@ -184,6 +184,8 @@ For Sidewinder specifically, radial was the closest serious non-rectangular cand
 
 But that analogy still fails on current repo truth because Sidewinder depends on bounded band closure, while radial rings are cyclic rather than bounded.
 
+For Eller specifically, the blocker is narrower than generic layers alone. Eller depends on successor-layer carry semantics with preserved set identity, and radial still fails because uneven ring sizes and fan-out break that carry model.
+
 That is why mazeASK treats portability as selective rather than universal.
 
 That open Binary Tree-on-radial question has since been resolved through a topology-owned preferred-direction analogue.
