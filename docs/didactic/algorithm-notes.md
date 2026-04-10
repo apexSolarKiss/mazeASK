@@ -386,6 +386,8 @@ Then the process repeats for the next row.
 
 ### Note
 This is a row-by-row algorithm that tracks connected sets.
+In mazeASK, radial came closest to a possible analogue because topology already owns rings and inter-ring adjacency.
+But Eller still remains rectangular-only because it depends on stable carry of set identity into a successor layer, and uneven ring sizes plus fan-out break that carry model.
 
 ### What it tends to look like
 - structured but still varied
