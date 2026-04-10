@@ -71,6 +71,30 @@ That requires an honest yes on all of these:
 - inward carving from a run member connects into prior structure in a way structurally comparable to carving north from a row
 - the resulting behavior still reads as Sidewinder rather than as a different sweep-based algorithm
 
+## Current Radial Conclusion
+
+Radial was the only serious non-rectangular candidate.
+
+The analogy got close because radial already provides:
+- topology-owned rings
+- topology-owned same-ring forward continuation
+- topology-owned inward prior-structure
+
+But the analogy still fails on current repo truth.
+
+Sidewinder depends on bounded band closure, not only on lateral continuation plus carve-out.
+
+Rectangular rows are bounded.
+Radial rings are cyclic.
+
+That difference is not incidental in the current algorithm shape.
+
+So the current conclusion is:
+
+- radial is interesting enough to clarify the boundary
+- radial is not honest enough yet to justify a Sidewinder analogue
+- Sidewinder should remain explicitly rectangular-only unless a future topology-owned bounded-band story exists without forcing an artificial seam
+
 ## Eller Problem Statement
 
 Current essential behavior:
@@ -125,7 +149,8 @@ Current outcome of this note:
 - Eller remains rectangular-only
 
 Future decision boundary for Sidewinder:
-- if radial has a topology-owned band structure close enough to rectangular rows, a later narrow rect-plus-radial design track may be justified
-- if not, Sidewinder should remain explicitly rectangular-only
+- current repo truth is not yet honest enough for a radial Sidewinder analogue
+- Sidewinder should remain explicitly rectangular-only
+- only a future topology-owned bounded-band story would justify reopening the question
 
 Only after those decisions are made should implementation branches be created.
