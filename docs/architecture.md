@@ -185,15 +185,18 @@ This milestone leaves open:
 
 The next architectural frontier is not another activation pass.
 
-The remaining work is to define topology-owned sweep or layer semantics, or an equivalent structure, that could support honest future reformulations of:
-- Sidewinder
-- Eller
+Milestone 6 remains a semantic design boundary, not an implementation track.
+
+Current outcome:
+- Sidewinder remains explicitly rectangular-only for now
+- radial was the only serious non-rectangular candidate, but the analogy still fails on current repo truth because Sidewinder depends on bounded band closure while radial rings are cyclic
+- Eller remains the more open remaining semantic-design question
 
 This milestone is a design problem first.
 
 See [`docs/milestone-6-semantics.md`](docs/milestone-6-semantics.md) for the dedicated semantic design note.
 
-Its immediate outcome is a decision boundary, not an active implementation track.
+Its immediate outcome is still a decision boundary, not an active implementation track.
 
 ## Milestone 7 (Triangle topology completion)
 
