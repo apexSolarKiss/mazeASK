@@ -37,7 +37,7 @@ Bad comments explain prior discussions, design debates, or architectural history
 Rule:
 - comments = local truth needed to understand code
 - docs = architectural truth
-- PRs = migration intent
+- change summaries = migration intent
 
 ### Commit messages
 Keep commit messages short, concrete, and scoped to the change.
@@ -52,18 +52,25 @@ Bad:
 - references to prior discussion threads
 - mixed milestone + theory language
 
-### PR descriptions
-Use PR descriptions to capture:
+### Change summaries
+Use structured change summaries to capture:
 - the architectural decision being implemented
+- why this change exists
 - what changed
 - what did not change
-- the next milestone
+- what remains out of scope
+
+If a PR is used, the structured change summary belongs in the PR description.
+
+If no PR is used, the same summary must still appear in the Codex handoff or approval record before meaningful write actions complete.
 
 Do not move architectural narrative into source comments or commit messages.
 
 ### Branching and PR workflow
 
 Treat pull requests as the default review boundary for meaningful changes.
+
+Exact scoped diff review remains the real approval boundary.
 
 Rules:
 - code changes = always use a branch + PR, even for solo work
@@ -72,11 +79,13 @@ Rules:
 - small non-architectural docs edits = PR optional
 - do not push code changes directly to `main` unless explicitly instructed
 - do not merge code changes without opening a PR first
-- PR descriptions should capture migration intent:
+- meaningful repo updates should always carry a structured change summary:
   - why this change exists
   - what changed
   - what did not change
   - what remains out of scope
+- if a PR is used, that summary goes in the PR description
+- if no PR is used, that summary must still appear in the Codex handoff or approval record
 
 If a branch has been committed and pushed but no PR has been opened yet, prefer opening the PR rather than pushing additional changes directly to `main`.
 
