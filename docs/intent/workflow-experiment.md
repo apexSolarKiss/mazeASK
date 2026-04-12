@@ -4,7 +4,7 @@ mazeASK is also a workflow-refinement experiment.
 
 It is a case study in governed AI collaboration around a real repo with explicit boundaries.
 
-Within this project:
+Within this project >>
 
 - ChatGPT acts as the external control surface and prompt compiler
 - Codex acts as the in-repo executor
@@ -15,7 +15,7 @@ It is a repo-specific attempt to subject machine-assisted work to defined bounda
 
 The workflow experiment remains repo-specific and explicit in scope.
 
-That is why mazeASK keeps a clear boundary between:
+That is why mazeASK keeps a clear boundary between >>
 
 - repo-local execution rules
 - external prompt-compilation guidance

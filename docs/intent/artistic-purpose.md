@@ -2,7 +2,7 @@
 
 mazeASK treats maze generation as a medium for computational form.
 
-Its artistic intent lies in:
+Its artistic intent lies in >>
 
 - visual signature produced by small rule changes
 - constrained variation across shared structure
@@ -17,7 +17,7 @@ Color introduces constrained randomness inside a bounded palette so that each ru
 
 In this sense, mazeASK follows an ASK visual logic >> order from chaos // beauty in systems
 
-mazeASK therefore treats visual style as part of the work's meaning:
+mazeASK therefore treats visual style as part of the work's meaning >>
 
 - modular enough to vary
 - constrained enough to remain coherent

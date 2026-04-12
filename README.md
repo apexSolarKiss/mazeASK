@@ -9,7 +9,7 @@ Maze generation algorithms
 
 ## Live
 
-Open the fullscreen sketch:
+Live sketch >>
 
 https://editor.p5js.org/asymptoticSystemKey/full/FJk1OWjNb
 
@@ -27,7 +27,7 @@ Same grid. Same constraints. Different rules.
 
 ## Why this repo exists
 
-mazeASK is an expression of intent on three layers:
+mazeASK is an expression of intent on three layers >>
 
 - artistic purpose: [docs/intent/artistic-purpose.md](docs/intent/artistic-purpose.md)
 - didactic purpose: [docs/intent/didactic-purpose.md](docs/intent/didactic-purpose.md)
@@ -37,7 +37,7 @@ mazeASK is an expression of intent on three layers:
 
 ## Architecture
 
-`mazeASK.js` is structured as a single p5.js sketch with three phases: initialization, incremental generation, and rendering. The `step...()` functions contain the algorithm-specific generation logic.
+`mazeASK.js` is structured as a single p5.js sketch with three phases >> initialization, incremental generation, and rendering. The `step...()` functions contain the algorithm-specific generation logic.
 
 For the conceptual generalization path from rectangular mazes to topology-owned structure, see [docs/didactic/generalization-narrative.md](docs/didactic/generalization-narrative.md).
 
@@ -109,7 +109,7 @@ That structure is what you see.
 
 Rectangular is the default baseline.
 
-Hex is opt-in through the `H` toggle and currently works for:
+Hex is opt-in through the `H` toggle and currently works for >>
 - Recursive Backtracker
 - Binary Tree
 - Prim
@@ -117,7 +117,7 @@ Hex is opt-in through the `H` toggle and currently works for:
 - Wilson
 - Kruskal
 
-Radial is opt-in through the `C` toggle and currently works for:
+Radial is opt-in through the `C` toggle and currently works for >>
 - Recursive Backtracker
 - Binary Tree
 - Prim
@@ -125,11 +125,11 @@ Radial is opt-in through the `C` toggle and currently works for:
 - Wilson
 - Kruskal
 
-Radial does not yet claim support for:
+Radial does not yet claim support for >>
 - Sidewinder
 - Eller
 
-Triangle is opt-in through the `T` toggle and currently works for:
+Triangle is opt-in through the `T` toggle and currently works for >>
 - Recursive Backtracker
 - Binary Tree
 - Prim
@@ -144,13 +144,12 @@ Sidewinder and Eller remain rectangular-only for now.
 ## Run locally (source)
 
 1. Rename:
-
+1. Rename >>
     mazeASK.js → sketch.js
 
 2. Place inside a p5.js project
 
-3. Run:
-
+3. Run >>
     npx serve
 
 4. Open the local URL shown in your terminal

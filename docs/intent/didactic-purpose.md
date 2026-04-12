@@ -4,7 +4,7 @@ mazeASK is a study in maze algorithms, but it is also a study in generalization.
 
 Its didactic force comes from making representation explicit.
 
-mazeASK is organized around a set of distinctions:
+mazeASK is organized around a set of distinctions >>
 
 - topology as possible structure
 - carved links as canonical connectivity
@@ -15,7 +15,7 @@ That separation matters because it determines what can be generalized honestly.
 
 Its didactic purpose is to demonstrate why some algorithms move cleanly through neighbors and links while others depend on deeper semantics that may remain rectangular-only.
 
-That is why mazeASK proceeds through:
+That is why mazeASK proceeds through >>
 
 - representation rather than wall-thinking
 - topology rather than drawing convention
