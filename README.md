@@ -25,6 +25,14 @@ Switch between algorithms and watch how each one builds structure in real time.
 
 Same grid. Same constraints. Different rules.
 
+## Why this repo exists
+
+mazeASK is an expression of intent on three layers:
+
+- artistic purpose: [docs/intent/artistic-purpose.md](docs/intent/artistic-purpose.md)
+- didactic purpose: [docs/intent/didactic-purpose.md](docs/intent/didactic-purpose.md)
+- workflow experiment: [docs/intent/workflow-experiment.md](docs/intent/workflow-experiment.md)
+
 ---
 
 ## Architecture
