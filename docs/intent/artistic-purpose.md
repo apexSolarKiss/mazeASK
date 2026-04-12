@@ -15,7 +15,7 @@ The work studies how different selection rules, within a constrained colorsASK p
 
 Color introduces constrained randomness inside a bounded palette so that each run can shift in tone while remaining recognizably part of the same visual language.
 
-In this sense, mazeASK follows an ASK visual logic: order from chaos // beauty in systems.
+In this sense, mazeASK follows an ASK visual logic >> order from chaos // beauty in systems
 
 mazeASK therefore treats visual style as part of the work's meaning:
 
