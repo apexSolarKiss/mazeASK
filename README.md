@@ -1,5 +1,5 @@
 <!-- Codex workflow test -->
-![mazeASK](mazeASK.jpg)
+![mazeASK](mazeASK-banner.png)
 
 # mazeASK
 
