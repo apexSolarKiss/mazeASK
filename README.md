@@ -7,9 +7,7 @@ Maze generation algorithms
 
 ---
 
-## Live
-
-Live sketch >>
+## Live sketch
 
 https://editor.p5js.org/asymptoticSystemKey/full/FJk1OWjNb
 
@@ -138,21 +136,6 @@ Triangle is opt-in through the `T` toggle and currently works for >>
 - Kruskal
 
 Sidewinder and Eller remain rectangular-only for now.
-
----
-
-## Run locally (source)
-
-1. Rename:
-1. Rename >>
-    mazeASK.js → sketch.js
-
-2. Place inside a p5.js project
-
-3. Run >>
-    npx serve
-
-4. Open the local URL shown in your terminal
 
 ---
 
