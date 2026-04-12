@@ -141,4 +141,6 @@ Sidewinder and Eller remain rectangular-only for now.
 
 ## License
 
-Apache 2.0
+Copyright (c) 2026 Andrew S Klug // ASK
+
+Licensed under the Apache License 2.0. See [`LICENSE`](LICENSE).
