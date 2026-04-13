@@ -220,6 +220,14 @@ The ASK brand color is:
 
 - `#D4C6E1` // `rgb(212, 198, 225)` // lavenderASK
 
+### ASK visual identity reference
+
+The following assets are included here as an ASK brand reference for mazeASK visual alignment:
+
+![ASK visual identity reference](assets/visual-style-guide-ASK.jpg)
+
+[ASK visual identity source (.ai)](assets/visual-style-guide-ASK.ai)
+
 ### Emphasis accent
 
 For overlays and other high-emphasis diagrammatic / visual needs, use:
