@@ -224,9 +224,9 @@ The ASK brand color is:
 
 The following assets are included here as an ASK brand reference for mazeASK visual alignment:
 
-![ASK visual identity reference](assets/visual-style-guide-ASK.jpg)
+![ASK visual identity reference](assets/visual-identity-ASK.jpg)
 
-[ASK visual identity source (.ai)](assets/visual-style-guide-ASK.ai)
+[ASK visual identity source (.ai)](assets/visual-identity-ASK.ai)
 
 ### Emphasis accent
 
