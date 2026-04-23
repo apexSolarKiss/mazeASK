@@ -282,6 +282,8 @@ Preferred typefaces / weights for diagrams and future visual/UI needs are:
 - Inter Extra Light
 - Inter Regular
 
+Inter is the canonical type choice because it is widely available, reproducible across environments, and consistent with the project's preference for explicit, low-friction system constraints.
+
 ## Tone and Exclusions
 
 The target tone is:
