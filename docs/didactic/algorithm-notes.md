@@ -1,6 +1,6 @@
 <!--© 2026 Andrew S Klug // ASK
 Apache License, Version 2.0-->
-![mazeASK](mazeASK.jpg)
+![mazeASK](../assets/mazeASK-2.jpg)
 
 # mazeASK // algorithm notes
 
