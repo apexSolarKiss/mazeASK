@@ -1,4 +1,3 @@
-<!-- Codex workflow test -->
 ![mazeASK](docs/assets/mazeASK-3.jpg)
 
 # mazeASK
@@ -141,6 +140,6 @@ Sidewinder and Eller remain rectangular-only for now.
 
 ## License
 
-Copyright (c) 2026 Andrew S Klug // ASK
+Copyright 2026 Andrew S Klug // ASK
 
 Licensed under the Apache License 2.0 // see [`LICENSE`](LICENSE)
