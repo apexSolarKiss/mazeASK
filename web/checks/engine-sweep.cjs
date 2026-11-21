@@ -1,9 +1,11 @@
 // Every algorithm x grid x frame shape x density, several seeds: is each finished maze one perfect maze?
 // Usage, from web/: node checks/engine-sweep.cjs app/maze-engine.js [seedsPerCase, default 6] [--legacy]
 // Exits 1 if any sweep maze, or under --legacy any maze from a repaired rule, is not perfect.
-// The legacy rules' broken mazes are expected and only reported.
+// The legacy rules' broken mazes are expected and only reported. Exits 2 on a bad seed count.
 const E = require(require('path').resolve(process.argv[2]));
-const SEEDS = Number(process.argv[3] || 6);
+const seedsArg = process.argv.slice(3).find((a) => !a.startsWith('--'));
+const SEEDS = seedsArg === undefined ? 6 : Number(seedsArg);
+if (!Number.isInteger(SEEDS) || SEEDS < 1) { console.error(`seedsPerCase must be a whole number of at least 1, not ${seedsArg}`); process.exit(2); }
 const ASPECTS = [16 / 9, 4 / 3, 1, 390 / 793];
 const DENSITIES = [0.5, 1, 1.5];
 let cases = 0, bad = 0, skipped = 0;
