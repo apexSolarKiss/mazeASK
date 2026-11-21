@@ -42,8 +42,8 @@ Scripts: `app/maze-engine.js`, then `instrument.js`, then `app/maze-app.js`.
 
 - `colors_and_type.css`: tokens, type, and the light / dark mechanism. The page sets no theme attribute, so the chrome follows the operating system.
 - `surface-action.css`: every action button.
-- `surface-panel.css`: the controls panel.
-- `surface-treatments.css`: the stage frame's axis classes and the `controls` and `tuning` disclosure triggers.
+- `surface-panel.css`: the controls panel, and the stage frame's panel material and free attachment.
+- `surface-treatments.css`: the stage frame's flush elevation, and the `controls` and `tuning` disclosure triggers.
 - `instrument.css`, `instrument.js`: the instrument pattern. Its contract is `patterns/instrument/README.md` in the donor.
 - Not vendored: the pattern's example script (`instrument.example.js`, example content only), `art-palettes.json` (the maze draws its own sketch palette), `surface-text-link.css`, `surface-cta.css`, the page shell, `fonts-embedded.js` and `styleguide-theme-control.js`. Nothing here uses them.
 
