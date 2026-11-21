@@ -6,6 +6,7 @@ For orientation:
 - `README.md` = repo overview
 - `docs/workflow-boundary.md` = repo-vs-external control boundary
 - `docs/architecture.md` = design intent
+- `web/README.md` = the browser instrument and its vendored design-system files
 
 mazeASK is evolving toward a three-layer architecture:
 
@@ -62,7 +63,7 @@ Use structured change summaries to capture:
 
 If a PR is used, the structured change summary belongs in the PR description.
 
-If no PR is used, the same summary must still appear in the Codex handoff or approval record before meaningful write actions complete.
+If no PR is used, the same summary must still appear in the executor handoff or approval record before meaningful write actions complete.
 
 Do not move architectural narrative into source comments or commit messages.
 
@@ -85,7 +86,7 @@ Rules:
   - what did not change
   - what remains out of scope
 - if a PR is used, that summary goes in the PR description
-- if no PR is used, that summary must still appear in the Codex handoff or approval record
+- if no PR is used, that summary must still appear in the executor handoff or approval record
 
 If a branch has been committed and pushed but no PR has been opened yet, prefer opening the PR rather than pushing additional changes directly to `main`.
 

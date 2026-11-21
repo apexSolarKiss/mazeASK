@@ -1,0 +1,373 @@
+/* ============================================================
+   surface-action.css — the shared compact-action visual contract
+
+   An OPT-IN live-surface visual rule under Foundations, and the sibling of
+   surface-panel.css on the action axis. That module owns the container a
+   surface presents; this one owns the compact control a surface offers.
+
+   It exists because recurring compact controls had diverged in local geometry
+   and typography — the same object reached independently on each surface, each
+   version defensible where it stood. That is precisely why the grammar belongs
+   above all of them rather than inside any one.
+
+   Presentation and interaction only. It owns no markup, no semantics, no
+   destination, and no row layout, and it ships no template, catalog card, or
+   generated preview.
+
+   WHAT IT DOES NOT OWN, deliberately:
+
+     element type      <a> or <button> — the consumer decides whether the
+                       control navigates or acts, and the contract styles
+                       either without changing what it is
+     destination/copy  the consumer's
+     row layout        placement, gap, and vertical rhythm stay with the
+                       consuming card or band. Action rows legitimately differ
+                       between surfaces, and those differences do not alter the
+                       control contract — so no shared row class ships here.
+                       The module owns the controls, never the composition
+                       around them.
+     placement         inside a panel, outside one, several, one, or none
+
+   NOT for: full-panel links (a.surface-panel owns those), ordinary inline
+   text links (surface-text-link.css owns those), theme or mode selectors,
+   lightbox and gallery-overlay triggers, status notes, badges, or
+   non-interactive labels. Being rectangular and
+   clickable is not the same role. A lightbox or gallery-overlay trigger, or
+   another shaped control that is not a compact action, may still take the
+   attention edge alone, by class; see ADOPTING THE EDGE BY CLASS below.
+
+   WHY THESE VALUES. The contract uses existing role tokens wherever the system
+   already owns a role: type, spacing, radius, surface, foreground, border
+   color, and motion timing/easing. It introduces no token and no palette role.
+
+   Established interaction literals retain their existing raw values where no
+   role token exists: the 1px border, the 0.92 hover opacity and the 0.97 press
+   scale. Those are the family's existing interaction contract, not ad-hoc
+   measurements — do not invent tokens for them here, and do not alter the
+   interaction treatment to make them look tokenized. The 0.5px light-theme
+   attention ring is a raw literal on the same terms, but it is NEW: it arrived
+   with the selected hover and focus treatment rather than being inherited. The
+   borderless adopter's inset 1px ring and the SVG edge's 1.5 and 1 are the same
+   edge in other anatomies, raw on the same terms. The SVG scale input is a
+   geometric parameter the consumer supplies; the module supplies only its
+   default, 1.
+
+   The README's 1px/4px translucent-white focus glow is NOT among this module's
+   literals any more. A compact action's focus limb takes the shared attention
+   edge instead; the glow remains the focus indicator for the populations that
+   keep it, and the README's focus contract names which.
+
+   Caption-sized mono at 300 keeps the control quieter than the primary label
+   it usually sits beneath, without becoming prose. It is Caption-SIZED, not
+   the Caption role: Caption is uppercase, widely tracked and heavier, and it
+   labels; this is sentence-cased on zero tracking, and it is clicked.
+
+   Five properties a consumer could otherwise decide are DECLARED here. Four of
+   them inherit, so a host surface can set them far above the control; the
+   fifth is a box model the two permitted element types do not share. All would
+   otherwise make the same control render differently per surface:
+
+     text-transform none. An ancestor that uppercases a region would uppercase
+                    the control with it, and a compact action is sentence-cased
+                    — that is one of the two things separating it from the
+                    Caption role it shares a size with.
+     text-align     center. A single-line label is centered by the flex box
+                    regardless, but `justify-content` centers the flex ITEM,
+                    not the lines of text inside it. The moment a label wraps —
+                    which this contract deliberately permits — an anchor
+                    inherits the host's alignment while a button keeps its
+                    user-agent centering, and the two semantic forms visibly
+                    diverge on the exact case the contract exists to allow.
+
+     line-height    --lh-tight. Line-height inherits, so an undeclared control
+                    takes whatever the host sets — 1.45 on a body-copy surface,
+                    something else on a mono surface — and the same pill would
+                    stand at a different height on each. A compact control's
+                    height must not be a property of the page it lands on.
+     white-space    normal. A long label wraps WITHIN the control in a narrow
+                    layout rather than forcing overflow, and the control stays
+                    whole inside a wrapping row. Canonical `nowrap` was
+                    rejected on measurement rather than taste: a compact label
+                    long enough to exceed its container is a real case, and
+                    `nowrap` resolves it by pushing past the container edge.
+     box-sizing     border-box. A consumer may give a control an explicit
+                    width, and an anchor and a button do not resolve one the
+                    same way by default — the same declared width would yield
+                    two different outer widths. Since the contract promises
+                    that both element types are interchangeable, it has to own
+                    the box model that promise depends on.
+
+   Hover, press and focus are one contract, inherited by every consumer, and
+   they live here rather than on any consuming surface. Press is scale(0.97).
+
+   HOVER AND KEYBOARD-VISIBLE FOCUS TURN THE BORDER PURE MAGENTA
+   (--ask-emphasis-magenta). In this rule the magenta carries attention — this is
+   the object the reader is addressing — and nothing more: the same palette value
+   carries persistent, context-governed meanings elsewhere in the family, and hue
+   alone confers none of them. A compact control is small and its rest border is
+   --line-2, the faintest line the system has; brightening that line reads as
+   almost no response on the light gradient, and the magenta border gives a
+   shaped control one attention response in both themes.
+
+   The apparent edge is 1.5px in light and 1px in dark, and nothing moves: the
+   border stays 1px, and light mode adds a 0.5px zero-blur ring drawn outside
+   the box, as paint rather than layout. There is NO GLOW. Press keeps its scale.
+
+   ONE PAINT, TWO INDEPENDENT STATES. Hover and focus answer different questions
+   — where the pointer is, and where the keyboard is — and this module keeps that
+   logic separate while giving both the same edge. Focus persists after the
+   pointer leaves; hover disappears with it; a control that is both shows one
+   treatment rather than two competing ones. What is NOT shared is the 0.92
+   opacity drop, which belongs to hover alone: a keyboard user has not dimmed
+   anything by arriving. The consequence is stated plainly: two controls, one
+   hovered and one focused, show the same edge, and only hover's opacity drop
+   tells them apart.
+
+   The magenta lasts only while the control is hovered or focused. It is not a
+   selected, current, filtered or error state, and a consumer must not use it as
+   one. No non-text contrast claim is made for the edge in either state.
+
+   THREE GOVERNED POPULATIONS share this treatment — compact actions, FULL-PANEL
+   LINKS (a.surface-panel), and objects that ADOPT THE EDGE BY CLASS
+   (.surface-attention-edge) — with different ANATOMY:
+
+     compact action      the complete pill border
+     full-panel link     the complete panel border, its ring composed with the
+                         panel's resting --shadow-md rather than replacing it
+     adopting object     its own border, a ring where a border would sit, or
+                         the stroke of a marked SVG shape — below
+
+   It names these three and no others. A bordered thing that might later become
+   interactive does not inherit it by being interactive: it joins by adopting
+   the class. Inert panels, unlinked diagram marks and persistent states do not
+   acquire it by analogy. A persistent emphasis carried BY a member of these
+   populations is overwritten by this paint while the object is hovered or
+   focused; it needs its own consumer composition rule.
+
+   ADOPTING THE EDGE BY CLASS. `.surface-attention-edge` gives a shaped
+   interactive object that is neither a compact action nor a full-panel link —
+   an image card, a media launcher, an overlay control, a linked card in an SVG
+   figure — the attention edge and nothing else. The class joins the compact
+   action's declarations below by selector grouping rather than restating them;
+   the full-panel link keeps its own implementation in surface-panel.css,
+   composed with its resting shadow. Both follow one contract. The class brings
+   no type, geometry, fill, elevation, opacity drop, press or transition. The
+   object's own hover, press and motion stay its own — an anchor's included,
+   which keeps the foundation's 0.92 hover opacity — and where nothing of its
+   own changes on hover, its hover and focus look alike. The object keeps its
+   element type and its behavior; the class never makes it a compact action.
+
+   Three anatomies, one paint:
+
+     bordered            the object's own border turns magenta, with the
+                         0.5px ring outside it in light
+     borderless          an object whose border is none adds
+                         `.surface-attention-edge--borderless`: the edge is an
+                         inset 1px ring where a 1px border would sit, with the
+                         same 0.5px ring outside in light. Nothing moves. The
+                         inset ring paints beneath the object's content, so it
+                         suits a control whose content stays clear of its
+                         edge, such as a glyph button; an object whose content
+                         fills its box takes the bordered anatomy. An anchor
+                         keeps the foundation's underline border unless its
+                         own rule removes it
+     SVG                 a link inside an SVG figure has no box to paint. The
+                         link carries the class, and the shape inside it that
+                         draws its outline carries
+                         `.surface-attention-edge-shape` — one shape; every
+                         marked shape under the link paints. That stroke
+                         turns magenta, an apparent 1.5px in light and 1px
+                         in dark. A figure drawn below its own size declares
+                         its scale; see THE SVG SCALE INPUT
+
+   THE SVG SCALE INPUT. --surface-attention-edge-scale is a geometric input,
+   not a token: the effective uniform scale from the marked shape's own units to
+   CSS pixels on the page, declared on the link or any ancestor by whatever
+   scales the figure — a viewBox fit, a CSS transform, a zoom control; a fluid
+   fit declares it from script. It is a plain positive number: zero, a negative
+   number or a value with a unit does not give the edge. Below 1
+   the stroke widens by its inverse, so the edge keeps its apparent width while
+   the figure shrinks: at a quarter of its size, a 1px edge is four units wide.
+   At 1 and above, and wherever nothing declares it, the stroke is 1.5 and 1
+   units and scales with the figure as the stroke it replaces does; those widths
+   assume the shape rests on a 1-unit stroke, as the diagram box does, and a
+   heavier resting stroke would thin. Only the attention stroke reads the
+   input: no resting stroke, no other shape and no HTML anatomy does. A declared
+   scale that is not the figure's actual one gives a wider or thinner edge, so
+   the code that applies the scale is the code that declares it.
+
+   An adopting object with a resting or hover shadow of its own restates it,
+   composed with the ring, in its own rules — the full-panel link's
+   composition, done by the consumer. A rule cannot read another rule's shadow.
+
+   The class removes the browser's focus ring, so an object adopts it only with
+   an anatomy that paints: its own border, the borderless ring, or a marked
+   shape. A consumer rule that sets the object's border color, or its marked
+   shape's stroke, on hover or focus — later in source at the same specificity,
+   or at a higher one — wins over the edge; adoption retires it.
+
+   THE EDGE REACHES ONLY THIS DOCUMENT. A control inside an embedded document
+   from another origin — a video player's own buttons — is painted by that
+   document, and no rule here reaches it. An adopting launcher carries the edge
+   until the embed replaces it.
+
+   The remaining roles are governed elsewhere and are NOT conformed to this
+   rule: the foundation's GENERIC ANCHOR keeps its text-edge hover to
+   `currentColor`; WRAPPING BREADCRUMB LINKS (.surface-title a) and the
+   navigation panel's hierarchy rows take the shell's magenta underline;
+   ORDINARY INLINE TEXT LINKS, excluded below, have their own owner —
+   surface-text-link.css; and the IDENTITY MARK changes opacity only, leaving
+   its border alone and keeping the README's focus glow.
+
+   THE SHELL FOOTER IS NOT AMONG THEM ANY MORE. It used to carry its own unboxed
+   terminal-link treatment; a footer destination is now a compact action, so it
+   is governed BY this rule rather than excluded from it. Nothing here changed
+   to accommodate it — the row is the shell's, the item is this module's, and
+   the split is the same one that already separates a gallery card's action row
+   from the control inside it. A footer destination stays an <a>: the shaped
+   geometry is what this module supplies, and it supplies it identically to an
+   anchor that navigates and a button that acts.
+
+   State it accurately: this IS a hue change, in both themes. In this module a
+   hover or focus border, or an adopting SVG shape's stroke, changes only to the
+   palette's emphasis magenta, and the module introduces no token and no palette
+   role.
+
+   The foundation underlines anchors, so text-decoration is held off at rest
+   and on hover — a compact control reads as a control, not as running text.
+
+   Requires colors_and_type.css. Layers on top of it and rebinds no token.
+   ============================================================ */
+
+.surface-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-normal);
+  white-space: normal;
+  text-decoration: none;
+  text-transform: none;
+  text-align: center;
+
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-glass-2);
+  color: var(--fg-1);
+
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+/* The <button> form. A button carries user-agent font, background, border and
+   appearance that a class alone does not reach; the declarations above already
+   replace the paint, and these two remove what is left. Same contract, same
+   pixels — the consumer keeps a real button where the control acts rather than
+   navigates, instead of reaching for an anchor with no destination. */
+button.surface-action {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Secondary is a FOREGROUND variant, never a second geometry. Two controls
+   sitting in one row are the same kind of object at two priorities; giving the
+   quieter one its own size, padding or radius would make it a different object
+   that happens to be nearby. */
+.surface-action--secondary { color: var(--fg-2); }
+
+/* The SHARED paint. One declaration for both states, so they cannot drift apart
+   and neither can win the other's edge. An object that adopts the edge by class
+   joins the same declaration rather than a copy of it. */
+.surface-action:hover,
+.surface-action:focus-visible,
+.surface-attention-edge:hover,
+.surface-attention-edge:focus-visible {
+  border-color: var(--ask-emphasis-magenta);
+  box-shadow: 0 0 0 0.5px var(--ask-emphasis-magenta);
+}
+/* Dark: the 1px magenta border alone. The trailing :where() keeps these at the
+   shared rule's own specificity (0,2,0) rather than raising it, so a consumer's
+   theme rule is not outranked by this module; source order is what makes them
+   apply. It also covers .theme-dark on the control itself. */
+.surface-action:hover:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *),
+.surface-action:focus-visible:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *),
+.surface-attention-edge:hover:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *),
+.surface-attention-edge:focus-visible:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *) { box-shadow: none; }
+@media (prefers-color-scheme: dark) {
+  .surface-action:hover:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *),
+  .surface-action:focus-visible:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *),
+  .surface-attention-edge:hover:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *),
+  .surface-attention-edge:focus-visible:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *) { box-shadow: none; }
+}
+
+/* The limbs that are NOT shared. The opacity drop is hover's, and it belongs to
+   the compact action alone: an adopting object brings none. `outline: none` is
+   focus's, and the shared rule above paints the indicator in its place. A compact
+   action has no resting shadow, so its light ring stands alone; a consumer that
+   gives one a resting shadow restates it, composed with the ring, in its own hover
+   and focus rules. */
+.surface-action:hover { opacity: 0.92; text-decoration: none; }
+.surface-action:active { transform: scale(0.97); }
+.surface-action:focus-visible,
+.surface-attention-edge:focus-visible { outline: none; }
+
+/* A BORDERLESS adopting object. Its border-color changes paint nothing, so the
+   edge is an inset 1px ring where a 1px border would sit, and the light ring
+   stays outside it: the same apparent edge, with no layout change. Both rules
+   follow the shared ones in source at the same specificity, so they replace the
+   shared shadow rather than composing with it. */
+.surface-attention-edge--borderless:hover,
+.surface-attention-edge--borderless:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--ask-emphasis-magenta), 0 0 0 0.5px var(--ask-emphasis-magenta);
+}
+.surface-attention-edge--borderless:hover:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *),
+.surface-attention-edge--borderless:focus-visible:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *) {
+  box-shadow: inset 0 0 0 1px var(--ask-emphasis-magenta);
+}
+@media (prefers-color-scheme: dark) {
+  .surface-attention-edge--borderless:hover:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *),
+  .surface-attention-edge--borderless:focus-visible:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *) {
+    box-shadow: inset 0 0 0 1px var(--ask-emphasis-magenta);
+  }
+}
+
+/* An SVG adopting link. The edge is the stroke of the shape inside it that
+   carries .surface-attention-edge-shape: an apparent 1.5 in light and 1 in dark.
+   The width divides by the declared figure scale while that scale is below 1
+   (1 when undeclared), and is 1.5 and 1 units at 1 and above. The shape's rest
+   stroke, fill and every other shape in the link are left alone, and a shape
+   outside an adopting link takes nothing. */
+.surface-attention-edge:hover .surface-attention-edge-shape,
+.surface-attention-edge:focus-visible .surface-attention-edge-shape {
+  stroke: var(--ask-emphasis-magenta);
+  stroke-width: calc(1.5px / min(var(--surface-attention-edge-scale, 1), 1));
+}
+.surface-attention-edge:hover:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *) .surface-attention-edge-shape,
+.surface-attention-edge:focus-visible:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *) .surface-attention-edge-shape {
+  stroke-width: calc(1px / min(var(--surface-attention-edge-scale, 1), 1));
+}
+@media (prefers-color-scheme: dark) {
+  .surface-attention-edge:hover:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *) .surface-attention-edge-shape,
+  .surface-attention-edge:focus-visible:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *) .surface-attention-edge-shape {
+    stroke-width: calc(1px / min(var(--surface-attention-edge-scale, 1), 1));
+  }
+}
+
+/* Reduced motion. Transitions and the press scale are removed; the shared hover
+   and focus paint still applies, without animation. An adopting object's motion
+   is its own, under reduced motion too. */
+@media (prefers-reduced-motion: reduce) {
+  .surface-action { transition: none; }
+  .surface-action:active { transform: none; }
+}

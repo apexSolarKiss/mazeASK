@@ -14,6 +14,14 @@ Best viewed on desktop in Chrome.
 
 ---
 
+## Web instrument
+
+[`web/`](web/) holds the maze lab as a browser instrument: the sketch's eight algorithms and four grids on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s instrument pattern, with full window, fullscreen, fixed frames and PNG saves at exact sizes. Open `web/index.html`; there is no build step.
+
+It keeps the sketch's algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. See [`web/README.md`](web/README.md). The sketch below stays as it is.
+
+---
+
 ## What this is
 
 An interactive p5.js lab for exploring maze generation algorithms through their behavior and output.
@@ -71,6 +79,8 @@ That structure is what you see.
 
 ## Controls
 
+These are the p5.js sketch's controls. The web instrument's controls and keys are in [`web/README.md`](web/README.md): it saves only from its `save PNG` button, its frame selector replaces `o` and `p`, and `P` pauses building.
+
 ### Algorithms
 - `1` Recursive Backtracker  
 - `2` Binary Tree  
@@ -103,6 +113,8 @@ That structure is what you see.
 ---
 
 ## Topology mode
+
+This describes the p5.js sketch. The web instrument offers the same grids and repairs Binary Tree on hexagons and rings, and Wilson; see [`web/README.md`](web/README.md).
 
 Rectangular is the default baseline.
 
@@ -143,3 +155,5 @@ Sidewinder and Eller remain rectangular-only for now.
 Copyright 2026 Andrew S Klug // ASK
 
 Licensed under the Apache License 2.0 // see [`LICENSE`](LICENSE)
+
+`web/` also includes design-system-ASK files (Apache License 2.0) and the Inter and JetBrains Mono fonts (SIL Open Font License 1.1); see [`web/VENDOR.md`](web/VENDOR.md).

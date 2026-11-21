@@ -1,0 +1,15 @@
+/* maze.css // the maze page's own additions. Loads after instrument.css. */
+.maze-nowrap { white-space: nowrap; }
+.maze-advice { color: var(--fg-1); }
+.maze-advice .surface-action { margin-top: var(--space-2); }
+/* A phone in full window has room for one short row: new, save PNG, controls, exit.
+   The button's accessible name stays "new maze" (aria-label). */
+.maze-short { display: none; }
+@media (max-width: 699px) {
+  .inst[data-expanded="true"] .maze-long { display: none; }
+  .inst[data-expanded="true"] .maze-short { display: inline; }
+}
+/* While a new maze can be undone, a phone in full window shows undo in the place of save PNG. */
+@media (max-width: 699px) {
+  .inst[data-expanded="true"][data-undo="true"] #save { display: none; }
+}
