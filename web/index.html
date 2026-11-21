@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mazeASK</title>
+<!-- No icon: this keeps a server from being asked for one outside this folder. -->
+<link rel="icon" href="data:,">
+<!-- design-system-ASK, vendored byte-identical at one commit (see VENDOR.md): the foundation, the root
+     modules and the instrument pattern. Load order is the DS's own. The page carries no theme
+     attribute: the chrome follows the operating system through the foundation. -->
+<link rel="stylesheet" href="_dsa-tokens/colors_and_type.css">
+<link rel="stylesheet" href="_dsa-surface/surface-action.css">
+<link rel="stylesheet" href="_dsa-surface/surface-panel.css">
+<link rel="stylesheet" href="_dsa-surface/surface-treatments.css">
+<link rel="stylesheet" href="instrument.css">
+<!-- The maze page's own small additions. -->
+<link rel="stylesheet" href="app/maze.css">
+</head>
+<body>
+<div class="inst" id="inst">
+
+  <header class="inst-head">
+    <p class="caption">mazeASK // maze lab</p>
+    <div class="inst-row">
+      <button type="button" class="surface-action surface-action--secondary" id="view-window">full window</button>
+      <button type="button" class="surface-action surface-action--secondary" id="view-fullscreen">fullscreen</button>
+    </div>
+  </header>
+
+  <!-- Stage and actions: two grid items side by side, one pinned block when the layout stacks. -->
+  <div class="inst-pin" id="pin">
+    <main class="inst-stage surface-material-panel surface-attach-free surface-elevation-flush" aria-label="artwork">
+      <div class="inst-fit" id="fit">
+        <canvas id="canvas" tabindex="0" role="img" aria-label="maze, generated artwork. Space makes a new maze."></canvas>
+      </div>
+    </main>
+
+    <div class="inst-bar">
+      <p class="inst-status" id="status"></p>
+      <p class="inst-sr" id="announce" role="status" aria-live="polite"></p>
+      <div class="inst-bar-actions">
+        <button type="button" class="surface-action" id="new" aria-label="new maze"><span class="maze-long">new maze</span><span class="maze-short">new</span></button>
+        <button type="button" class="surface-action surface-action--secondary inst-wide-only" id="play">pause</button>
+        <button type="button" class="surface-action" id="save" aria-describedby="save-size">save PNG</button>
+        <button type="button" class="surface-action surface-action--secondary" id="undo" hidden>undo</button>
+        <span class="inst-bar-spacer" aria-hidden="true"></span>
+        <button type="button" class="surface-action surface-action--secondary inst-when-expanded inst-wide-only" id="view-fullscreen-bar">fullscreen</button>
+        <button type="button" class="surface-disclosure-trigger" id="panel-toggle" aria-controls="panel" aria-expanded="false" hidden>
+          <span class="surface-disclosure-label">controls</span>
+          <span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span>
+        </button>
+        <button type="button" class="surface-action surface-action--secondary" id="view-exit" hidden>exit</button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="inst-panel surface-panel" id="panel" aria-label="controls">
+    <div class="inst-panel-body">
+      <h1 class="surface-panel-title">mazeASK</h1>
+
+      <div class="inst-col">
+        <fieldset class="inst-field" id="algorithm">
+          <legend class="caption">algorithm</legend>
+          <div class="inst-seg inst-seg--two">
+            <label><input type="radio" name="algorithm" value="recursiveBacktracker" checked><span>backtracker</span></label>
+            <label><input type="radio" name="algorithm" value="binaryTree"><span>binary tree</span></label>
+            <label><input type="radio" name="algorithm" value="prim"><span>Prim</span></label>
+            <label><input type="radio" name="algorithm" value="sidewinder"><span>sidewinder</span></label>
+            <label><input type="radio" name="algorithm" value="eller"><span>Eller</span></label>
+            <label><input type="radio" name="algorithm" value="kruskal"><span>Kruskal</span></label>
+            <label><input type="radio" name="algorithm" value="wilson"><span>Wilson</span></label>
+            <label><input type="radio" name="algorithm" value="aldousBroder"><span>Aldous-Broder</span></label>
+          </div>
+          <p class="inst-note" id="algorithm-note"></p>
+        </fieldset>
+
+        <fieldset class="inst-field" id="grid">
+          <legend class="caption">grid</legend>
+          <div class="inst-seg inst-seg--two">
+            <label><input type="radio" name="grid" value="rect" checked><span>squares</span></label>
+            <label><input type="radio" name="grid" value="hex"><span>hexagons</span></label>
+            <label><input type="radio" name="grid" value="triangle"><span>triangles</span></label>
+            <label><input type="radio" name="grid" value="radial"><span>rings</span></label>
+          </div>
+          <p class="inst-note" id="grid-note"></p>
+        </fieldset>
+
+        <div class="inst-field">
+          <label class="caption" for="density">density</label>
+          <div class="inst-row">
+            <input class="inst-range" id="density" type="range" min="0.5" max="2.5" step="0.25" value="1" aria-describedby="density-note">
+            <span class="inst-value" id="density-value" aria-hidden="true">1 &times;</span>
+          </div>
+          <p class="inst-note" id="density-note">Cells across and down, against the default. Letting go of the slider starts a new maze.</p>
+        </div>
+
+        <p class="inst-note">Changing the algorithm, the grid or the density starts a new maze. <span class="maze-nowrap">undo</span> brings the last one back for 8 seconds.</p>
+      </div>
+
+      <div class="inst-col inst-col--second">
+        <fieldset class="inst-field" id="frame">
+          <legend class="caption">frame</legend>
+          <div class="inst-seg">
+            <label><input type="radio" name="frame" value="free" checked><span>free</span></label>
+            <label><input type="radio" name="frame" value="square"><span>square</span></label>
+            <label><input type="radio" name="frame" value="four-three"><span>4:3</span></label>
+            <label><input type="radio" name="frame" value="wide"><span>widescreen</span></label>
+          </div>
+          <p class="inst-note" id="save-size"></p>
+          <p class="inst-note maze-advice" id="fit-note" hidden></p>
+        </fieldset>
+
+        <fieldset class="inst-field" id="show">
+          <legend class="caption">show</legend>
+          <div class="inst-seg">
+            <label><input type="checkbox" name="show" value="ends"><span>ends</span></label>
+            <label><input type="checkbox" name="show" value="solution"><span>solution</span></label>
+            <label><input type="checkbox" name="show" value="label" checked><span>label</span></label>
+          </div>
+          <p class="inst-note">Ends and solution appear once the maze is complete. Everything shown is also saved.</p>
+        </fieldset>
+
+        <div class="inst-row">
+          <button type="button" class="surface-action surface-action--secondary" id="recolor">new colors</button>
+        </div>
+
+        <hr class="inst-rule">
+
+        <button type="button" class="surface-disclosure-trigger" id="tuning-trigger" aria-expanded="false" aria-controls="tuning">
+          <span class="surface-disclosure-label">tuning</span>
+          <span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span>
+        </button>
+        <div class="inst-group" id="tuning" hidden>
+          <div class="inst-field">
+            <label class="caption" for="speed">speed</label>
+            <div class="inst-row">
+              <input class="inst-range" id="speed" type="range" min="1" max="240" step="1" value="16" aria-describedby="speed-note">
+              <span class="inst-value" id="speed-value" aria-hidden="true">16</span>
+            </div>
+            <p class="inst-note" id="speed-note">Building steps per 1/60 s, as the sketch's speed. It changes how fast a maze is built, not the maze.</p>
+          </div>
+
+          <div class="inst-field">
+            <span class="caption" id="settings-label">settings</span>
+            <p class="inst-note inst-note--mono" id="settings-line" aria-labelledby="settings-label"></p>
+            <p class="inst-note" id="settings-note">Put after the page's address and a <span class="maze-nowrap">?</span>, this line makes the same maze again: the same walls, composed for the same frame shape.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="inst-note inst-span" id="keys-note">With the canvas or the page focused: space new maze, 1&ndash;8 algorithm, H hexagons, T triangles, C rings, R new colors, E ends, S solution, [ ] density, &minus; = speed, P pause. Esc leaves full window.</p>
+    </div>
+  </aside>
+</div>
+
+<!-- Classic scripts, no modules, no fetch: the page runs from disk as well as from a server. -->
+<script src="app/maze-engine.js"></script>
+<script src="instrument.js"></script>
+<script src="app/maze-app.js"></script>
+</body>
+</html>

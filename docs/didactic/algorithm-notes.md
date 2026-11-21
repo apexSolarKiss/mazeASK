@@ -538,6 +538,8 @@ This is another random-walk algorithm that also produces a **uniform spanning tr
 
 # Controls
 
+These are the p5.js sketch's controls. The web instrument in `web/` has its own controls and keys; see [`web/README.md`](../../web/README.md).
+
 ## Algorithm switching
 - `1` Recursive Backtracker
 - `2` Binary Tree
