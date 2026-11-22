@@ -8,7 +8,7 @@ For orientation:
 - `docs/architecture.md` = design intent
 - `web/README.md` = the browser instrument and its vendored design-system files
 
-mazeASK is evolving toward a three-layer architecture:
+mazes-ASK is evolving toward a three-layer architecture:
 
 - topology = graph structure
 - algorithm = spanning tree generation

@@ -1,10 +1,10 @@
 <!--© 2026 Andrew S Klug // ASK
 Apache License, Version 2.0-->
-![mazeASK](../assets/mazeASK-2.jpg)
+![mazes-ASK](../assets/mazeASK-2.jpg)
 
-# mazeASK // algorithm notes
+# mazes-ASK // algorithm notes
 
-## What mazeASK is doing
+## What mazes-ASK is doing
 
 This project builds mazes on a topology of connected cells.
 
@@ -182,7 +182,7 @@ Sidewinder and Eller remain intentionally rectangular-only for now.
 
 ---
 
-# Algorithms implemented in `mazeASK`
+# Algorithms implemented in mazes-ASK
 
 ## 1. Recursive Backtracker
 
@@ -250,7 +250,7 @@ For example, each room might connect either:
 
 So every room makes one simple little decision.
 
-In radial mode, mazeASK uses a Binary Tree analogue built from topology-owned preferred directions:
+In radial mode, mazes-ASK uses a Binary Tree analogue built from topology-owned preferred directions:
 - inward
 - lateral
 
@@ -342,7 +342,7 @@ Then start a new run.
 
 ### Note
 This is a row-based algorithm with a directional bias, but it is more interesting than Binary Tree.
-In mazeASK, radial got closest to a possible analogue because topology already owns rings, same-ring forward continuation, and inward prior-structure.
+In mazes-ASK, radial got closest to a possible analogue because topology already owns rings, same-ring forward continuation, and inward prior-structure.
 But Sidewinder still remains rectangular-only because its current shape depends on bounded row closure, while radial rings are cyclic rather than bounded.
 
 ### What it tends to look like
@@ -386,7 +386,7 @@ Then the process repeats for the next row.
 
 ### Note
 This is a row-by-row algorithm that tracks connected sets.
-In mazeASK, radial came closest to a possible analogue because topology already owns rings and inter-ring adjacency.
+In mazes-ASK, radial came closest to a possible analogue because topology already owns rings and inter-ring adjacency.
 But Eller still remains rectangular-only because it depends on stable carry of set identity into a successor layer, and uneven ring sizes plus fan-out break that carry model.
 
 ### What it tends to look like

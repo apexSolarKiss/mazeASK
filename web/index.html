@@ -4,9 +4,49 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>mazeASK</title>
-<!-- No icon: this keeps a server from being asked for one outside this folder. -->
-<link rel="icon" href="data:,">
+<title>mazes-ASK // maze lab</title>
+<meta name="description" content="mazes-ASK // maze lab. Eight algorithms build mazes on four grids while you watch. Choose the rules and the frame, then save the mazes you keep as PNGs.">
+<link rel="canonical" href="https://mazes.a-s-k.studio/">
+<meta property="og:site_name" content="mazes-ASK">
+<meta property="og:title" content="mazes-ASK // maze lab">
+<meta property="og:description" content="Eight algorithms build mazes on four grids while you watch. Choose the rules and the frame, then save the mazes you keep as PNGs.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mazes.a-s-k.studio/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A hexagonal maze in white with its path in magenta on a lavender gradient, captioned Recursive Backtracker // hex // 46x34 // speed 16">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="mazes-ASK // maze lab">
+<meta name="twitter:description" content="Eight algorithms build mazes on four grids while you watch. Choose the rules and the frame, then save the mazes you keep as PNGs.">
+<meta name="twitter:image" content="https://mazes.a-s-k.studio/og-image.jpg">
+<meta name="twitter:image:alt" content="A hexagonal maze in white with its path in magenta on a lavender gradient, captioned Recursive Backtracker // hex // 46x34 // speed 16">
+<!-- The ASK browser-icon package, vendored byte-identical (see VENDOR.md), in design-system-ASK's
+     deployed-origin form: root-absolute paths, with favicon.ico at the root for the browser's own probe. -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- If a file the page needs does not load, say so at the top of the page instead of leaving it blank
+     or broken. It is registered before the stylesheets so that it hears their failures too. -->
+<script>
+(function () {
+  var failed = false;
+  function show() {
+    if (!failed || !document.body || document.getElementById('load-error')) return;
+    var p = document.createElement('p');
+    p.id = 'load-error';
+    p.className = 'inst-note';
+    p.setAttribute('role', 'alert');
+    p.textContent = 'A file this page needs did not load, so the maze lab may not work. Reload the page to try again.';
+    document.body.insertBefore(p, document.body.firstChild);
+  }
+  window.addEventListener('error', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'SCRIPT' || (t.tagName === 'LINK' && /stylesheet/i.test(t.rel)))) { failed = true; show(); }
+  }, true);
+  document.addEventListener('DOMContentLoaded', show);
+})();
+</script>
 <!-- design-system-ASK, vendored byte-identical at one commit (see VENDOR.md): the foundation, the root
      modules and the instrument pattern. Load order is the DS's own. The page carries no theme
      attribute: the chrome follows the operating system through the foundation. -->
@@ -19,10 +59,11 @@
 <link rel="stylesheet" href="app/maze.css">
 </head>
 <body>
+<noscript><p class="inst-note">mazes-ASK draws its mazes with JavaScript, which is turned off in this browser.</p></noscript>
 <div class="inst" id="inst">
 
   <header class="inst-head">
-    <p class="caption">mazeASK // maze lab</p>
+    <p class="caption">mazes-ASK // maze lab</p>
     <div class="inst-row">
       <button type="button" class="surface-action surface-action--secondary" id="view-window">full window</button>
       <button type="button" class="surface-action surface-action--secondary" id="view-fullscreen">fullscreen</button>
@@ -58,7 +99,7 @@
 
   <aside class="inst-panel surface-panel" id="panel" aria-label="controls">
     <div class="inst-panel-body">
-      <h1 class="surface-panel-title">mazeASK</h1>
+      <h1 class="surface-panel-title">mazes-ASK</h1>
 
       <div class="inst-col">
         <fieldset class="inst-field" id="algorithm">
@@ -151,6 +192,8 @@
       </div>
 
       <p class="inst-note inst-span" id="keys-note">With the canvas or the page focused: space new maze, 1&ndash;8 algorithm, H hexagons, T triangles, C rings, R new colors, E ends, S solution, [ ] density, &minus; = speed, P pause. Esc leaves full window.</p>
+
+      <p class="inst-note inst-span">mazes-ASK is part of <a href="https://a-s-k.studio/asymptotic-system-key">asymptotic system key</a> // <a href="https://github.com/apexSolarKiss/mazes-ASK">source on GitHub</a></p>
     </div>
   </aside>
 </div>

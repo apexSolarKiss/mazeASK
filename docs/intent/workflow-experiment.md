@@ -1,6 +1,6 @@
 # Workflow Experiment
 
-mazeASK is also a workflow-refinement experiment.
+mazes-ASK is also a workflow-refinement experiment.
 
 It is a case study in governed AI collaboration around a real repo with explicit boundaries.
 
@@ -18,7 +18,7 @@ Earlier, ChatGPT acted as the external control surface and prompt compiler, and 
 
 The workflow experiment remains repo-specific and explicit in scope.
 
-That is why mazeASK keeps a clear boundary between >>
+That is why mazes-ASK keeps a clear boundary between >>
 
 - repo-local execution rules
 - the external workflow that frames and reviews the work

@@ -1,6 +1,6 @@
 # Artistic Purpose
 
-mazeASK treats maze generation as a medium for computational form.
+mazes-ASK treats maze generation as a medium for computational form.
 
 Its artistic intent lies in >>
 
@@ -15,9 +15,9 @@ The work studies how different selection rules, within a constrained colorsASK p
 
 Color introduces constrained randomness inside a bounded palette so that each run can shift in tone while remaining recognizably part of the same visual language.
 
-In this sense, mazeASK follows an ASK visual logic >> order from chaos // beauty in systems
+In this sense, mazes-ASK follows an ASK visual logic >> order from chaos // beauty in systems
 
-mazeASK therefore treats visual style as part of the work's meaning >>
+mazes-ASK therefore treats visual style as part of the work's meaning >>
 
 - modular enough to vary
 - constrained enough to remain coherent
