@@ -36,7 +36,7 @@ mazes-ASK is an expression of intent on three layers >>
 
 ## Earlier p5.js sketch
 
-The maze lab began as a p5.js sketch, [`mazeASK.js`](mazeASK.js), kept in this repository as provenance. The live maze lab keeps its algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. The Architecture, Controls and Topology mode sections below describe the sketch.
+The maze lab began as a p5.js sketch, [`mazeASK.js`](mazeASK.js), kept in this repository as provenance. The live maze lab keeps its algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. The Architecture and Topology mode sections below describe the sketch.
 
 ---
 
@@ -74,41 +74,6 @@ What changes is how the next connection is chosen.
 That choice introduces bias.  
 That bias shapes the structure.  
 That structure is what you see.
-
----
-
-## Controls
-
-These are the p5.js sketch's controls. The live maze lab's controls and keys are in [`web/README.md`](web/README.md): it saves only from its `save PNG` button, its frame selector replaces `o` and `p`, and `P` pauses building.
-
-### Algorithms
-- `1` Recursive Backtracker  
-- `2` Binary Tree  
-- `3` Prim  
-- `4` Sidewinder  
-- `5` Eller  
-- `6` Kruskal  
-- `7` Wilson  
-- `8` Aldous–Broder  
-
-### Interaction
-- `click` save PNG output  
-- `e` toggle start + finish overlay  
-- `s` toggle solution path overlay  
-- `space` regenerate  
-- `r` recolor  
-- `h` toggle rectangular / hex topology  
-- `c` toggle rectangular / radial topology  
-- `t` toggle rectangular / triangle topology  
-- `-` / `+` adjust speed  
-
-### Density
-- `[` decrease grid  
-- `]` increase grid  
-
-### Output
-- `o` toggle output mode  
-- `p` cycle square / `4:3` / widescreen  
 
 ---
 
