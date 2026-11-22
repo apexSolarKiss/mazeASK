@@ -6,6 +6,8 @@ The p5.js sketch, [`mazeASK.js`](../mazeASK.js), stays as it is. This folder is 
 
 ## Open it
 
+Its public address is [mazes.A-S-K.studio](https://mazes.a-s-k.studio/), served from this folder.
+
 Locally, double-click `index.html`. It runs from disk; there is nothing to install. The browser icons do not show from disk, because the page names them by root paths, as a deployed site does.
 
 To serve it instead, from this folder:

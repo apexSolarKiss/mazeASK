@@ -18,7 +18,7 @@ Best viewed on desktop in Chrome.
 
 ## Web instrument
 
-[`web/`](web/) holds the maze lab as a browser instrument: the sketch's eight algorithms and four grids on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s instrument pattern, with full window, fullscreen, fixed frames and PNG saves at exact sizes. Open `web/index.html`; there is no build step.
+[`web/`](web/) holds the maze lab as a browser instrument, served at [mazes.A-S-K.studio](https://mazes.a-s-k.studio/): the sketch's eight algorithms and four grids on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s instrument pattern, with full window, fullscreen, fixed frames and PNG saves at exact sizes. Open `web/index.html`; there is no build step.
 
 It keeps the sketch's algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. See [`web/README.md`](web/README.md). The sketch below stays as it is.
 
