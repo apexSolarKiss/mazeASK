@@ -8,25 +8,17 @@ Formerly `mazeASK`. The repository was renamed in place on 2026-11-21, and its o
 
 ---
 
-## Live sketch
+## Live maze lab
 
-https://editor.p5js.org/asymptoticSystemKey/full/FJk1OWjNb
+[mazes.A-S-K.studio](https://mazes.a-s-k.studio/)
 
-Best viewed on desktop in Chrome.
-
----
-
-## Web instrument
-
-[`web/`](web/) holds the maze lab as a browser instrument, served at [mazes.A-S-K.studio](https://mazes.a-s-k.studio/): the sketch's eight algorithms and four grids on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s instrument pattern, with full window, fullscreen, fixed frames and PNG saves at exact sizes. Open `web/index.html`; there is no build step.
-
-It keeps the sketch's algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. See [`web/README.md`](web/README.md). The sketch below stays as it is.
+Eight algorithms build mazes on four grids while you watch, with full window, fullscreen, fixed frames and PNG saves at exact sizes. The maze lab is a browser instrument on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s instrument pattern, served from [`web/`](web/); there is no build step. See [`web/README.md`](web/README.md) for its controls, keys and how it differs from the earlier sketch.
 
 ---
 
 ## What this is
 
-An interactive p5.js lab for exploring maze generation algorithms through their behavior and output.
+An interactive lab for exploring maze generation algorithms through their behavior and output.
 
 Switch between algorithms and watch how each one builds structure in real time.
 
@@ -39,6 +31,12 @@ mazes-ASK is an expression of intent on three layers >>
 - artistic purpose: [docs/intent/artistic-purpose.md](docs/intent/artistic-purpose.md)
 - didactic purpose: [docs/intent/didactic-purpose.md](docs/intent/didactic-purpose.md)
 - workflow experiment: [docs/intent/workflow-experiment.md](docs/intent/workflow-experiment.md)
+
+---
+
+## Earlier p5.js sketch
+
+The maze lab began as a p5.js sketch, [`mazeASK.js`](mazeASK.js), kept in this repository as provenance. The live maze lab keeps its algorithms, palette and drawing, repairs three algorithm rules that left some mazes in pieces, and changes how saving, output sizes and some keys work. The Architecture, Controls and Topology mode sections below describe the sketch.
 
 ---
 
@@ -81,7 +79,7 @@ That structure is what you see.
 
 ## Controls
 
-These are the p5.js sketch's controls. The web instrument's controls and keys are in [`web/README.md`](web/README.md): it saves only from its `save PNG` button, its frame selector replaces `o` and `p`, and `P` pauses building.
+These are the p5.js sketch's controls. The live maze lab's controls and keys are in [`web/README.md`](web/README.md): it saves only from its `save PNG` button, its frame selector replaces `o` and `p`, and `P` pauses building.
 
 ### Algorithms
 - `1` Recursive Backtracker  
@@ -116,7 +114,7 @@ These are the p5.js sketch's controls. The web instrument's controls and keys ar
 
 ## Topology mode
 
-This describes the p5.js sketch. The web instrument offers the same grids and repairs Binary Tree on hexagons and rings, and Wilson; see [`web/README.md`](web/README.md).
+This describes the p5.js sketch. The live maze lab offers the same grids and repairs Binary Tree on hexagons and rings, and Wilson; see [`web/README.md`](web/README.md).
 
 Rectangular is the default baseline.
 
