@@ -1,6 +1,6 @@
 # From Rectangular to Topology
 
-mazeASK did not begin as a general maze system.
+mazes-ASK did not begin as a general maze system.
 
 It began from the most intuitive version of the problem:
 
@@ -87,7 +87,7 @@ It was:
 
 ## The topology seam and ownership split
 
-mazeASK now separates four concerns:
+mazes-ASK now separates four concerns:
 
 - topology = possible structure
 - Maze State = carved connectivity
@@ -148,7 +148,7 @@ They show that the topology seam is strong enough to support genuinely different
 
 Generalization does not mean every algorithm ports automatically.
 
-mazeASK now makes an important distinction:
+mazes-ASK now makes an important distinction:
 
 - some algorithms are mostly about neighbor access and carved links
 - some algorithms are defined by deeper directional or layer semantics
@@ -186,7 +186,7 @@ But that analogy still fails on current repo truth because Sidewinder depends on
 
 For Eller specifically, the blocker is narrower than generic layers alone. Eller depends on successor-layer carry semantics with preserved set identity, and radial still fails because uneven ring sizes and fan-out break that carry model.
 
-That is why mazeASK treats portability as selective rather than universal.
+That is why mazes-ASK treats portability as selective rather than universal.
 
 That open Binary Tree-on-radial question has since been resolved through a topology-owned preferred-direction analogue.
 
@@ -241,9 +241,9 @@ That is why radial matters so much in the repo's story.
 
 It tests whether the architecture is really topology-first, not just rectangle-first with a few alternate drawings.
 
-## Where mazeASK stands now
+## Where mazes-ASK stands now
 
-mazeASK is now best understood as a maze lab built around generalization.
+mazes-ASK is now best understood as a maze lab built around generalization.
 
 It still teaches algorithms.
 
@@ -264,4 +264,4 @@ It is also:
 
 > Here is how a rectangular maze sketch became a topology-driven system, and how that shift made broader structure possible.
 
-That is the real generalization path mazeASK now demonstrates.
+That is the real generalization path mazes-ASK now demonstrates.

@@ -127,7 +127,7 @@
     stage: $('fit'),
     canvas: canvas,
     pin: $('pin'),
-    name: 'mazeASK',
+    name: 'mazes-ASK',
     frame: params.get('frame') || undefined,
     storageKey: useStore ? STORE + '/frame' : null,
     render: function (ctx, width, height, info) {

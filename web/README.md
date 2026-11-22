@@ -1,12 +1,12 @@
-# mazeASK // web instrument
+# mazes-ASK // web instrument
 
-The mazeASK maze lab as a browser instrument: the sketch's eight algorithms and four grids, on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s `instrument` pattern, in chrome that follows the system's light or dark setting. JavaScript and Canvas 2D; no p5, no framework, no build step.
+The mazes-ASK maze lab as a browser instrument: the sketch's eight algorithms and four grids, on [design-system-ASK](https://github.com/apexSolarKiss/design-system-ASK)'s `instrument` pattern, in chrome that follows the system's light or dark setting. JavaScript and Canvas 2D; no p5, no framework, no build step.
 
 The p5.js sketch, [`mazeASK.js`](../mazeASK.js), stays as it is. This folder is a separate chapter beside it.
 
 ## Open it
 
-Double-click `index.html`. It runs from disk; there is nothing to install.
+Locally, double-click `index.html`. It runs from disk; there is nothing to install. The browser icons do not show from disk, because the page names them by root paths, as a deployed site does.
 
 To serve it instead, from this folder:
 
@@ -14,22 +14,31 @@ To serve it instead, from this folder:
 python3 -m http.server 8765
 ```
 
-then open `http://localhost:8765/`.
+then open `http://localhost:8765/`, where the icons do show.
 
 ## What is here
 
 | Folder or file | What it holds | Owner |
 |---|---|---|
-| `index.html` | the page: markup and copy | mazeASK |
-| `app/maze-engine.js` | the maze: generation, solving and drawing, ported from `mazeASK.js`. No DOM | mazeASK |
-| `app/maze-app.js` | controls, loop, keys, undo and settings | mazeASK |
-| `app/maze.css` | the page's own small additions: the frame note, and the phone full-window row | mazeASK |
-| `checks/engine-sweep.cjs` | builds every algorithm on every grid it offers and checks each result is one perfect maze | mazeASK |
+| `index.html` | the page: markup, copy, link-preview metadata, and a notice if a file it needs fails to load | mazes-ASK |
+| `app/maze-engine.js` | the maze: generation, solving and drawing, ported from `mazeASK.js`. No DOM | mazes-ASK |
+| `app/maze-app.js` | controls, loop, keys, undo and settings | mazes-ASK |
+| `app/maze.css` | the page's own small additions: the frame note, and the phone full-window row | mazes-ASK |
+| `checks/engine-sweep.cjs` | builds every algorithm on every grid it offers and checks each result is one perfect maze | mazes-ASK |
 | `instrument.js`, `instrument.css` | frame fitting, full window, fullscreen, PNG saves and the shared control styles. Knows nothing about mazes | design-system-ASK, vendored |
 | `_dsa-tokens/`, `_dsa-surface/`, `licenses/` | the design system's foundation, root modules and licenses | design-system-ASK, vendored |
-| `VENDOR.md` | the donor commit and every vendored file's identity | mazeASK |
+| `favicon.svg`, `favicon-32.png`, `favicon.ico`, `apple-touch-icon.png` | the ASK browser icons, at the site root | design-system-ASK, vendored |
+| `og-image.jpg` | the link-preview card, 1200 × 630 | mazes-ASK |
+| `vercel.json`, `.vercelignore` | hosting: response headers, and what stays out of the deployment | mazes-ASK |
+| `VENDOR.md` | the donor commit and every vendored file's identity | mazes-ASK |
 
 The vendored files are byte-identical copies at one design-system commit. `VENDOR.md` records it and says how to re-sync.
+
+## Hosting
+
+The site is this folder as it is: there is no build step, and `vercel.json` only adds response headers. `.vercelignore` keeps `checks/`, this README and `VENDOR.md` out of the deployment.
+
+The link-preview card, `og-image.jpg`, is cut from the repository's header image, [`docs/assets/mazeASK-3.jpg`](../docs/assets/mazeASK-3.jpg), and keeps its settings caption. It uses the same horizontal framing as the repository's GitHub social preview, a 1280 × 640 cut of the same image.
 
 ## Using it
 
@@ -64,7 +73,7 @@ Put after the page's address and a `?`, it makes the same maze again, on any scr
 - **Remembered settings.** Opening such an address also makes its algorithm, grid and density the remembered settings, unless `store=0` is added.
 - **Colors.** A page's first maze takes its colors from its seed, so a replayed maze has its seed's colors. A maze that kept the colors of the maze before it, or got `new colors`, comes back in its seed's colors instead.
 - **The frame.** A maze shown in a frame of another shape sits whole inside it, with more ground around it, and the panel offers `new maze for this frame`. A saved PNG also depends on the frame it is saved in.
-- **File names** are `mazeASK-<date>-<time>-<algorithm>-<grid>-<seed>-<W>x<H>.png`. They name the maze; the settings line holds what makes it again.
+- **File names** are `mazes-ASK-<date>-<time>-<algorithm>-<grid>-<seed>-<W>x<H>.png`. They name the maze; the settings line holds what makes it again.
 
 ## From the sketch: what is the same, what changed
 
@@ -109,13 +118,13 @@ The sketch itself keeps its original rules.
 - **Phones in particular:** saving through iOS Safari, the memory a 3840 × 2160 save needs on a phone, and the cost of redrawing every cell each frame while a large maze builds are untested.
 - **The label's letters can differ by antialiasing** between the page's canvas and an off-screen drawing of the same maze; everything else matches pixel for pixel. A saved file matches a fresh drawing at its size to within one step in each color channel.
 - **Wilson and Aldous-Broder are slow on large mazes**, as in the sketch: on a phone in portrait at 2.5 × density, a few minutes at the default speed. `speed` goes to 240.
-- **Nothing is saved between visits except settings.** The algorithm, grid, density, speed, `show` choices and frame are remembered in the browser's local storage, under `mazeASK` and `mazeASK/frame`. The maze itself is not: a reload makes a new maze unless the URL names one.
+- **Nothing is saved between visits except settings.** The algorithm, grid, density, speed, `show` choices and frame are remembered in the browser's local storage, under `mazeASK` and `mazeASK/frame`, the names they had before the project became mazes-ASK. The maze itself is not: a reload makes a new maze unless the URL names one.
 
 ## Not in this chapter
 
 - Solving by hand, a timer, or any game.
 - Saving and reopening a maze, or a share sheet.
-- Hosting at a public address, and the iPhone and iPad build.
+- The iPhone and iPad build.
 
 ## URL parameters
 

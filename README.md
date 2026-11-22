@@ -1,8 +1,10 @@
-![mazeASK](docs/assets/mazeASK-3.jpg)
+![mazes-ASK](docs/assets/mazeASK-3.jpg)
 
-# mazeASK
+# mazes-ASK
 
 Maze generation algorithms
+
+Formerly `mazeASK`. The repository was renamed in place on 2026-11-21, and its old GitHub address redirects here.
 
 ---
 
@@ -32,7 +34,7 @@ Same grid. Same constraints. Different rules.
 
 ## Why this repo exists
 
-mazeASK is an expression of intent on three layers >>
+mazes-ASK is an expression of intent on three layers >>
 
 - artistic purpose: [docs/intent/artistic-purpose.md](docs/intent/artistic-purpose.md)
 - didactic purpose: [docs/intent/didactic-purpose.md](docs/intent/didactic-purpose.md)

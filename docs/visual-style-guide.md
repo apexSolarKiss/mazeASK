@@ -15,7 +15,7 @@ This guide governs both:
 
 It is not a brand guide, a marketing style guide, or a nostalgic terminal mood board.
 
-It exists to keep mazeASK visually coherent as a technical, didactic, and computational system.
+It exists to keep mazes-ASK visually coherent as a technical, didactic, and computational system.
 
 ## Core Principles
 
@@ -158,7 +158,7 @@ Only after those are working should color, opacity, or weight be used to reinfor
 
 ### Canonical aspect ratios
 
-Prefer canonical aspect ratios across mazeASK visual outputs for the sake of consistency.
+Prefer canonical aspect ratios across mazes-ASK visual outputs for the sake of consistency.
 
 The canonical aspect ratios are:
 
@@ -222,7 +222,7 @@ The ASK brand color is:
 
 ### ASK visual identity reference
 
-The following assets are included here as an ASK brand reference for mazeASK visual alignment:
+The following assets are included here as an ASK brand reference for mazes-ASK visual alignment:
 
 ![ASK visual identity reference](assets/visual-identity-ASK.jpg)
 

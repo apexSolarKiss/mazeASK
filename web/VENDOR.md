@@ -20,6 +20,10 @@ Every file below is a byte-identical copy of the donor's file at that commit. No
 | `instrument.js` | `patterns/instrument/instrument.js` | 27,672 | `84b951c3150dbedc35c11db5d37c573e8ce387ba7a90ab56af97caab29471f19` | `77f08d20c03bbe153d96f583d0ca1576f3d5f1ba` |
 | `licenses/design-system-ASK/LICENSE` | `LICENSE` | 10,835 | `8188fe74beac4005f834721ae459e84909cd42c55554549ad750f50fcfc20801` | `0c382f604647738e78449026c3dd3d5c26702a6f` |
 | `licenses/design-system-ASK/NOTICE` | `NOTICE` | 1,602 | `8b6de487f00ed3b3ec4835b9a3ed44a3785d705e2840157d165d8e96356759aa` | `985a32e5583c599c494d16030fb5d2dae6fe4fbf` |
+| `favicon.svg` | `favicon.svg` | 1,585 | `1033f1c23123d78b8650de49ea413c85e1937014c866812229552c89d645cc6b` | `b753ce2377098b3e670935393b5ebf5b69de2114` |
+| `favicon-32.png` | `favicon-32.png` | 1,451 | `9f08639c0523fae1aa7a782567b66d3ca5a9ac0929150a72deca9455f397d390` | `3b133ce50f7c1e3cad67fea5ca481c8705d40a42` |
+| `favicon.ico` | `favicon.ico` | 1,473 | `6e34ba4e8ce3519aac8e244ac456c4523dd238237f8ac6104708e0b8e1ca6c1d` | `23e97f6efc77845b72d944a7daf6d1e4d47cf42a` |
+| `apple-touch-icon.png` | `apple-touch-icon.png` | 6,715 | `e2fc718650c99c9e610ad232a30dcf9308dcd5223094e06f04eeb502f2313b5d` | `5ffdfb6373d8d75ed0ad2c2e7c65a98a8423e28b` |
 
 The Git blob column is the id `git rev-parse <commit>:<donor path>` gives in the donor and `git hash-object <local path>` gives here.
 
@@ -36,7 +40,7 @@ app/maze.css                             the maze page's own additions, last
 
 Scripts: `app/maze-engine.js`, then `instrument.js`, then `app/maze-app.js`.
 
-`colors_and_type.css` reaches its fonts by a path relative to itself, so `fonts/` stays beside it. `instrument.css` and `instrument.js` sit beside the page, as in the pattern's template (`patterns/instrument/instrument.template.html`).
+`colors_and_type.css` reaches its fonts by a path relative to itself, so `fonts/` stays beside it. `instrument.css` and `instrument.js` sit beside the page, as in the pattern's template (`patterns/instrument/instrument.template.html`). The four browser-icon files sit at the folder root, which is the deployed site's root.
 
 ## What is used, and what is not vendored
 
@@ -45,7 +49,8 @@ Scripts: `app/maze-engine.js`, then `instrument.js`, then `app/maze-app.js`.
 - `surface-panel.css`: the controls panel, and the stage frame's panel material and free attachment.
 - `surface-treatments.css`: the stage frame's flush elevation, and the `controls` and `tuning` disclosure triggers.
 - `instrument.css`, `instrument.js`: the instrument pattern. Its contract is `patterns/instrument/README.md` in the donor.
-- Not vendored: the pattern's example script (`instrument.example.js`, example content only), `art-palettes.json` (the maze draws its own sketch palette), `surface-text-link.css`, `surface-cta.css`, the page shell, `fonts-embedded.js` and `styleguide-theme-control.js`. Nothing here uses them.
+- `favicon.svg`, `favicon-32.png`, `favicon.ico`, `apple-touch-icon.png`: the ASK browser-icon package, which ASK assigns to this instrument's browser chrome. The page declares `favicon.svg`, `favicon-32.png` and `apple-touch-icon.png` with root paths, in the form the donor's README gives for a deployed origin (§Browser icons); `favicon.ico` answers the browser's own request for it.
+- Not vendored: the pattern's example script (`instrument.example.js`, example content only), `art-palettes.json` (the maze draws its own sketch palette), `surface-text-link.css`, `surface-cta.css`, the page shell, `fonts-embedded.js` and `styleguide-theme-control.js`, and the donor's `og-image.png` (the ASK social card; this site has its own card). Nothing here uses them.
 
 ## Licenses
 
