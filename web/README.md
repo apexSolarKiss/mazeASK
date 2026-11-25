@@ -116,10 +116,12 @@ The sketch itself keeps its original rules.
 
 ## Known limits
 
-- **Checked in headless Chrome only**, outside this repo: the page, its saves and its views. Real browser fullscreen (headless Chrome refuses it), Safari, Firefox, a hardware-accelerated canvas and physical phones and tablets are untested.
-- **Phones in particular:** saving through iOS Safari, the memory a 3840 × 2160 save needs on a phone, and the cost of redrawing every cell each frame while a large maze builds are untested.
+- **Checked in headless Chrome**, outside this repo: the page, its saves and its views, and the pixel comparisons below.
+- **Checked on ASK's iPhone, in Safari:** full window and its `controls` panel, the hexagon grid, rotating the phone, which kept the same maze, and `save PNG`, which reached Files. The `fullscreen` control did not appear there: that browser did not offer the element fullscreen the page uses, and the page shows the control only where it is offered.
+- **Untested:** real browser fullscreen (headless Chrome refuses it, and the iPhone check above is of full window), Safari on a computer, Firefox, other browsers on a phone, other phones, and tablets. Nothing was compared pixel for pixel outside headless Chrome.
+- **Phones in particular:** the memory a 3840 × 2160 save needs on a phone, and the cost of redrawing every cell each frame while a large maze builds, are not measured.
 - **The label's letters can differ by antialiasing** between the page's canvas and an off-screen drawing of the same maze; everything else matches pixel for pixel. A saved file matches a fresh drawing at its size to within one step in each color channel.
-- **Wilson and Aldous-Broder are slow on large mazes**, as in the sketch: on a phone in portrait at 2.5 × density, a few minutes at the default speed. `speed` goes to 240.
+- **Wilson and Aldous-Broder are slow on large mazes**, as in the sketch: at a phone's portrait size and 2.5 × density, a few minutes at the default speed, worked out from the step count rather than timed on a phone. `speed` goes to 240.
 - **Nothing is saved between visits except settings.** The algorithm, grid, density, speed, `show` choices and frame are remembered in the browser's local storage, under `mazeASK` and `mazeASK/frame`, the names they had before the project became mazes-ASK. The maze itself is not: a reload makes a new maze unless the URL names one.
 
 ## Not in this chapter
