@@ -66,7 +66,7 @@ The files are in the app's Library folder, under `mazes-ASK/`:
 | `saved-maze.json` | `save this maze` | only when you save again, after confirming the replacement |
 | `recovery.json` | a maze completes, its look changes, or the app goes to the background | each time a complete maze or its look changes, unless a copy of it cannot be read (see below) |
 | `recovery-refused.json` | a recovery file that is refused or cannot be read, or a last maze that was never reopened, moved here before a new maze is kept | replaced, unread, by the next one moved here |
-| `building.json` | a maze being built becomes the current maze: a new maze, or undo back to an unfinished one | removed once a complete maze is current and kept |
+| `building.json` | a maze being built becomes the current maze: a new maze, or undo back to an unfinished one | removed while the current maze is complete, including when its checkpoint cannot be kept |
 
 Each file is written to a temporary copy, `<file>.tmp`, which is then renamed over the old file. The rename removes the old file before it moves the copy in, a write can stop part-way, and the app can stop between the write and the rename. So the copy, when it is good, is never older than the file: it is the same, or it is the newer record. The app keeps to these rules:
 
