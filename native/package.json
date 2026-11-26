@@ -1,0 +1,22 @@
+{
+  "name": "mazes-ask-ios",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The mazes-ASK maze lab as a private iPhone and iPad app: the web instrument in web/, packaged by Capacitor.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "bundle": "node scripts/bundle-web.mjs",
+    "sync": "node scripts/bundle-web.mjs && cap sync ios",
+    "open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/ios": "8.6.3",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.3"
+  }
+}

@@ -1079,7 +1079,55 @@
       for (var j = 0; j < all.length; j++) all[j].nb = topology.getNeighbors(all[j]);
     })();
     cellCount = getTopologyCells().length;
-    setupAlgorithm();
+    if (spec.graph) adoptGraph(spec.graph); else setupAlgorithm();
+
+    /* ---- a saved graph ------------------------------------------------------
+       A complete maze is fully described, for drawing, by its canonical carved
+       links and the order its cells were reached (the visited fields' colors
+       follow that order). `graph()` reads them; `spec.graph` rebuilds a
+       complete maze from them on this grid instead of generating one, and
+       throws if they do not fit it. */
+    function readGraph() {
+      if (!mazeComplete) return null;
+      var cells = getTopologyCells();
+      var order = new Array(cells.length);
+      for (var i = 0; i < cells.length; i++) order[i] = cells[i].visitOrder;
+      return { links: sortedLinks(), visitOrder: order, steps: steps };
+    }
+    function adoptGraph(graph) {
+      var cells = getTopologyCells();
+      if (!graph || !Array.isArray(graph.links) || !Array.isArray(graph.visitOrder)) throw new Error('the saved maze has no graph');
+      if (graph.visitOrder.length !== cells.length) {
+        throw new Error('the saved maze has ' + graph.visitOrder.length + ' cells; this grid has ' + cells.length);
+      }
+      var byKey = {};
+      for (var i = 0; i < cells.length; i++) byKey[cellKey(cells[i])] = cells[i];
+      for (var j = 0; j < graph.links.length; j++) {
+        var key = graph.links[j];
+        var ends = typeof key === 'string' ? key.split('|') : [];
+        var a = ends.length === 2 ? byKey[ends[0]] : null;
+        var b = ends.length === 2 ? byKey[ends[1]] : null;
+        if (!a || !b || !areAdjacentCells(a, b) || makeLinkKey(a, b) !== key || links.has(key)) {
+          throw new Error('the saved maze has a link that does not join two neighboring cells once: ' + String(key));
+        }
+        linkCells(a, b);
+      }
+      var seen = new Array(cells.length);
+      for (var k = 0; k < cells.length; k++) {
+        var v = graph.visitOrder[k];
+        if (typeof v !== 'number' || v !== Math.floor(v) || v < 0 || v >= cells.length || seen[v]) {
+          throw new Error('the saved maze does not reach each cell once');
+        }
+        seen[v] = true;
+        cells[k].visited = true;
+        cells[k].visitOrder = v;
+      }
+      visitOrderCounter = cells.length;
+      visitedCount = cells.length;
+      steps = typeof graph.steps === 'number' && graph.steps >= 0 ? Math.floor(graph.steps) : 0;
+      if (!verify().perfect) throw new Error('the saved links do not make one perfect maze');
+      completeNow();
+    }
 
     /* One generation step, as the sketch's updateMaze() ran them. Binary Tree
        finishes in one pass. Returns true while there is more to do. */
@@ -1279,7 +1327,10 @@
       sortedLinks: sortedLinks,
       verify: verify,
       /* Tests only: the cells, read-only by agreement. */
-      cells: function () { return getTopologyCells(); }
+      cells: function () { return getTopologyCells(); },
+      /* The complete maze's links and visit order (null while it is built). */
+      graph: readGraph,
+      restored: !!spec.graph
     };
   }
 
@@ -1352,11 +1403,22 @@
       return work.links + ':' + h.toString(16);
     }
 
+    /* A complete maze rebuilt by readRecord as the current maze. Returns a
+       function that puts the previous maze back. */
+    function adopt(next) {
+      if (!next || !next.restored || !next.complete) throw new Error('not a rebuilt saved maze');
+      var previous = work;
+      work = next;
+      carry = 0;
+      return function restore() { if (previous) work = previous; carry = 0; };
+    }
+
     return {
       settings: settings,
       get work() { return work; },
       newMaze: newMaze,
       recolor: recolor,
+      adopt: adopt,
       advance: advance,
       finish: finish,
       hash: hash,
@@ -1366,9 +1428,114 @@
     };
   }
 
+  /* ---- saved mazes ----------------------------------------------------------
+     A saved maze is a JSON record of a complete maze: the recipe that made it
+     (provenance; replaying it can differ in colors), the grid it was built
+     on, its canonical links and visit order, and how it looked: its colors,
+     frame and what it showed. `readRecord` checks a record and rebuilds the
+     maze from its graph, not from its seed, so a later change to an
+     algorithm cannot change a saved maze. It throws, saying why, on a record
+     it cannot rebuild exactly. */
+
+  var RECORD_FORMAT = 'mazes-ASK/saved-maze';
+  var RECORD_VERSION = 1;
+  var ENGINE_ID = { name: 'mazes-ASK maze-engine', graph: 1 };
+  var COLOR_KEYS = ['background', 'c1', 'c2', 'c3', 'c4'];
+
+  /* JSON with sorted keys, so a record's check does not depend on key order. */
+  function canonical(value) {
+    if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
+    if (value && typeof value === 'object') {
+      return '{' + Object.keys(value).sort().map(function (k) { return JSON.stringify(k) + ':' + canonical(value[k]); }).join(',') + '}';
+    }
+    return JSON.stringify(value);
+  }
+  /* Two 32-bit FNV-1a hashes with different starts: a check against damage, not a signature. */
+  function digest(value) {
+    var s = canonical(value), h1 = 2166136261, h2 = 0x811C9DC5 ^ 0x5BD1E995;
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 16777619) >>> 0;
+      h2 = Math.imul(h2 ^ c, 16777619) >>> 0;
+    }
+    return ('0000000' + h1.toString(16)).slice(-8) + ('0000000' + h2.toString(16)).slice(-8);
+  }
+
+  function toRecord(work, appearance, meta) {
+    var graph = work && work.graph ? work.graph() : null;
+    if (!graph) throw new Error('only a complete maze can be saved');
+    appearance = appearance || {};
+    meta = meta || {};
+    var colors = {};
+    COLOR_KEYS.forEach(function (k) { colors[k] = work.colors[k].map(function (v) { return Math.round(v); }); });
+    var maze = {
+      recipe: { seed: work.seed, colorSeed: work.colorSeed, algorithm: work.algorithm, grid: work.requestedTopology,
+        density: work.density, aspect: work.compositionAspect },
+      geometry: { topology: work.topology, composition: work.composition, cols: work.cols, rows: work.rows, cells: work.cellCount },
+      graph: graph,
+      appearance: {
+        colors: colors,
+        frame: typeof appearance.frame === 'string' ? appearance.frame : null,
+        show: { ends: !!appearance.ends, solution: !!appearance.solution, label: !!appearance.label }
+      }
+    };
+    return {
+      format: RECORD_FORMAT,
+      version: RECORD_VERSION,
+      engine: ENGINE_ID,
+      build: meta.build == null ? null : meta.build,
+      savedAt: meta.savedAt == null ? null : meta.savedAt,
+      maze: maze,
+      check: digest(maze)
+    };
+  }
+
+  function readRecord(record) {
+    function fail(why) { throw new Error(why); }
+    function uint32(v) { return typeof v === 'number' && v === Math.floor(v) && v >= 0 && v <= 4294967295; }
+    if (!record || typeof record !== 'object' || record.format !== RECORD_FORMAT) fail('this is not a saved maze');
+    if (typeof record.version !== 'number' || record.version < 1) fail('the saved maze has no version');
+    if (record.version > RECORD_VERSION) fail('the saved maze was made by a newer version of the app');
+    var maze = record.maze;
+    if (!maze || typeof maze !== 'object' || record.check !== digest(maze)) fail('the saved maze is damaged');
+    var r = maze.recipe || {}, g = maze.geometry || {}, a = maze.appearance || {};
+    if (!maze.graph || typeof maze.graph !== 'object') fail('the saved maze has no graph');
+    if (!uint32(r.seed) || !uint32(r.colorSeed)) fail('the saved maze has no seed');
+    var known = ALGORITHMS.some(function (x) { return x.id === r.algorithm; }) &&
+      TOPOLOGIES.some(function (x) { return x.id === r.grid; });
+    if (!known) fail('the saved maze names an algorithm or grid this version does not have');
+    if (typeof r.density !== 'number' || r.density < 0.5 || r.density > 2.5 || Math.round(r.density * 4) !== r.density * 4) fail('the saved maze has an unknown density');
+    if (typeof r.aspect !== 'number' || !isFinite(r.aspect) || r.aspect <= 0) fail('the saved maze has no frame shape');
+    var colors = {};
+    COLOR_KEYS.forEach(function (k) {
+      var c = a.colors && a.colors[k];
+      if (!Array.isArray(c) || c.length !== 3 || !c.every(function (v) { return typeof v === 'number' && v >= 0 && v <= 255; })) fail('the saved maze has no colors');
+      colors[k] = c.slice();
+    });
+    var work = makeWork({
+      seed: r.seed, colorSeed: r.colorSeed, algorithm: r.algorithm, topology: r.grid, density: r.density,
+      aspect: r.aspect, colors: colors, graph: maze.graph
+    });
+    if (work.topology !== g.topology || work.composition !== g.composition || work.cols !== g.cols ||
+        work.rows !== g.rows || work.cellCount !== g.cells) {
+      fail('this version builds the saved maze\'s grid differently');
+    }
+    var show = a.show || {};
+    return {
+      work: work,
+      appearance: { frame: typeof a.frame === 'string' ? a.frame : null, ends: show.ends === true, solution: show.solution === true, label: show.label !== false },
+      savedAt: typeof record.savedAt === 'string' ? record.savedAt : null,
+      build: record.build == null ? null : record.build
+    };
+  }
+
   var api = {
     create: create,
     makeWork: makeWork,
+    toRecord: toRecord,
+    readRecord: readRecord,
+    RECORD_FORMAT: RECORD_FORMAT,
+    RECORD_VERSION: RECORD_VERSION,
     pickColors: pickColors,
     mulberry32: mulberry32,
     supports: supports,

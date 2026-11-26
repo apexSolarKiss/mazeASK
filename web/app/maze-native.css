@@ -1,0 +1,60 @@
+/* maze-native.css // the iOS app's layout additions. Only maze-native.js loads it, inside the
+   app, after maze.css. The app's page runs edge to edge, under the status bar, the camera
+   housing and the home indicator, where Safari keeps its own bars, so the page's padding
+   takes the safe areas. Each rule mirrors the instrument.css rule it extends. */
+
+.inst {
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
+}
+@media (max-width: 999px) and (orientation: landscape) and (max-height: 520px) {
+  .inst {
+    padding-top: max(var(--space-2), env(safe-area-inset-top));
+    padding-right: max(var(--space-2), env(safe-area-inset-right));
+    padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+    padding-left: max(var(--space-2), env(safe-area-inset-left));
+  }
+}
+@media (max-width: 999px) and (min-height: 521px), (max-width: 999px) and (orientation: portrait) {
+  .inst {
+    padding-top: max(var(--space-3), env(safe-area-inset-top));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+    padding-left: max(var(--space-3), env(safe-area-inset-left));
+  }
+  /* The pinned picture stops under the status bar, not behind it. */
+  .inst-pin { top: env(safe-area-inset-top); }
+}
+
+/* On iPhone, full window only, as in Safari on iPhone (see maze-native.js). */
+html.maze-phone #view-fullscreen,
+html.maze-phone #view-fullscreen-bar { display: none !important; }
+
+/* The page's notice that a file did not load starts below the status bar. */
+#load-error { margin-top: env(safe-area-inset-top); }
+
+/* Behind the status bar, the page field, so controls scrolling up pass under it. */
+.maze-safe-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: env(safe-area-inset-top);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  background-color: var(--bg-edge);
+  pointer-events: none;
+}
+
+/* Full window: the picture stays clear of the status bar and the camera housing; the bar
+   keeps its own bottom inset, and its sides now sit inside the page's. */
+.inst[data-expanded="true"] {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+}
+.inst[data-expanded="true"] .inst-bar {
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
+}
