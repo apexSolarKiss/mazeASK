@@ -62,6 +62,12 @@
   var aspectParam = parse(params.get('aspect'));
   var engine = MazeEngine.create({ seed: seedParam == null ? undefined : Math.floor(Math.abs(seedParam)) % 4294967296 });
   var settings = engine.settings;
+  /* A native host (app/maze-native.js inside the iOS app) registers itself
+     before this file runs. On the web there is none, and everything below
+     that names it is skipped. */
+  var nativeHost = window.MazeNativeHost && typeof window.MazeNativeHost.attach === 'function' ? window.MazeNativeHost : null;
+  var hostListeners = [];
+  function tellHost(kind) { for (var i = 0; i < hostListeners.length; i++) hostListeners[i](kind); }
 
   /* ---- remembered settings, then the URL ------------------------------- */
 
@@ -138,7 +144,8 @@
     fileSuffix: function () {
       var w = engine.work;
       return w ? w.algorithm + '-' + w.topology + '-' + w.seed : '';
-    }
+    },
+    formatSize: nativeHost ? function (w, h) { return 'PNG ' + w + ' × ' + h + ' px'; } : undefined
   });
 
   /* The shape a new maze is composed for: a fixed frame's exact aspect, or
@@ -249,7 +256,7 @@
     renderStatus();
   }
 
-  function changed() { remember(); syncControls(); }
+  function changed() { remember(); syncControls(); tellHost('change'); }
 
   /* ---- undo ---------------------------------------------------------------
      Every action that replaces the maze or its colors can be taken back,
@@ -293,6 +300,7 @@
     var restore = engine.newMaze(aspect || frameAspect());
     if (hadWork) pushUndo(restore);
     if (finishAtOnce) engine.finish();
+    tellHost('new');
     instrument.redraw();
     changed();
     kick();
@@ -317,6 +325,7 @@
     makeNew('New maze at density ' + trim(next) + '.');
   }
   function recolor() {
+    if (!engine.work) return;          // in the app, before the first maze
     pushUndo(engine.recolor());
     instrument.redraw();
     changed();
@@ -407,6 +416,7 @@
       if (w.complete) {
         syncControls();
         announce('Maze complete.');
+        tellHost('complete');
         return;
       }
       renderStatus();
@@ -428,6 +438,7 @@
   document.addEventListener('visibilitychange', function () { last = 0; });
 
   instrument.on('change', advice);
+  instrument.on('change', function (s) { if (s.reason === 'frame') tellHost('change'); });
   instrument.on('resize', advice);
   instrument.on('export', function (result) {
     if (!result.downloaded) return;
@@ -441,15 +452,123 @@
   instrument.bind({
     frame: $('frame'),
     size: $('save-size'),
-    save: $('save'),
+    save: nativeHost ? null : $('save'),     // the native host shares the PNG instead
     fullWindow: $('view-window'),
     fullscreen: [$('view-fullscreen'), $('view-fullscreen-bar')],
     exit: $('view-exit'),
     panelToggle: $('panel-toggle')
   });
 
-  /* The first maze, for the shape the URL names or else the frame the page opened with. */
-  makeNew(null, true, aspectParam != null && aspectParam > 0 ? aspectParam : null);
+  /* ---- the native host seam ------------------------------------------------
+     What a native host may do: read the complete maze as a saved-maze record,
+     open a record as the current maze, export the PNG without a download,
+     speak in the status line, and hear when the maze or how it looks
+     changes. It never reaches the engine or the instrument itself. */
+
+  function appearance() {
+    return { frame: instrument.frame.id, ends: settings.ends, solution: settings.solution, label: settings.label };
+  }
+  /* A record opened as the current maze. Throws, leaving the current maze, if
+     it does not rebuild. `undoable`: the maze it replaces can be brought back. */
+  function openRecord(record, undoable) {
+    var read = MazeEngine.readRecord(record);
+    var before = appearance();
+    var restoreWork = engine.adopt(read.work);
+    var w = engine.work;
+    settings.algorithm = w.algorithm;
+    settings.topology = MazeEngine.supports(w.algorithm, w.requestedTopology) ? w.requestedTopology : 'rect';
+    settings.density = w.density;
+    settings.ends = read.appearance.ends;
+    settings.solution = read.appearance.solution;
+    settings.label = read.appearance.label;
+    if (read.appearance.frame) instrument.setFrame(read.appearance.frame);
+    if (undoable) {
+      pushUndo(function () {
+        restoreWork();
+        settings.ends = before.ends; settings.solution = before.solution; settings.label = before.label;
+        instrument.setFrame(before.frame);
+      });
+    }
+    instrument.redraw();
+    changed();
+    kick();
+    return read;
+  }
+  /* A record kept under undo instead of opened: the maze showing stays, and undo
+     brings the record's maze back, with how it looked. It becomes the only undo step,
+     since the steps before it belong to mazes it does not follow. Throws if it does
+     not rebuild. */
+  function offerRecord(record) {
+    var read = MazeEngine.readRecord(record);
+    undoStack = [];
+    pushUndo(function () {
+      engine.adopt(read.work);
+      settings.ends = read.appearance.ends; settings.solution = read.appearance.solution; settings.label = read.appearance.label;
+      if (read.appearance.frame) instrument.setFrame(read.appearance.frame);
+    });
+    syncControls();
+    return read;
+  }
+
+  /* The first maze in the app. The host answers once, with the record it kept or
+     none. It may answer late: the page shows after a second whether or not the
+     host has answered, and makes its own first maze then (`fallback`), and the
+     person may make or recolor a maze before the answer comes. A late record
+     opens over the page's own maze, with undo, while that maze is showing with
+     the colors it was made with. Otherwise the maze showing is one the person
+     made or recolored: it stays, and the record goes under undo instead. */
+  var answered = false;
+  var pageWork = null, pageColors = '';     // the page's own first maze, as it was made
+  var startTimer = 0;
+  function firstAspect() { return aspectParam != null && aspectParam > 0 ? aspectParam : null; }
+  function firstMaze() { makeNew(null, true, firstAspect()); }
+  function fallback() {
+    if (engine.work) return;
+    firstMaze();
+    pageWork = engine.work;
+    pageColors = JSON.stringify(pageWork.colors);
+  }
+  function pageMazeShowing() { return !!pageWork && engine.work === pageWork && JSON.stringify(pageWork.colors) === pageColors; }
+  function start(record) {
+    if (answered) return null;
+    answered = true;
+    window.clearTimeout(startTimer);
+    if (!engine.work) {
+      if (record) {
+        try { return { opened: true, read: openRecord(record, false) }; }
+        catch (e) { firstMaze(); return { opened: false, error: e }; }
+      }
+      firstMaze();
+      return { opened: false };
+    }
+    if (!record) return { opened: false };
+    try {
+      if (pageMazeShowing()) return { opened: true, late: true, read: openRecord(record, true) };
+      return { opened: false, offered: true, read: offerRecord(record) };
+    } catch (e) { return { opened: false, error: e }; }
+  }
+
+  if (nativeHost) {
+    /* A host that never attaches or never starts still gets a maze. */
+    startTimer = window.setTimeout(fallback, 2000);
+    nativeHost.attach({
+      start: start,
+      fallback: fallback,
+      record: function (meta) {
+        var w = engine.work;
+        return w && w.complete ? MazeEngine.toRecord(w, appearance(), meta) : null;
+      },
+      open: function (record) { return openRecord(record, true); },
+      complete: function () { return !!(engine.work && engine.work.complete); },
+      describe: function () { var w = engine.work; return w ? shortName(w.algorithm) + ' // ' + gridText(w) : ''; },
+      exportPNG: function () { return instrument.exportPNG({ download: false, defer: true }); },
+      say: say,
+      on: function (fn) { hostListeners.push(fn); }
+    });
+  } else {
+    /* The first maze, for the shape the URL names or else the frame the page opened with. */
+    makeNew(null, true, firstAspect());
+  }
   /* The label uses the design system's mono face; draw again once it has loaded. */
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { instrument.redraw(); });
 

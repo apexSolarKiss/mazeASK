@@ -26,7 +26,9 @@ then open `http://localhost:8765/`, where the icons do show.
 | `app/maze-engine.js` | the maze: generation, solving and drawing, ported from `mazeASK.js`. No DOM | mazes-ASK |
 | `app/maze-app.js` | controls, loop, keys, undo and settings | mazes-ASK |
 | `app/maze.css` | the page's own small additions: the frame note, and the phone full-window row | mazes-ASK |
+| `app/maze-native.js`, `app/maze-native.css` | the iPhone and iPad app's saved maze, recovery, PNG sharing and safe areas. On the web the script returns at once and the stylesheet is never loaded; see [`../native/README.md`](../native/README.md) | mazes-ASK |
 | `checks/engine-sweep.cjs` | builds every algorithm on every grid it offers and checks each result is one perfect maze | mazes-ASK |
+| `checks/saved-maze.cjs` | saves and reopens every algorithm on every grid and checks each reopened maze is the same; checks damaged records are refused | mazes-ASK |
 | `instrument.js`, `instrument.css` | frame fitting, full window, fullscreen, PNG saves and the shared control styles. Knows nothing about mazes | design-system-ASK, vendored |
 | `_dsa-tokens/`, `_dsa-surface/`, `licenses/` | the design system's foundation, root modules and licenses | design-system-ASK, vendored |
 | `favicon.svg`, `favicon-32.png`, `favicon.ico`, `apple-touch-icon.png` | the ASK browser icons, at the site root | design-system-ASK, vendored |
@@ -127,8 +129,7 @@ The sketch itself keeps its original rules.
 ## Not in this chapter
 
 - Solving by hand, a timer, or any game.
-- Saving and reopening a maze, or a share sheet.
-- The iPhone and iPad build.
+- Saving and reopening a maze, or a share sheet, on the web. The iPhone and iPad app in [`../native/`](../native/) has both; the web page is unchanged.
 
 ## URL parameters
 

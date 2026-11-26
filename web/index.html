@@ -57,6 +57,9 @@
 <link rel="stylesheet" href="instrument.css">
 <!-- The maze page's own small additions. -->
 <link rel="stylesheet" href="app/maze.css">
+<!-- The iOS app's host. On the web it returns at once. In the app it runs here, before the body,
+     so that the page is not drawn until the app knows its safe areas. -->
+<script src="app/maze-native.js"></script>
 </head>
 <body>
 <noscript><p class="inst-note">mazes-ASK draws its mazes with JavaScript, which is turned off in this browser.</p></noscript>
